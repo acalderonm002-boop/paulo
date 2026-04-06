@@ -1,0 +1,153 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
+
+const navLinks = [
+  { label: "Sobre Mí", href: "#sobre-mi" },
+  { label: "Servicios", href: "#servicios" },
+  { label: "Propiedades", href: "#propiedades" },
+  { label: "Testimonios", href: "#testimonios" },
+  { label: "Contacto", href: "#contacto" },
+];
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  return (
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-[0_1px_24px_rgba(26,42,74,0.08)]"
+            : "bg-transparent"
+        } ${
+          mounted
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2"
+        }`}
+      >
+        <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-5 md:py-6">
+          <Link
+            href="/"
+            className="font-serif text-xl md:text-2xl tracking-[0.18em] text-[color:var(--accent)]"
+            style={{ fontFamily: "var(--font-dm-serif), Georgia, serif" }}
+          >
+            PAULO LEAL
+          </Link>
+
+          <div className="hidden lg:flex items-center gap-10">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-[12px] uppercase text-[color:var(--text-primary)] hover:text-[color:var(--accent)] transition-colors duration-300"
+                style={{ letterSpacing: "2px" }}
+              >
+                {link.label}
+              </a>
+            ))}
+            <a
+              href="#contacto"
+              className="text-[12px] uppercase border border-[color:var(--accent)] text-[color:var(--accent)] px-5 py-3 hover:bg-[color:var(--accent)] hover:text-white transition-colors duration-300"
+              style={{ letterSpacing: "2px" }}
+            >
+              Agendar Cita
+            </a>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileOpen}
+            className="lg:hidden relative z-[60] w-10 h-10 flex items-center justify-center"
+          >
+            <Menu
+              size={24}
+              className={`absolute transition-all duration-300 ${
+                mobileOpen
+                  ? "opacity-0 rotate-90 text-white"
+                  : "opacity-100 rotate-0 text-[color:var(--text-primary)]"
+              }`}
+            />
+            <X
+              size={26}
+              className={`absolute transition-all duration-300 ${
+                mobileOpen
+                  ? "opacity-100 rotate-0 text-white"
+                  : "opacity-0 -rotate-90 text-[color:var(--text-primary)]"
+              }`}
+            />
+          </button>
+        </nav>
+      </header>
+
+      {/* Mobile fullscreen menu */}
+      <div
+        className={`lg:hidden fixed inset-0 z-40 bg-[color:var(--midnight)] transition-all duration-500 ease-out ${
+          mobileOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!mobileOpen}
+      >
+        <div className="h-full flex flex-col items-center justify-center gap-8 px-6">
+          {navLinks.map((link, i) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className={`text-white text-3xl md:text-4xl tracking-[0.12em] hover:text-[color:var(--accent-light)] transition-all duration-500 ${
+                mobileOpen
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+              style={{
+                fontFamily: "var(--font-dm-serif), Georgia, serif",
+                transitionDelay: mobileOpen ? `${i * 70 + 150}ms` : "0ms",
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="#contacto"
+            onClick={() => setMobileOpen(false)}
+            className={`mt-6 text-[13px] uppercase border border-white text-white px-8 py-4 hover:bg-white hover:text-[color:var(--midnight)] transition-all duration-500 ${
+              mobileOpen
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+            style={{
+              letterSpacing: "2px",
+              transitionDelay: mobileOpen
+                ? `${navLinks.length * 70 + 150}ms`
+                : "0ms",
+            }}
+          >
+            Agendar Cita
+          </a>
+        </div>
+      </div>
+    </>
+  );
+}
