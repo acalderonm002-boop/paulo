@@ -7,8 +7,10 @@ export default function VideoSection() {
       tagline="CONÓCEME"
       title="Me dedico a encontrar la mejor propiedad para tu empresa o para tu familia."
       subtext="Estoy a tus órdenes para dar el siguiente paso."
-      videoSrc="https://www.youtube.com/embed/VIDEO_ID"
-      videoTitle="Conoce a Paulo Leal"
+      video={{
+        kind: "file",
+        src: "/images/videos/paulo-intro.mp4",
+      }}
     />
   );
 }

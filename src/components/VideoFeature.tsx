@@ -3,13 +3,16 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, type ReactNode } from "react";
 
+type VideoSource =
+  | { kind: "file"; src: string; poster?: string }
+  | { kind: "iframe"; src: string; title: string };
+
 type VideoFeatureProps = {
   background: "cream" | "white" | "warm-white";
   tagline: string;
   title: string;
   subtext?: string;
-  videoSrc: string;
-  videoTitle: string;
+  video: VideoSource;
   reverse?: boolean;
   children?: ReactNode;
 };
@@ -40,8 +43,7 @@ export default function VideoFeature({
   tagline,
   title,
   subtext,
-  videoSrc,
-  videoTitle,
+  video,
   reverse = false,
   children,
 }: VideoFeatureProps) {
@@ -119,17 +121,28 @@ export default function VideoFeature({
             initial="hidden"
             animate={inView ? "show" : "hidden"}
             custom={2}
-            className="relative w-full aspect-video rounded-xl overflow-hidden shadow-[0_25px_60px_-20px_rgba(26,42,74,0.25)]"
+            className="relative w-full aspect-video rounded-xl overflow-hidden shadow-[0_25px_60px_-20px_rgba(26,42,74,0.25)] bg-black"
           >
-            <iframe
-              src={videoSrc}
-              title={videoTitle}
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-              className="absolute inset-0 w-full h-full border-0"
-            />
+            {video.kind === "file" ? (
+              <video
+                src={video.src}
+                poster={video.poster}
+                controls
+                preload="metadata"
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <iframe
+                src={video.src}
+                title={video.title}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full border-0"
+              />
+            )}
           </motion.div>
         </div>
       </div>

@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
+import SocialIcons from "./SocialIcons";
 
 const stats = [
   { value: "3+", label: "Años de Experiencia" },
@@ -60,7 +62,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8, ease: easeOut }}
-              className="flex flex-col sm:flex-row gap-3 mb-10"
+              className="flex flex-col sm:flex-row gap-3 mb-6"
             >
               <a
                 href="#contacto"
@@ -80,6 +82,15 @@ export default function Hero() {
               >
                 Ver Propiedades
               </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9, ease: easeOut }}
+              className="mb-8"
+            >
+              <SocialIcons size={20} gapClass="gap-6" />
             </motion.div>
 
             <motion.div
@@ -126,28 +137,20 @@ export default function Hero() {
             transition={{ duration: 1.2, delay: 0.3, ease: easeOut }}
             className="absolute inset-0"
           >
-            <div
-              className="relative w-full h-full flex items-center justify-center lg:rounded-bl-[60px] overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(135deg, #eff4fa 0%, #f5f2ed 50%, #e8eef7 100%)",
-              }}
-              aria-label="Retrato de Paulo Leal Saviñón"
-            >
-              {/* Soft accent glow */}
-              <div
-                className="absolute inset-0 opacity-[0.35] pointer-events-none"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 70% 30%, rgba(96,165,250,0.25) 0%, transparent 55%)",
-                }}
+            <div className="relative w-full h-full lg:rounded-bl-[60px] overflow-hidden">
+              <Image
+                src="/images/paulo-portrait.jpg"
+                alt="Paulo Leal Saviñón, asesor inmobiliario en Monterrey"
+                fill
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-cover object-top"
+                priority
               />
-              <span
-                className="relative text-[color:var(--text-secondary)] text-xs uppercase tracking-[0.3em]"
-                style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
-              >
-                Foto Paulo
-              </span>
+              {/* Subtle gradient wash for depth */}
+              <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-[color:var(--midnight)]/25 via-transparent to-transparent"
+              />
             </div>
           </motion.div>
 

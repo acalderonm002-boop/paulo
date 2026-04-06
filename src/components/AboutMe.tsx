@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useRef } from "react";
@@ -51,22 +52,14 @@ export default function AboutMe() {
                 className="hidden sm:block absolute -left-6 top-[20%] w-[2px] h-[40%] bg-[color:var(--accent)]"
               />
 
-              <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden bg-gradient-to-br from-[color:var(--midnight)] to-[color:var(--dark-blue)]">
-                <div
-                  className="absolute inset-0 opacity-[0.08] pointer-events-none"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(circle at 30% 20%, #ffffff 0%, transparent 55%)",
-                  }}
+              <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden">
+                <Image
+                  src="/images/paulo-screenshot.png"
+                  alt="Paulo Leal Saviñón, asesor inmobiliario"
+                  fill
+                  sizes="(max-width: 1024px) 90vw, 40vw"
+                  className="object-cover object-center"
                 />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span
-                    className="text-white/70 text-xs uppercase tracking-[0.3em]"
-                    style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
-                  >
-                    Foto Paulo
-                  </span>
-                </div>
               </div>
 
               <motion.div

@@ -1,46 +1,8 @@
 "use client";
 
-import {
-  Facebook,
-  Instagram,
-  Linkedin,
-  Mail,
-  MapPin,
-  Phone,
-} from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { useState, type FormEvent } from "react";
-
-const socials = [
-  {
-    name: "Instagram",
-    href: "https://instagram.com",
-    icon: Instagram,
-  },
-  {
-    name: "Facebook",
-    href: "https://facebook.com",
-    icon: Facebook,
-  },
-  {
-    name: "LinkedIn",
-    href: "https://linkedin.com",
-    icon: Linkedin,
-  },
-];
-
-function TikTokIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M19.6 6.3a5.4 5.4 0 0 1-3.3-1.1 5.3 5.3 0 0 1-2-3.2h-3.4v13.5a2.5 2.5 0 1 1-2.5-2.5c.2 0 .5 0 .7.1V9.7a6 6 0 0 0-.7 0 5.9 5.9 0 1 0 5.9 5.9V9.3a8.7 8.7 0 0 0 5.3 1.8V7.7a5.4 5.4 0 0 1 0-1.4Z" />
-    </svg>
-  );
-}
+import SocialIcons from "./SocialIcons";
 
 type ContactField = "name" | "email" | "phone" | "message";
 
@@ -90,29 +52,11 @@ export default function Footer() {
               metropolitana.
             </p>
 
-            <div className="flex items-center gap-4">
-              {socials.map(({ name, href, icon: Icon }) => (
-                <a
-                  key={name}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={name}
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-[color:var(--accent)] hover:bg-white/5 transition-colors duration-300"
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="TikTok"
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-[color:var(--accent)] hover:bg-white/5 transition-colors duration-300"
-              >
-                <TikTokIcon size={18} />
-              </a>
-            </div>
+            <SocialIcons
+              size={18}
+              gapClass="gap-5"
+              linkClass="text-white/60 hover:text-[color:var(--accent)]"
+            />
           </div>
 
           {/* COLUMN 2 — Contact info */}

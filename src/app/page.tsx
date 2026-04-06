@@ -6,6 +6,7 @@ import Properties from "@/components/Properties";
 import Testimonials from "@/components/Testimonials";
 import Clients from "@/components/Clients";
 import ContentHighlight from "@/components/ContentHighlight";
+import InstagramFeed from "@/components/InstagramFeed";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 
@@ -20,6 +21,7 @@ export default function Home() {
       <Testimonials />
       <Clients />
       <ContentHighlight />
+      <InstagramFeed />
       <CallToAction />
       <Footer />
     </main>
