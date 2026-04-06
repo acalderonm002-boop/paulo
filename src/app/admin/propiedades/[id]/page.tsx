@@ -1,7 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminPropertyEditor from "@/components/admin/AdminPropertyEditor";
+import { SiteDataProvider } from "@/context/SiteDataContext";
 import { verifyAdmin } from "@/lib/auth";
+import { fetchSiteContent } from "@/lib/content";
+import { fetchProperties } from "@/lib/properties-db";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -37,9 +40,24 @@ export default async function AdminPropertyDetailPage({ params }: PageProps) {
 
   if (!row) notFound();
 
+  const [content, properties] = await Promise.all([
+    fetchSiteContent(),
+    fetchProperties(),
+  ]);
+
   return (
-    <AdminShell>
-      <AdminPropertyEditor property={row} />
-    </AdminShell>
+    <SiteDataProvider
+      initial={{
+        config: content.config,
+        services: content.services,
+        testimonials: content.testimonials,
+        clients: content.clients,
+        properties,
+      }}
+    >
+      <AdminShell>
+        <AdminPropertyEditor property={row} />
+      </AdminShell>
+    </SiteDataProvider>
   );
 }

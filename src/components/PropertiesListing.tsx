@@ -358,17 +358,19 @@ export default function PropertiesListing({
         </div>
       </section>
 
-      <PropertyWizard
-        open={wizardOpen}
-        onClose={() => {
-          setWizardOpen(false);
-          setEditingInitial(null);
-          setEditingId(undefined);
-          fetchAdmin();
-        }}
-        initial={editingInitial}
-        editingId={editingId}
-      />
+      {adminMode && (
+        <PropertyWizard
+          open={wizardOpen}
+          onClose={() => {
+            setWizardOpen(false);
+            setEditingInitial(null);
+            setEditingId(undefined);
+            fetchAdmin();
+          }}
+          initial={editingInitial}
+          editingId={editingId}
+        />
+      )}
     </>
   );
 }

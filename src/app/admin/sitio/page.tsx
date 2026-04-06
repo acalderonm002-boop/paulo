@@ -21,18 +21,18 @@ export default async function AdminSitioPage() {
   ]);
 
   return (
-    <AdminShell>
-      <SiteDataProvider
-        initial={{
-          config: content.config,
-          services: content.services,
-          testimonials: content.testimonials,
-          clients: content.clients,
-          properties,
-        }}
-      >
+    <SiteDataProvider
+      initial={{
+        config: content.config,
+        services: content.services,
+        testimonials: content.testimonials,
+        clients: content.clients,
+        properties,
+      }}
+    >
+      <AdminShell>
         <HomeContent adminMode />
-      </SiteDataProvider>
-    </AdminShell>
+      </AdminShell>
+    </SiteDataProvider>
   );
 }
