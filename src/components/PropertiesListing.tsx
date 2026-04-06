@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Eye, EyeOff, Plus } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
   PriceLabel,
@@ -13,7 +13,6 @@ import PropertyCard from "./PropertyCard";
 import PropertyWizard, {
   type WizardInitial,
 } from "./admin/PropertyWizard";
-import { Pencil } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 
 type TypeFilter = "Todos" | PropertyType;
@@ -110,6 +109,25 @@ export default function PropertiesListing({
         })),
     });
     setWizardOpen(true);
+  };
+
+  const deleteProperty = async (row: AdminPropertyRow) => {
+    if (
+      !window.confirm(
+        `¿Eliminar "${row.title}"? Esta acción no se puede deshacer.`
+      )
+    )
+      return;
+    try {
+      const res = await fetch(`/api/admin/properties/${row.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Error al eliminar");
+      setAdminRows((arr) => (arr ?? []).filter((x) => x.id !== row.id));
+      showToast("Propiedad eliminada");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Error al eliminar");
+    }
   };
 
   const toggleVisibility = async (row: AdminPropertyRow) => {
@@ -312,10 +330,26 @@ export default function PropertiesListing({
                               <EyeOff size={16} />
                             )}
                           </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              deleteProperty(row);
+                            }}
+                            aria-label="Eliminar propiedad"
+                            className="w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-center text-[color:var(--text-primary)] hover:text-red-600"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
                       </>
                     )}
-                    <PropertyCard property={p} index={i} />
+                    <PropertyCard
+                      property={p}
+                      index={i}
+                      hrefPrefix={adminMode ? "/admin/propiedades" : "/propiedades"}
+                    />
                   </div>
                 );
               })}

@@ -37,7 +37,9 @@ export default function Navbar() {
     <>
       <header
         className={`fixed top-0 right-0 bg-white shadow-[0_1px_24px_rgba(26,42,74,0.06)] transition-all duration-500 ease-out ${
-          isAdminPanel ? "left-0 lg:left-[240px]" : "left-0"
+          isAdminPanel
+            ? "hidden lg:block left-0 lg:left-[240px]"
+            : "block left-0"
         } ${
           mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
         }`}

@@ -290,6 +290,47 @@ export default function PropertyWizard({
           const err = await res.json().catch(() => ({}));
           throw new Error(err?.error || "Error al guardar");
         }
+
+        // Delete images that were removed in the wizard.
+        const originalIds = new Set(
+          (initial?.images ?? [])
+            .map((img) => img.id)
+            .filter((id): id is string => Boolean(id))
+        );
+        const remainingIds = new Set(
+          data.images
+            .map((img) => img.id)
+            .filter((id): id is string => Boolean(id))
+        );
+        const toDelete = Array.from(originalIds).filter(
+          (id) => !remainingIds.has(id)
+        );
+        for (const id of toDelete) {
+          await fetch(
+            `/api/admin/properties/${editingId}/images?imageId=${id}`,
+            { method: "DELETE" }
+          );
+        }
+
+        // Update sort_order + is_primary for existing images.
+        const existingPatch = data.images
+          .map((img, i) =>
+            img.id
+              ? {
+                  id: img.id,
+                  sort_order: i,
+                  is_primary: img.is_primary,
+                }
+              : null
+          )
+          .filter((x): x is NonNullable<typeof x> => x !== null);
+        if (existingPatch.length > 0) {
+          await fetch(`/api/admin/properties/${editingId}/images`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ images: existingPatch }),
+          });
+        }
       } else {
         const res = await fetch(`/api/admin/properties`, {
           method: "POST",
@@ -304,7 +345,7 @@ export default function PropertyWizard({
         propertyId = result.property?.id;
       }
 
-      // Attach images (new ones only — those without an id).
+      // Attach NEW images (those without an id).
       if (propertyId) {
         for (let i = 0; i < data.images.length; i++) {
           const img = data.images[i];
@@ -322,9 +363,7 @@ export default function PropertyWizard({
       }
 
       await refreshData();
-      showToast(
-        editingId ? "Propiedad actualizada" : "Propiedad publicada"
-      );
+      showToast(editingId ? "Propiedad actualizada" : "Propiedad publicada");
       onClose();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Error al publicar");
@@ -484,7 +523,7 @@ function StepBasic({ data, update }: StepProps) {
           placeholder="Departamento en Torre Dana"
         />
       </Field>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Tipo *">
           <Select
             value={data.property_type}
@@ -500,7 +539,7 @@ function StepBasic({ data, update }: StepProps) {
           />
         </Field>
       </div>
-      <div className="grid grid-cols-[1fr_120px] gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px] gap-4">
         <Field label="Precio *">
           <AdminInput
             value={formatNumber(data.price)}
@@ -545,7 +584,7 @@ function StepLocation({ data, update }: StepProps) {
           placeholder="Del Valle"
         />
       </Field>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Ciudad">
           <AdminInput
             value={data.city}

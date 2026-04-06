@@ -89,7 +89,10 @@ export default function AdminSidebar({
 
   const renderItem = (item: NavItem) => {
     const isLink = "href" in item;
-    const active = isLink && item.href === pathname;
+    const active =
+      isLink &&
+      !item.external &&
+      (pathname === item.href || pathname.startsWith(`${item.href}/`));
     const cls = `${baseItemClass} ${
       active
         ? "bg-[color:var(--accent)] text-white"

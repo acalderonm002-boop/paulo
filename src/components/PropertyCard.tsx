@@ -11,12 +11,15 @@ type Props = {
   property: Property;
   index?: number;
   inView?: boolean;
+  /** Path prefix for the card link (defaults to public detail). */
+  hrefPrefix?: string;
 };
 
 export default function PropertyCard({
   property,
   index = 0,
   inView = true,
+  hrefPrefix = "/propiedades",
 }: Props) {
   const hasRooms = property.bedrooms > 0;
 
@@ -31,7 +34,7 @@ export default function PropertyCard({
       }}
     >
       <Link
-        href={`/propiedades/${property.id}`}
+        href={`${hrefPrefix}/${property.id}`}
         className="group block bg-white rounded-xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_-15px_rgba(26,42,74,0.18)] transition-shadow duration-300 overflow-hidden"
       >
         {/* Image */}
