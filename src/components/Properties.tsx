@@ -1,36 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
-
-type Property = {
-  title: string;
-  location: string;
-};
-
-const properties: Property[] = [
-  {
-    title: "Departamento en Torre Dana",
-    location: "San Pedro Garza García, N.L.",
-  },
-  {
-    title: "Departamento en Saqqara",
-    location: "San Pedro Garza García, N.L.",
-  },
-  {
-    title: "Terreno Industrial",
-    location: "Salinas Victoria, N.L.",
-  },
-  {
-    title: "Departamento en Valle Oriente",
-    location: "San Pedro Garza García, N.L.",
-  },
-  {
-    title: "Casa en Carretera Nacional",
-    location: "Monterrey, N.L.",
-  },
-];
+import { properties } from "@/data/properties";
+import PropertyCard from "./PropertyCard";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -88,74 +63,13 @@ export default function Properties() {
 
         {/* GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((prop, i) => (
-            <motion.article
-              key={prop.title}
-              variants={fadeUp}
-              initial="hidden"
-              animate={inView ? "show" : "hidden"}
-              custom={i + 2}
-              className="group bg-white rounded-xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_-15px_rgba(26,42,74,0.18)] transition-shadow duration-300 overflow-hidden"
-            >
-              {/* Image */}
-              <div className="relative w-full aspect-[16/9] overflow-hidden">
-                <div
-                  className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, var(--midnight) 0%, var(--dark-blue) 100%)",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-[0.12] pointer-events-none"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle at 30% 25%, #ffffff 0%, transparent 55%)",
-                    }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span
-                      className="text-white/70 text-[11px] uppercase tracking-[0.3em]"
-                      style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
-                    >
-                      {prop.title}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Body */}
-              <div className="p-6">
-                <div
-                  className="flex items-center gap-1.5 text-[11px] uppercase text-[color:var(--accent)] mb-3"
-                  style={{ letterSpacing: "2px" }}
-                >
-                  <MapPin size={13} strokeWidth={2.2} />
-                  <span>{prop.location}</span>
-                </div>
-
-                <h3
-                  className="text-[17px] text-[color:var(--text-primary)] mb-4 leading-snug"
-                  style={{
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                    fontWeight: 700,
-                  }}
-                >
-                  {prop.title}
-                </h3>
-
-                <a
-                  href="#contacto"
-                  className="inline-flex items-center gap-1.5 text-[13px] text-[color:var(--accent)] hover:underline underline-offset-4 transition-all"
-                >
-                  Ver Video
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </a>
-              </div>
-            </motion.article>
+          {properties.map((p, i) => (
+            <PropertyCard
+              key={p.id}
+              property={p}
+              index={i + 2}
+              inView={inView}
+            />
           ))}
         </div>
 
@@ -164,11 +78,11 @@ export default function Properties() {
           variants={fadeUp}
           initial="hidden"
           animate={inView ? "show" : "hidden"}
-          custom={properties.length + 2}
+          custom={properties.length + 3}
           className="mt-12 flex justify-center"
         >
-          <a
-            href="#contacto"
+          <Link
+            href="/propiedades"
             className="group inline-flex items-center gap-2 border border-[color:var(--accent)] text-[color:var(--accent)] px-8 py-4 text-[12px] uppercase hover:bg-[color:var(--accent)] hover:text-white transition-colors duration-300"
             style={{ letterSpacing: "2px" }}
           >
@@ -177,7 +91,7 @@ export default function Properties() {
               size={16}
               className="transition-transform duration-300 group-hover:translate-x-1"
             />
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>
