@@ -69,7 +69,7 @@ export default function Footer() {
     "w-full bg-transparent border-0 border-b border-white/20 focus:border-[color:var(--accent)] focus:outline-none text-white placeholder-white/40 py-3 text-[15px] transition-colors";
 
   return (
-    <footer className="relative w-full bg-[color:var(--midnight)] text-white pt-20 lg:pt-24 pb-10">
+    <footer className="relative w-full bg-[color:var(--midnight)] text-white pt-16 lg:pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-12">
           {/* COLUMN 1 — Brand */}

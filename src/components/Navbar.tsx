@@ -13,16 +13,11 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -35,20 +30,16 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
-          scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-[0_1px_24px_rgba(26,42,74,0.08)]"
-            : "bg-transparent"
-        } ${
+        className={`fixed top-0 left-0 right-0 z-[100] bg-white shadow-[0_1px_24px_rgba(26,42,74,0.06)] transition-all duration-500 ease-out ${
           mounted
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-2"
         }`}
       >
-        <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-5 md:py-6">
+        <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
           <Link
             href="/"
-            className="font-serif text-xl md:text-2xl tracking-[0.18em] text-[color:var(--accent)]"
+            className="text-xl md:text-2xl tracking-[0.18em] text-[color:var(--text-primary)]"
             style={{ fontFamily: "var(--font-dm-serif), Georgia, serif" }}
           >
             PAULO LEAL
@@ -79,7 +70,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={mobileOpen}
-            className="lg:hidden relative z-[60] w-10 h-10 flex items-center justify-center"
+            className="lg:hidden relative z-[110] w-10 h-10 flex items-center justify-center"
           >
             <Menu
               size={24}
@@ -103,7 +94,7 @@ export default function Navbar() {
 
       {/* Mobile fullscreen menu */}
       <div
-        className={`lg:hidden fixed inset-0 z-40 bg-[color:var(--midnight)] transition-all duration-500 ease-out ${
+        className={`lg:hidden fixed inset-0 z-[90] bg-[color:var(--midnight)] transition-all duration-500 ease-out ${
           mobileOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"

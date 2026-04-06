@@ -1,8 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion, useInView } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 type Testimonial = {
   name: string;
@@ -30,13 +29,13 @@ const testimonials: Testimonial[] = [
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 28 },
   show: (i: number = 0) => ({
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.8,
-      delay: 0.1 + i * 0.12,
+      delay: 0.1 + i * 0.1,
       ease: easeOut,
     },
   }),
@@ -45,24 +44,12 @@ const fadeUp = {
 export default function Testimonials() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState<1 | -1>(1);
-
-  const goTo = (next: number) => {
-    setDirection(next > index ? 1 : -1);
-    setIndex((next + testimonials.length) % testimonials.length);
-  };
-
-  const prev = () => goTo(index - 1);
-  const next = () => goTo(index + 1);
-
-  const current = testimonials[index];
 
   return (
     <section
       id="testimonios"
       ref={ref}
-      className="relative w-full bg-[color:var(--midnight)] text-white py-24 lg:py-40 overflow-hidden"
+      className="relative w-full bg-[color:var(--midnight)] text-white py-16 lg:py-20 overflow-hidden"
     >
       {/* Subtle radial texture */}
       <div
@@ -74,15 +61,15 @@ export default function Testimonials() {
         }}
       />
 
-      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 lg:px-16">
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
         {/* HEADER */}
-        <div className="text-center mb-16 lg:mb-20">
+        <div className="text-center mb-12 lg:mb-14">
           <motion.p
             variants={fadeUp}
             initial="hidden"
             animate={inView ? "show" : "hidden"}
             custom={0}
-            className="text-[12px] uppercase text-[color:var(--accent-light)] mb-5"
+            className="text-[12px] uppercase text-[color:var(--accent-light)] mb-4"
             style={{ letterSpacing: "3px" }}
           >
             TESTIMONIOS
@@ -96,113 +83,65 @@ export default function Testimonials() {
             className="text-white leading-[1.1]"
             style={{
               fontFamily: "var(--font-dm-serif), Georgia, serif",
-              fontSize: "clamp(32px, 3.8vw, 52px)",
+              fontSize: "clamp(28px, 3vw, 42px)",
             }}
           >
             Lo que dicen mis clientes
           </motion.h2>
         </div>
 
-        {/* CAROUSEL */}
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          custom={2}
-          className="relative"
-        >
-          {/* Decorative quote mark */}
-          <div
-            aria-hidden
-            className="absolute left-1/2 -translate-x-1/2 -top-6 lg:-top-10 text-[color:var(--accent)] opacity-30 leading-none select-none"
-            style={{
-              fontFamily: "var(--font-dm-serif), Georgia, serif",
-              fontSize: "80px",
-            }}
-          >
-            “
-          </div>
-
-          <div className="relative min-h-[260px] sm:min-h-[220px] flex items-center justify-center">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.figure
-                key={current.name}
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -40 }}
-                transition={{ duration: 0.6, ease: easeOut }}
-                className="max-w-[700px] text-center px-4 sm:px-8"
+        {/* GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <motion.figure
+              key={t.name}
+              variants={fadeUp}
+              initial="hidden"
+              animate={inView ? "show" : "hidden"}
+              custom={i + 2}
+              className="relative rounded-xl p-8 bg-white/5 border border-white/10 backdrop-blur-[1px]"
+            >
+              <span
+                aria-hidden
+                className="absolute left-6 top-3 text-[color:var(--accent)] opacity-30 leading-none select-none"
+                style={{
+                  fontFamily: "var(--font-dm-serif), Georgia, serif",
+                  fontSize: "70px",
+                }}
               >
-                <blockquote
-                  className="italic text-white/90"
+                “
+              </span>
+
+              <blockquote
+                className="relative italic text-white/85 pt-6"
+                style={{
+                  fontFamily: "var(--font-dm-sans), sans-serif",
+                  fontSize: "15px",
+                  lineHeight: 1.75,
+                }}
+              >
+                {t.quote}
+              </blockquote>
+
+              <figcaption className="mt-6 flex items-center gap-3">
+                <span
+                  aria-hidden
+                  className="h-[2px] w-8 bg-[color:var(--accent)]"
+                />
+                <span
+                  className="text-[color:var(--accent-light)] text-[11px] uppercase"
                   style={{
                     fontFamily: "var(--font-dm-sans), sans-serif",
-                    fontSize: "clamp(17px, 1.6vw, 20px)",
-                    lineHeight: 1.8,
+                    fontWeight: 700,
+                    letterSpacing: "2px",
                   }}
                 >
-                  {current.quote}
-                </blockquote>
-
-                <figcaption className="mt-10 flex flex-col items-center">
-                  <span
-                    className="text-[color:var(--accent-light)] text-[12px] uppercase"
-                    style={{
-                      fontFamily: "var(--font-dm-sans), sans-serif",
-                      fontWeight: 700,
-                      letterSpacing: "2px",
-                    }}
-                  >
-                    {current.name}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="mt-3 h-[2px] w-10 bg-[color:var(--accent)]"
-                  />
-                </figcaption>
-              </motion.figure>
-            </AnimatePresence>
-          </div>
-
-          {/* Arrows */}
-          <div className="mt-12 flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={prev}
-              aria-label="Testimonio anterior"
-              className="w-12 h-12 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-[color:var(--midnight)] hover:border-white transition-colors duration-300"
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Siguiente testimonio"
-              className="w-12 h-12 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-[color:var(--midnight)] hover:border-white transition-colors duration-300"
-            >
-              <ArrowRight size={18} />
-            </button>
-          </div>
-
-          {/* Dots */}
-          <div className="mt-8 flex items-center justify-center gap-3">
-            {testimonials.map((t, i) => (
-              <button
-                key={t.name}
-                type="button"
-                onClick={() => goTo(i)}
-                aria-label={`Ver testimonio de ${t.name}`}
-                aria-current={i === index}
-                className={`h-[6px] rounded-full transition-all duration-300 ${
-                  i === index
-                    ? "w-8 bg-[color:var(--accent)]"
-                    : "w-[6px] bg-white/30 hover:bg-white/60"
-                }`}
-              />
-            ))}
-          </div>
-        </motion.div>
+                  {t.name}
+                </span>
+              </figcaption>
+            </motion.figure>
+          ))}
+        </div>
       </div>
     </section>
   );

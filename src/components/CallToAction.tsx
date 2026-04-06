@@ -26,7 +26,7 @@ export default function CallToAction() {
   return (
     <section
       ref={ref}
-      className="relative w-full overflow-hidden py-24 lg:py-36"
+      className="relative w-full overflow-hidden py-16 lg:py-20"
       style={{
         backgroundImage:
           "linear-gradient(135deg, var(--midnight) 0%, var(--dark-blue) 100%)",
