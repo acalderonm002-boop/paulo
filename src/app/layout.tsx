@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Serif_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
+import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { ToastProvider } from "@/context/ToastContext";
@@ -60,6 +61,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${dmSerif.variable} ${dmSans.variable} antialiased`}>
         <ToastProvider>
+          <LoadingScreen />
           <Navbar />
           {children}
           <WhatsAppFloat />
