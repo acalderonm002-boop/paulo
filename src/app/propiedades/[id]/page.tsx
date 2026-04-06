@@ -22,13 +22,14 @@ import {
   Waves,
   type LucideIcon,
 } from "lucide-react";
+import { formatPrice, type Property } from "@/data/properties";
 import {
-  formatPrice,
-  getProperty,
-  getRelatedProperties,
-  properties,
-  type Property,
-} from "@/data/properties";
+  fetchAllPropertySlugs,
+  fetchProperties,
+  fetchPropertyBySlug,
+  getRelatedFromList,
+} from "@/lib/properties-db";
+import { fetchSiteContent } from "@/lib/content";
 import PropertyGallery from "@/components/PropertyGallery";
 import PropertySidebar from "@/components/PropertySidebar";
 import PropertyCard from "@/components/PropertyCard";
@@ -36,16 +37,19 @@ import PropertyMobileBar from "@/components/PropertyMobileBar";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 
-export function generateStaticParams() {
-  return properties.map((p) => ({ id: p.id }));
+export const dynamic = "force-dynamic";
+
+export async function generateStaticParams() {
+  const slugs = await fetchAllPropertySlugs();
+  return slugs.map((slug) => ({ id: slug }));
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: { id: string };
-}): Metadata {
-  const property = getProperty(params.id);
+}): Promise<Metadata> {
+  const property = await fetchPropertyBySlug(params.id);
   if (!property) {
     return {
       title: "Propiedad no encontrada | Paulo Leal Saviñón",
@@ -160,15 +164,19 @@ function SpecCard({
   );
 }
 
-export default function PropertyPage({
+export default async function PropertyPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const property = getProperty(params.id);
+  const [property, allProperties, { config }] = await Promise.all([
+    fetchPropertyBySlug(params.id),
+    fetchProperties(),
+    fetchSiteContent(),
+  ]);
   if (!property) notFound();
 
-  const related = getRelatedProperties(params.id, 3);
+  const related = getRelatedFromList(allProperties, params.id, 3);
 
   return (
     <main className="bg-white pb-28 lg:pb-0">
@@ -422,8 +430,8 @@ export default function PropertyPage({
           </section>
         )}
 
-        <CallToAction />
-        <Footer />
+        <CallToAction config={config} />
+        <Footer config={config} />
       </div>
 
       {/* Mobile quick-contact bar */}

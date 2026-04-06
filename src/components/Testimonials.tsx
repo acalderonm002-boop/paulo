@@ -2,29 +2,9 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { DEFAULT_TESTIMONIALS, type TestimonialRow } from "@/lib/content";
 
-type Testimonial = {
-  name: string;
-  quote: string;
-};
-
-const testimonials: Testimonial[] = [
-  {
-    name: "Juan Pablo Leal",
-    quote:
-      "Paulo me ha ayudado tanto en temas comerciales y residenciales, con el local de mi negocio hace unos años y me acaba de rentar un depa. ¡Muy versátil!",
-  },
-  {
-    name: "Juan Carlos Garza",
-    quote:
-      "Paulo me ayudó a encontrar la casa en la que llevo varios años viviendo y desde entonces siempre ha estado al pendiente de cualquier duda o necesidad.",
-  },
-  {
-    name: "Claudia Villegas",
-    quote:
-      "Aparte de ayudarme con la renta de mi departamento Paulo me recomendó un buen servicio de mudanza, como foránea fue una gran ayuda.",
-  },
-];
+type Props = { testimonials?: TestimonialRow[] };
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -41,7 +21,9 @@ const fadeUp = {
   }),
 };
 
-export default function Testimonials() {
+export default function Testimonials({
+  testimonials = DEFAULT_TESTIMONIALS,
+}: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
 
@@ -94,7 +76,7 @@ export default function Testimonials() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
             <motion.figure
-              key={t.name}
+              key={t.id}
               variants={fadeUp}
               initial="hidden"
               animate={inView ? "show" : "hidden"}
@@ -120,7 +102,7 @@ export default function Testimonials() {
                   lineHeight: 1.75,
                 }}
               >
-                {t.quote}
+                {t.text}
               </blockquote>
 
               <figcaption className="mt-6 flex items-center gap-3">
@@ -136,7 +118,7 @@ export default function Testimonials() {
                     letterSpacing: "2px",
                   }}
                 >
-                  {t.name}
+                  {t.client_name}
                 </span>
               </figcaption>
             </motion.figure>

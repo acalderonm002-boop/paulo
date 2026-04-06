@@ -3,7 +3,11 @@
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
-export default function WhatsAppFloat() {
+type Props = { whatsappNumber?: string };
+
+export default function WhatsAppFloat({
+  whatsappNumber = "528128625350",
+}: Props = {}) {
   const pathname = usePathname() ?? "/";
   // Hide on mobile property detail routes to avoid overlap with the mobile bar
   const isPropertyDetail = /^\/propiedades\/[^/]+$/.test(pathname);
@@ -11,7 +15,7 @@ export default function WhatsAppFloat() {
 
   return (
     <motion.a
-      href="https://wa.me/528128625350"
+      href={`https://wa.me/${whatsappNumber}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactar por WhatsApp"

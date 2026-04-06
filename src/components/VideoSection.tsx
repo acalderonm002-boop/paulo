@@ -1,16 +1,25 @@
 import VideoFeature from "./VideoFeature";
+import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
 
-export default function VideoSection() {
+type Props = { config?: SiteConfig };
+
+export default function VideoSection({
+  config = DEFAULT_CONFIG,
+}: Props = {}) {
+  const src = config.video_section_url ?? "/images/videos/paulo-intro.mp4";
+  const isIframe = /youtube\.com|youtu\.be|vimeo\.com/i.test(src);
+
   return (
     <VideoFeature
       background="cream"
-      tagline="CONÓCEME"
-      title="Me dedico a encontrar la mejor propiedad para tu empresa o para tu familia."
-      subtext="Estoy a tus órdenes para dar el siguiente paso."
-      video={{
-        kind: "file",
-        src: "/images/videos/paulo-intro.mp4",
-      }}
+      tagline={config.video_section_tagline}
+      title={config.video_section_title}
+      subtext={config.video_section_subtitle}
+      video={
+        isIframe
+          ? { kind: "iframe", src, title: "Conoce a Paulo Leal" }
+          : { kind: "file", src }
+      }
     />
   );
 }

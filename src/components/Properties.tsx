@@ -4,7 +4,8 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
-import { properties } from "@/data/properties";
+import type { Property } from "@/data/properties";
+import { properties as fallbackProperties } from "@/data/properties";
 import PropertyCard from "./PropertyCard";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
@@ -22,9 +23,14 @@ const fadeUp = {
   }),
 };
 
-export default function Properties() {
+type Props = { properties?: Property[] };
+
+export default function Properties({
+  properties = fallbackProperties,
+}: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
+  const featured = properties.slice(0, 3);
 
   return (
     <section
@@ -63,7 +69,7 @@ export default function Properties() {
 
         {/* GRID — single row, first 3 properties */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.slice(0, 3).map((p, i) => (
+          {featured.map((p, i) => (
             <PropertyCard
               key={p.id}
               property={p}

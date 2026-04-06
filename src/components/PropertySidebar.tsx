@@ -72,13 +72,32 @@ export default function PropertySidebar({ property }: { property: Property }) {
     if (Object.keys(errs).length > 0) return;
 
     setLoading(true);
-    await new Promise((res) => setTimeout(res, 1500));
-    // Placeholder — to be wired to backend later.
-    console.log("property inquiry", { propertyId: property.id, ...form });
-    setLoading(false);
-    showToast("Mensaje enviado. Paulo te contactará pronto.");
-    setForm(initialForm);
-    setErrors({});
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          source: "property_page",
+          // Only send a UUID property_id if we recognize it as one; the
+          // public Property.id is the slug, not the DB uuid.
+          property_id: null,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Error al enviar");
+      }
+      showToast("Mensaje enviado. Paulo te contactará pronto.");
+      setForm(initialForm);
+      setErrors({});
+    } catch (err) {
+      showToast(
+        err instanceof Error ? err.message : "No se pudo enviar el mensaje."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const baseInput =

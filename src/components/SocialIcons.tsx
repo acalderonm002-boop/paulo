@@ -44,20 +44,52 @@ export const SOCIALS: SocialEntry[] = [
   { name: "LinkedIn", href: SOCIAL_LINKS.linkedin, icon: Linkedin },
 ];
 
+export type SocialLinks = {
+  instagram?: string;
+  facebook?: string;
+  tiktok?: string;
+  linkedin?: string;
+};
+
 type SocialIconsProps = {
   size?: number;
   gapClass?: string;
   linkClass?: string;
+  links?: SocialLinks;
 };
 
 export default function SocialIcons({
   size = 20,
   gapClass = "gap-5",
   linkClass = "text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]",
+  links,
 }: SocialIconsProps) {
+  const resolved: SocialEntry[] = [
+    {
+      name: "Instagram",
+      href: links?.instagram || SOCIAL_LINKS.instagram,
+      icon: Instagram,
+    },
+    {
+      name: "Facebook",
+      href: links?.facebook || SOCIAL_LINKS.facebook,
+      icon: Facebook,
+    },
+    {
+      name: "TikTok",
+      href: links?.tiktok || SOCIAL_LINKS.tiktok,
+      icon: "tiktok",
+    },
+    {
+      name: "LinkedIn",
+      href: links?.linkedin || SOCIAL_LINKS.linkedin,
+      icon: Linkedin,
+    },
+  ];
+
   return (
     <div className={`flex items-center ${gapClass}`}>
-      {SOCIALS.map((s) => (
+      {resolved.map((s) => (
         <a
           key={s.name}
           href={s.href}

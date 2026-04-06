@@ -8,54 +8,26 @@ import {
   TrendingUp,
   FileSearch,
   MessageCircle,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import { useRef } from "react";
+import { DEFAULT_SERVICES, type ServiceRow } from "@/lib/content";
 
-type Service = {
-  icon: LucideIcon;
-  title: string;
-  description: string;
+const ICON_MAP: Record<string, LucideIcon> = {
+  Home,
+  Building2,
+  Users,
+  TrendingUp,
+  FileSearch,
+  MessageCircle,
 };
 
-const services: Service[] = [
-  {
-    icon: Home,
-    title: "Compra y Venta",
-    description:
-      "Residenciales, industriales y comerciales. Te asesoro para encontrar o vender la propiedad ideal al mejor precio.",
-  },
-  {
-    icon: Building2,
-    title: "Arrendamiento",
-    description:
-      "Cualquier tipo de inmueble para personas físicas o morales, con contratos seguros y condiciones favorables.",
-  },
-  {
-    icon: Users,
-    title: "Colaboraciones",
-    description:
-      "Alianzas con valuadores, notarios, abogados y brokers de créditos hipotecarios para cubrir cada necesidad.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Inversión Inmobiliaria",
-    description:
-      "Maximiza el rendimiento de tu capital invirtiendo en las propiedades correctas con análisis fundamentado.",
-  },
-  {
-    icon: FileSearch,
-    title: "Opiniones de Valor",
-    description:
-      "Mediante distintos enfoques aporto una opinión profesional de valor sobre tu propiedad.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Comunicación Directa",
-    description:
-      "Tiempos de respuesta rápidos. Estoy a un mensaje de distancia y te acompaño en todo el proceso.",
-  },
-];
+function resolveIcon(name: string): LucideIcon {
+  return ICON_MAP[name] ?? Sparkles;
+}
+
+type Props = { services?: ServiceRow[] };
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -85,7 +57,9 @@ const cardVariant = {
   }),
 };
 
-export default function Services() {
+export default function Services({
+  services = DEFAULT_SERVICES,
+}: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
 
@@ -136,10 +110,10 @@ export default function Services() {
         {/* GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {services.map((service, i) => {
-            const Icon = service.icon;
+            const Icon = resolveIcon(service.icon_name);
             return (
               <motion.article
-                key={service.title}
+                key={service.id}
                 variants={cardVariant}
                 initial="hidden"
                 animate={inView ? "show" : "hidden"}

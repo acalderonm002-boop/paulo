@@ -2,8 +2,9 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { DEFAULT_CLIENTS, type ClientRow } from "@/lib/content";
 
-const clients = ["Grupo Gallegos", "V-KOOL", "Import Market Auto", "TAES"];
+type Props = { clients?: ClientRow[] };
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -20,12 +21,15 @@ const fadeUp = {
   }),
 };
 
-export default function Clients() {
+export default function Clients({
+  clients = DEFAULT_CLIENTS,
+}: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
 
+  const names = clients.map((c) => c.name);
   // Duplicated once → the marquee translates -50% to loop seamlessly
-  const loop = [...clients, ...clients];
+  const loop = [...names, ...names];
 
   return (
     <section
@@ -88,7 +92,7 @@ export default function Clients() {
               <div
                 key={`${name}-${i}`}
                 className="shrink-0 bg-white border border-black/[0.06] rounded-lg px-14 py-6 flex items-center justify-center shadow-[0_1px_10px_rgba(0,0,0,0.03)]"
-                aria-hidden={i >= clients.length}
+                aria-hidden={i >= names.length}
               >
                 <span
                   className="text-[color:var(--text-primary)] text-sm sm:text-[15px] uppercase whitespace-nowrap"

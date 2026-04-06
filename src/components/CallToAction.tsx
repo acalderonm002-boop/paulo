@@ -3,6 +3,9 @@
 import { motion, useInView } from "framer-motion";
 import { MessageCircle, Send } from "lucide-react";
 import { useRef } from "react";
+import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
+
+type Props = { config?: SiteConfig };
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -19,9 +22,12 @@ const fadeUp = {
   }),
 };
 
-export default function CallToAction() {
+export default function CallToAction({
+  config = DEFAULT_CONFIG,
+}: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
+  const waUrl = `https://wa.me/${config.whatsapp_number}`;
 
   return (
     <section
@@ -54,7 +60,7 @@ export default function CallToAction() {
             fontSize: "clamp(32px, 4.5vw, 56px)",
           }}
         >
-          ¿Listo para dar el siguiente paso?
+          {config.cta_title}
         </motion.h2>
 
         <motion.p
@@ -70,8 +76,7 @@ export default function CallToAction() {
             maxWidth: "620px",
           }}
         >
-          Agenda una cita sin compromiso y platiquemos sobre tu próximo
-          proyecto inmobiliario.
+          {config.cta_subtitle}
         </motion.p>
 
         <motion.div
@@ -82,7 +87,7 @@ export default function CallToAction() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <a
-            href="https://wa.me/528128625350"
+            href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex items-center justify-center gap-2 bg-[color:var(--accent)] text-white px-8 py-4 text-[12px] uppercase transition-transform duration-300 hover:scale-[1.03]"

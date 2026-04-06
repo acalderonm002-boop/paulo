@@ -4,16 +4,26 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import SocialIcons from "./SocialIcons";
-
-const stats = [
-  { value: "3+", label: "Años de Experiencia" },
-  { value: "50+", label: "Propiedades" },
-  { value: "AMPI", label: "Certificado" },
-];
+import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
-export default function Hero() {
+type Props = { config?: SiteConfig };
+
+export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
+  const stats = [
+    { value: config.hero_stat_1_number, label: config.hero_stat_1_label },
+    { value: config.hero_stat_2_number, label: config.hero_stat_2_label },
+    { value: config.hero_stat_3_number, label: config.hero_stat_3_label },
+  ];
+  const heroImage = config.hero_image_url ?? "/images/paulo-portrait.jpg";
+  const socialLinks = {
+    instagram: config.instagram_url,
+    facebook: config.facebook_url,
+    tiktok: config.tiktok_url,
+    linkedin: config.linkedin_url,
+  };
+
   return (
     <section
       id="top"
@@ -30,7 +40,7 @@ export default function Hero() {
               className="text-[11px] sm:text-[12px] uppercase text-[color:var(--accent)] mb-5"
               style={{ letterSpacing: "3px" }}
             >
-              ASESOR INMOBILIARIO CERTIFICADO · MONTERREY, N.L.
+              {config.hero_tagline}
             </motion.p>
 
             <motion.h1
@@ -43,7 +53,7 @@ export default function Hero() {
                 fontSize: "clamp(28px, 3.4vw, 46px)",
               }}
             >
-              ¿Buscas comprar, rentar, vender o invertir en bienes raíces?
+              {config.hero_title}
             </motion.h1>
 
             <motion.p
@@ -53,9 +63,7 @@ export default function Hero() {
               className="text-[color:var(--text-secondary)] text-[15px] sm:text-base mb-8"
               style={{ lineHeight: 1.75, maxWidth: "500px" }}
             >
-              Te acompaño en cada paso del proceso inmobiliario — compra,
-              venta, renta o inversión — con estrategia, transparencia y un
-              trato personalizado.
+              {config.hero_subtitle}
             </motion.p>
 
             <motion.div
@@ -90,7 +98,7 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.9, ease: easeOut }}
               className="mb-8"
             >
-              <SocialIcons size={20} gapClass="gap-6" />
+              <SocialIcons size={20} gapClass="gap-6" links={socialLinks} />
             </motion.div>
 
             <motion.div
@@ -139,7 +147,7 @@ export default function Hero() {
           >
             <div className="relative w-full h-full lg:rounded-bl-[60px] overflow-hidden">
               <Image
-                src="/images/paulo-portrait.jpg"
+                src={heroImage}
                 alt="Paulo Leal Saviñón, asesor inmobiliario en Monterrey"
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"

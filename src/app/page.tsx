@@ -9,21 +9,28 @@ import ContentHighlight from "@/components/ContentHighlight";
 import InstagramFeed from "@/components/InstagramFeed";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
+import { fetchSiteContent } from "@/lib/content";
+import { fetchProperties } from "@/lib/properties-db";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [{ config, services, testimonials, clients }, properties] =
+    await Promise.all([fetchSiteContent(), fetchProperties()]);
+
   return (
     <main>
-      <Hero />
-      <AboutMe />
-      <VideoSection />
-      <Services />
-      <Properties />
-      <Testimonials />
-      <Clients />
-      <ContentHighlight />
-      <InstagramFeed />
-      <CallToAction />
-      <Footer />
+      <Hero config={config} />
+      <AboutMe config={config} />
+      <VideoSection config={config} />
+      <Services services={services} />
+      <Properties properties={properties} />
+      <Testimonials testimonials={testimonials} />
+      <Clients clients={clients} />
+      <ContentHighlight config={config} />
+      <InstagramFeed config={config} />
+      <CallToAction config={config} />
+      <Footer config={config} />
     </main>
   );
 }

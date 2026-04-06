@@ -5,6 +5,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { ToastProvider } from "@/context/ToastContext";
+import { fetchSiteContent } from "@/lib/content";
 
 const dmSerif = DM_Serif_Display({
   weight: "400",
@@ -52,11 +53,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { config } = await fetchSiteContent();
+
   return (
     <html lang="es">
       <body className={`${dmSerif.variable} ${dmSans.variable} antialiased`}>
@@ -64,7 +67,7 @@ export default function RootLayout({
           <LoadingScreen />
           <Navbar />
           {children}
-          <WhatsAppFloat />
+          <WhatsAppFloat whatsappNumber={config.whatsapp_number} />
         </ToastProvider>
       </body>
     </html>

@@ -3,7 +3,9 @@
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Instagram } from "lucide-react";
 import { useRef } from "react";
-import { SOCIAL_LINKS } from "./SocialIcons";
+import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
+
+type Props = { config?: SiteConfig };
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -22,9 +24,13 @@ const fadeUp = {
 
 const POSTS = Array.from({ length: 8 }, (_, i) => i);
 
-export default function InstagramFeed() {
+export default function InstagramFeed({
+  config = DEFAULT_CONFIG,
+}: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
+  const igUrl =
+    config.instagram_url || "https://www.instagram.com/paulolealsav/";
 
   return (
     <section
@@ -80,7 +86,7 @@ export default function InstagramFeed() {
           {POSTS.map((i) => (
             <motion.a
               key={i}
-              href={SOCIAL_LINKS.instagram}
+              href={igUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Ver en Instagram"
@@ -124,7 +130,7 @@ export default function InstagramFeed() {
           className="mt-10 flex justify-center"
         >
           <a
-            href={SOCIAL_LINKS.instagram}
+            href={igUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 border border-[color:var(--accent)] text-[color:var(--accent)] px-8 py-4 text-[12px] uppercase hover:bg-[color:var(--accent)] hover:text-white transition-colors duration-300"

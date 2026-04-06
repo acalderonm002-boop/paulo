@@ -4,8 +4,11 @@ import { Loader2, Mail, MapPin, Phone } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import SocialIcons from "./SocialIcons";
 import { useToast } from "@/context/ToastContext";
+import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
 
 type ContactField = "name" | "email" | "phone" | "message";
+
+type Props = { config?: SiteConfig };
 
 const initialForm: Record<ContactField, string> = {
   name: "",
@@ -16,9 +19,15 @@ const initialForm: Record<ContactField, string> = {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function Footer() {
+export default function Footer({ config = DEFAULT_CONFIG }: Props = {}) {
   const { showToast } = useToast();
   const [form, setForm] = useState(initialForm);
+  const socialLinks = {
+    instagram: config.instagram_url,
+    facebook: config.facebook_url,
+    tiktok: config.tiktok_url,
+    linkedin: config.linkedin_url,
+  };
   const [errors, setErrors] = useState<Partial<Record<ContactField, string>>>(
     {}
   );
@@ -53,13 +62,26 @@ export default function Footer() {
     if (Object.keys(errs).length > 0) return;
 
     setLoading(true);
-    await new Promise((res) => setTimeout(res, 1500));
-    // Placeholder submission — to be wired to backend later.
-    console.log("contact form submission", form);
-    setLoading(false);
-    showToast("Mensaje enviado. Paulo te contactará pronto.");
-    setForm(initialForm);
-    setErrors({});
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, source: "website" }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Error al enviar");
+      }
+      showToast("Mensaje enviado. Paulo te contactará pronto.");
+      setForm(initialForm);
+      setErrors({});
+    } catch (err) {
+      showToast(
+        err instanceof Error ? err.message : "No se pudo enviar el mensaje."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputBase =
@@ -103,6 +125,7 @@ export default function Footer() {
               size={18}
               gapClass="gap-5"
               linkClass="text-white/60 hover:text-[color:var(--accent)]"
+              links={socialLinks}
             />
           </div>
 
@@ -122,7 +145,7 @@ export default function Footer() {
                   className="text-[color:var(--accent)] mt-[2px] shrink-0"
                 />
                 <span className="text-white/80 text-[14.5px]" style={{ lineHeight: 1.7 }}>
-                  San Pedro Garza García, Nuevo León
+                  {config.address}
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -131,10 +154,10 @@ export default function Footer() {
                   className="text-[color:var(--accent)] mt-[2px] shrink-0"
                 />
                 <a
-                  href="mailto:paulo.leal@w-p.mx"
+                  href={`mailto:${config.email}`}
                   className="text-white/80 text-[14.5px] hover:text-[color:var(--accent)] transition-colors"
                 >
-                  paulo.leal@w-p.mx
+                  {config.email}
                 </a>
               </li>
               <li className="flex items-start gap-3">
@@ -143,10 +166,10 @@ export default function Footer() {
                   className="text-[color:var(--accent)] mt-[2px] shrink-0"
                 />
                 <a
-                  href="tel:+528128625350"
+                  href={`tel:+${config.whatsapp_number}`}
                   className="text-white/80 text-[14.5px] hover:text-[color:var(--accent)] transition-colors"
                 >
-                  81 2862 5350
+                  {config.phone}
                 </a>
               </li>
             </ul>

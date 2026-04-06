@@ -4,12 +4,15 @@ import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useRef } from "react";
+import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
 
 const values = [
   "Atención Personalizada",
   "Ética Profesional",
   "Resultados Comprobables",
 ];
+
+type Props = { config?: SiteConfig };
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -26,9 +29,10 @@ const fadeUp = {
   }),
 };
 
-export default function AboutMe() {
+export default function AboutMe({ config = DEFAULT_CONFIG }: Props = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
+  const aboutImage = config.about_image_url ?? "/images/paulo-screenshot.png";
 
   return (
     <section
@@ -54,7 +58,7 @@ export default function AboutMe() {
 
               <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden">
                 <Image
-                  src="/images/paulo-screenshot.png"
+                  src={aboutImage}
                   alt="Paulo Leal Saviñón, asesor inmobiliario"
                   fill
                   sizes="(max-width: 1024px) 90vw, 40vw"
@@ -76,13 +80,14 @@ export default function AboutMe() {
                     fontSize: "clamp(28px, 2.6vw, 38px)",
                   }}
                 >
-                  3+ <span className="text-[color:var(--accent-light)]">años</span>
+                  {config.about_badge_number}{" "}
+                  <span className="text-[color:var(--accent-light)]">años</span>
                 </div>
                 <div
                   className="mt-1.5 text-[10px] uppercase text-white/70"
                   style={{ letterSpacing: "2px" }}
                 >
-                  de experiencia
+                  {config.about_badge_label}
                 </div>
               </motion.div>
             </motion.div>
@@ -98,7 +103,7 @@ export default function AboutMe() {
               className="text-[12px] uppercase text-[color:var(--accent)] mb-4"
               style={{ letterSpacing: "3px" }}
             >
-              SOBRE MÍ
+              {config.about_tagline}
             </motion.p>
 
             <motion.h2
@@ -112,7 +117,7 @@ export default function AboutMe() {
                 fontSize: "clamp(30px, 3.2vw, 42px)",
               }}
             >
-              Estrategia comercial con trato humano
+              {config.about_title}
             </motion.h2>
 
             <motion.p
@@ -123,11 +128,7 @@ export default function AboutMe() {
               className="text-[color:var(--text-secondary)] text-[15px] sm:text-base mb-4"
               style={{ lineHeight: 1.75, maxWidth: "620px" }}
             >
-              Con más de 3 años en el sector y el respaldo de la inmobiliaria
-              Walls & People, combino estrategia comercial con un trato humano
-              y transparente. Me especializo en conectar personas con
-              propiedades que no solo cumplen expectativas, sino que sean el
-              proyecto ideal para ellos.
+              {config.about_text_1}
             </motion.p>
 
             <motion.p
@@ -138,10 +139,7 @@ export default function AboutMe() {
               className="text-[color:var(--text-secondary)] text-[15px] sm:text-base mb-6"
               style={{ lineHeight: 1.75, maxWidth: "620px" }}
             >
-              Soy egresado de la UDEM de la Ingeniería en Gestión Empresarial e
-              Ingeniería Industrial y de Sistemas. Mis estudios me han ayudado
-              a buscar maneras de resolverle problemas a mis clientes y tener
-              mayor organización al trabajar.
+              {config.about_text_2}
             </motion.p>
 
             <motion.div
@@ -185,8 +183,7 @@ export default function AboutMe() {
               className="border-l-2 border-[color:var(--accent)] pl-5 italic text-[color:var(--text-secondary)] text-[15px] sm:text-base mb-8"
               style={{ lineHeight: 1.7, maxWidth: "620px" }}
             >
-              Certificado por AMPI y con amplia red de contactos legales,
-              notariales y financieros.
+              {config.about_certification_text}
             </motion.blockquote>
 
             <motion.div

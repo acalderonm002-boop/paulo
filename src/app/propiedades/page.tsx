@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { properties } from "@/data/properties";
+import { fetchProperties } from "@/lib/properties-db";
+import { fetchSiteContent } from "@/lib/content";
 import PropertiesListing from "@/components/PropertiesListing";
 import Footer from "@/components/Footer";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Propiedades Disponibles | Paulo Leal Saviñón",
@@ -9,13 +12,18 @@ export const metadata: Metadata = {
     "Explora las propiedades disponibles en Monterrey con Paulo Leal Saviñón, asesor inmobiliario certificado por AMPI.",
 };
 
-export default function PropertiesPage() {
+export default async function PropertiesPage() {
+  const [properties, { config }] = await Promise.all([
+    fetchProperties(),
+    fetchSiteContent(),
+  ]);
+
   return (
     <main className="bg-[color:var(--cream)] min-h-screen">
       <div className="pt-[76px]">
         <PropertiesListing properties={properties} />
       </div>
-      <Footer />
+      <Footer config={config} />
     </main>
   );
 }
