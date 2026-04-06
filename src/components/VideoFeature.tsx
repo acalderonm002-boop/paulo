@@ -53,7 +53,7 @@ export default function VideoFeature({
   return (
     <section
       ref={ref}
-      className={`relative w-full ${bgMap[background]} py-16 lg:py-20`}
+      className={`relative w-full ${bgMap[background]} py-12 lg:py-16`}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
         <div

@@ -49,7 +49,7 @@ export default function Testimonials() {
     <section
       id="testimonios"
       ref={ref}
-      className="relative w-full bg-[color:var(--midnight)] text-white py-16 lg:py-20 overflow-hidden"
+      className="relative w-full bg-[color:var(--midnight)] text-white py-12 lg:py-16 overflow-hidden"
     >
       {/* Subtle radial texture */}
       <div

@@ -93,7 +93,7 @@ export default function Services() {
     <section
       id="servicios"
       ref={ref}
-      className="relative w-full bg-[color:var(--warm-white)] py-16 lg:py-20"
+      className="relative w-full bg-[color:var(--warm-white)] py-12 lg:py-16"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
         {/* HEADER */}

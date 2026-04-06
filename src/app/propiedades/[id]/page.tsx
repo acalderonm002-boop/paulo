@@ -402,7 +402,7 @@ export default function PropertyPage({
 
         {/* Related properties */}
         {related.length > 0 && (
-          <section className="bg-[color:var(--cream)] py-16 lg:py-20">
+          <section className="bg-[color:var(--cream)] py-12 lg:py-16">
             <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
               <h2
                 className="text-[color:var(--text-primary)] mb-10 lg:mb-12 text-center leading-[1.1]"

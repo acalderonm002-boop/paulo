@@ -35,7 +35,7 @@ export default function PropertyCard({
         className="group block bg-white rounded-xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_-15px_rgba(26,42,74,0.18)] transition-shadow duration-300 overflow-hidden"
       >
         {/* Image */}
-        <div className="relative w-full aspect-[16/9] overflow-hidden">
+        <div className="relative w-full aspect-[3/2] overflow-hidden">
           <div
             className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             style={{
@@ -62,12 +62,13 @@ export default function PropertyCard({
           </div>
 
           {/* Price badge */}
-          <div className="absolute left-3 bottom-3 bg-white/95 backdrop-blur-sm rounded-md px-3 py-1.5 shadow-sm">
+          <div
+            className="absolute left-3 bottom-3 bg-white/95 backdrop-blur-sm rounded-md shadow-sm"
+            style={{ padding: "4px 12px" }}
+          >
             <span
-              className="text-[14px] text-[color:var(--midnight)]"
-              style={{
-                fontFamily: "var(--font-dm-serif), Georgia, serif",
-              }}
+              className="text-[13px] text-[color:var(--midnight)]"
+              style={{ fontFamily: "var(--font-dm-serif), Georgia, serif" }}
             >
               {formatPrice(property)}
             </span>
@@ -75,16 +76,16 @@ export default function PropertyCard({
         </div>
 
         {/* Body */}
-        <div className="p-6">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-2.5">
             <span
-              className="text-[10px] uppercase px-2.5 py-1 bg-[color:var(--accent)]/10 text-[color:var(--accent)] rounded-full"
+              className="text-[10px] uppercase px-2 py-[3px] bg-[color:var(--accent)]/10 text-[color:var(--accent)] rounded-full"
               style={{ letterSpacing: "1.5px", fontWeight: 700 }}
             >
               {property.propertyType}
             </span>
             <span
-              className="text-[10px] uppercase px-2.5 py-1 border border-[color:var(--text-secondary)]/30 text-[color:var(--text-secondary)] rounded-full"
+              className="text-[10px] uppercase px-2 py-[3px] border border-[color:var(--text-secondary)]/30 text-[color:var(--text-secondary)] rounded-full"
               style={{ letterSpacing: "1.5px", fontWeight: 700 }}
             >
               {property.priceLabel}
@@ -92,7 +93,7 @@ export default function PropertyCard({
           </div>
 
           <h3
-            className="text-[17px] text-[color:var(--text-primary)] mb-2 leading-snug"
+            className="text-[16px] text-[color:var(--text-primary)] mb-1.5 leading-snug"
             style={{
               fontFamily: "var(--font-dm-sans), sans-serif",
               fontWeight: 700,
@@ -101,7 +102,7 @@ export default function PropertyCard({
             {property.title}
           </h3>
 
-          <div className="flex items-center gap-1.5 text-[13px] text-[color:var(--text-secondary)] mb-4">
+          <div className="flex items-center gap-1.5 text-[13px] text-[color:var(--text-secondary)] mb-3">
             <MapPin size={13} className="shrink-0" />
             <span>
               {property.neighborhood}, {property.city}
@@ -109,7 +110,7 @@ export default function PropertyCard({
           </div>
 
           {/* Specs row */}
-          <div className="flex items-center gap-4 text-[12px] text-[color:var(--text-secondary)] pt-4 border-t border-black/[0.05]">
+          <div className="flex items-center gap-3 text-[13px] text-[color:var(--text-secondary)] pt-3 border-t border-black/[0.05]">
             {hasRooms ? (
               <>
                 <span className="flex items-center gap-1">
@@ -137,7 +138,7 @@ export default function PropertyCard({
             )}
           </div>
 
-          <div className="mt-4 inline-flex items-center gap-1 text-[13px] text-[color:var(--accent)] group-hover:gap-2 transition-all">
+          <div className="mt-3 inline-flex items-center gap-1 text-[13px] text-[color:var(--accent)] group-hover:gap-2 transition-all">
             Ver detalles →
           </div>
         </div>

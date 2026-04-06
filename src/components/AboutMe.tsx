@@ -34,7 +34,7 @@ export default function AboutMe() {
     <section
       id="sobre-mi"
       ref={ref}
-      className="relative w-full bg-white py-16 lg:py-20"
+      className="relative w-full bg-white py-12 lg:py-16"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">

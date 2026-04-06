@@ -30,7 +30,7 @@ export default function Clients() {
   return (
     <section
       ref={ref}
-      className="relative w-full bg-[color:var(--warm-white)] py-16 lg:py-20 overflow-hidden"
+      className="relative w-full bg-[color:var(--warm-white)] py-12 lg:py-16 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="text-center mb-10 lg:mb-12">

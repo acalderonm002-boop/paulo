@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useMemo, useState } from "react";
 import type {
   PriceLabel,
@@ -36,75 +38,88 @@ export default function PropertiesListing({ properties }: Props) {
     });
   }, [type, op, properties]);
 
-  const pillClass = (active: boolean) =>
-    `text-[11px] uppercase px-4 py-2 rounded-full border transition-colors ${
+  const chipClass = (active: boolean) =>
+    `whitespace-nowrap text-[12px] uppercase rounded-full border transition-colors ${
       active
         ? "bg-[color:var(--accent)] text-white border-[color:var(--accent)]"
         : "bg-white text-[color:var(--text-primary)] border-black/[0.08] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
     }`;
 
   return (
-    <section className="py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-        {/* Header */}
-        <div className="mb-10 lg:mb-12">
-          <p
-            className="text-[12px] uppercase text-[color:var(--accent)] mb-4"
-            style={{ letterSpacing: "3px" }}
+    <section className="pt-4 pb-12 lg:pt-6 lg:pb-16">
+      <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-12">
+        {/* Back button */}
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[14px] text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] transition-colors"
           >
-            PORTAFOLIO
-          </p>
-          <h1
-            className="text-[color:var(--text-primary)] leading-[1.1]"
-            style={{
-              fontFamily: "var(--font-dm-serif), Georgia, serif",
-              fontSize: "clamp(32px, 3.5vw, 52px)",
-            }}
-          >
-            Propiedades Disponibles
-          </h1>
+            <ArrowLeft size={14} />
+            Regresar
+          </Link>
         </div>
 
-        {/* Filters */}
-        <div className="space-y-4 mb-12">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className="text-[10px] uppercase text-[color:var(--text-secondary)] mr-2"
-              style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+        {/* Header */}
+        <p
+          className="text-[12px] uppercase text-[color:var(--accent)] mb-2"
+          style={{ letterSpacing: "3px" }}
+        >
+          PORTAFOLIO
+        </p>
+        <h1
+          className="text-[color:var(--text-primary)] leading-[1.1] mb-4"
+          style={{
+            fontFamily: "var(--font-dm-serif), Georgia, serif",
+            fontSize: "clamp(30px, 3.2vw, 44px)",
+          }}
+        >
+          Propiedades Disponibles
+        </h1>
+
+        {/* Filters — single row */}
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span
+            className="text-[11px] uppercase text-[color:var(--text-secondary)] mr-1"
+            style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+          >
+            Tipo
+          </span>
+          {TYPE_FILTERS.map((f) => (
+            <button
+              key={`type-${f}`}
+              type="button"
+              onClick={() => setType(f)}
+              className={chipClass(type === f)}
+              style={{
+                padding: "6px 16px",
+                letterSpacing: "1.2px",
+                fontWeight: 600,
+              }}
             >
-              Tipo
-            </span>
-            {TYPE_FILTERS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setType(f)}
-                className={pillClass(type === f)}
-                style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className="text-[10px] uppercase text-[color:var(--text-secondary)] mr-2"
-              style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+              {f}
+            </button>
+          ))}
+          <span
+            className="text-[11px] uppercase text-[color:var(--text-secondary)] ml-3 mr-1"
+            style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+          >
+            Operación
+          </span>
+          {OP_FILTERS.map((f) => (
+            <button
+              key={`op-${f}`}
+              type="button"
+              onClick={() => setOp(f)}
+              className={chipClass(op === f)}
+              style={{
+                padding: "6px 16px",
+                letterSpacing: "1.2px",
+                fontWeight: 600,
+              }}
             >
-              Operación
-            </span>
-            {OP_FILTERS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setOp(f)}
-                className={pillClass(op === f)}
-                style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+              {f}
+            </button>
+          ))}
         </div>
 
         {/* Grid */}
