@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || "Error al iniciar sesión");
       }
-      router.push("/");
+      router.push("/admin/sitio");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al iniciar sesión");
