@@ -1,8 +1,11 @@
 "use client";
 
-import { Check, Mail, Phone } from "lucide-react";
+import { Check, Loader2, Mail, Phone } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { formatPrice, type Property } from "@/data/properties";
+import { useToast } from "@/context/ToastContext";
+
+type SidebarField = "name" | "phone" | "message";
 
 function WhatsAppSvg({ size = 18 }: { size?: number }) {
   return (
@@ -20,6 +23,8 @@ function WhatsAppSvg({ size = 18 }: { size?: number }) {
 }
 
 export default function PropertySidebar({ property }: { property: Property }) {
+  const { showToast } = useToast();
+
   const waText = encodeURIComponent(
     `Hola Paulo, me interesa la propiedad ${property.title}`
   );
@@ -29,23 +34,67 @@ export default function PropertySidebar({ property }: { property: Property }) {
   )}`;
   const telUrl = `tel:+${property.agent.whatsapp}`;
 
-  const [form, setForm] = useState({
+  const initialForm: Record<SidebarField, string> = {
     name: "",
     phone: "",
     message: `Hola, me interesa ${property.title}`,
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Placeholder — to be wired to backend later.
-    console.log("property inquiry", { propertyId: property.id, ...form });
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3500);
   };
 
-  const inputClass =
-    "w-full bg-[color:var(--cream)] border border-black/[0.08] rounded-lg px-4 py-3 text-[14px] text-[color:var(--text-primary)] placeholder-[color:var(--text-secondary)] focus:outline-none focus:border-[color:var(--accent)] transition-colors";
+  const [form, setForm] = useState(initialForm);
+  const [errors, setErrors] = useState<Partial<Record<SidebarField, string>>>(
+    {}
+  );
+  const [loading, setLoading] = useState(false);
+
+  const onChange = (field: SidebarField, value: string) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    if (errors[field]) {
+      setErrors((err) => {
+        const next = { ...err };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const validate = (): Partial<Record<SidebarField, string>> => {
+    const next: Partial<Record<SidebarField, string>> = {};
+    if (!form.name.trim()) next.name = "Este campo es requerido";
+    if (!form.phone.trim()) next.phone = "Este campo es requerido";
+    if (!form.message.trim()) next.message = "Este campo es requerido";
+    return next;
+  };
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const errs = validate();
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setLoading(true);
+    await new Promise((res) => setTimeout(res, 1500));
+    // Placeholder — to be wired to backend later.
+    console.log("property inquiry", { propertyId: property.id, ...form });
+    setLoading(false);
+    showToast("Mensaje enviado. Paulo te contactará pronto.");
+    setForm(initialForm);
+    setErrors({});
+  };
+
+  const baseInput =
+    "w-full bg-[color:var(--cream)] border rounded-lg px-4 py-3 text-[14px] text-[color:var(--text-primary)] placeholder-[color:var(--text-secondary)] focus:outline-none transition-colors";
+
+  const inputClass = (field: SidebarField) =>
+    `${baseInput} ${
+      errors[field]
+        ? "border-red-500 focus:border-red-500"
+        : "border-black/[0.08] focus:border-[color:var(--accent)]"
+    }`;
+
+  const errorText = (field: SidebarField) =>
+    errors[field] ? (
+      <p className="mt-1 text-[11px] text-red-500">{errors[field]}</p>
+    ) : null;
 
   return (
     <aside className="lg:sticky lg:top-28 lg:self-start">
@@ -140,7 +189,7 @@ export default function PropertySidebar({ property }: { property: Property }) {
         <hr className="border-black/[0.06] mb-6" />
 
         {/* Form */}
-        <form onSubmit={onSubmit} className="space-y-3">
+        <form onSubmit={onSubmit} noValidate className="space-y-3">
           <h4
             className="text-[color:var(--text-primary)] mb-1"
             style={{
@@ -151,41 +200,53 @@ export default function PropertySidebar({ property }: { property: Property }) {
           >
             ¿Te interesa esta propiedad?
           </h4>
-          <input
-            type="text"
-            required
-            placeholder="Nombre"
-            value={form.name}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, name: e.target.value }))
-            }
-            className={inputClass}
-          />
-          <input
-            type="tel"
-            placeholder="Teléfono"
-            value={form.phone}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, phone: e.target.value }))
-            }
-            className={inputClass}
-          />
-          <textarea
-            required
-            rows={3}
-            placeholder="Mensaje"
-            value={form.message}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, message: e.target.value }))
-            }
-            className={`${inputClass} resize-none`}
-          />
+          <div>
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={form.name}
+              onChange={(e) => onChange("name", e.target.value)}
+              className={inputClass("name")}
+              aria-invalid={!!errors.name}
+            />
+            {errorText("name")}
+          </div>
+          <div>
+            <input
+              type="tel"
+              placeholder="Teléfono"
+              value={form.phone}
+              onChange={(e) => onChange("phone", e.target.value)}
+              className={inputClass("phone")}
+              aria-invalid={!!errors.phone}
+            />
+            {errorText("phone")}
+          </div>
+          <div>
+            <textarea
+              rows={3}
+              placeholder="Mensaje"
+              value={form.message}
+              onChange={(e) => onChange("message", e.target.value)}
+              className={`${inputClass("message")} resize-none`}
+              aria-invalid={!!errors.message}
+            />
+            {errorText("message")}
+          </div>
           <button
             type="submit"
-            className="w-full bg-[color:var(--accent)] text-white py-[14px] rounded-lg text-[11px] uppercase hover:bg-[color:var(--accent-light)] transition-colors"
+            disabled={loading}
+            className="w-full bg-[color:var(--accent)] text-white py-[14px] rounded-lg text-[11px] uppercase hover:bg-[color:var(--accent-light)] transition-colors disabled:opacity-70 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
             style={{ letterSpacing: "1.5px", fontWeight: 700 }}
           >
-            {submitted ? "¡Mensaje enviado!" : "Enviar mensaje"}
+            {loading ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              "Enviar mensaje"
+            )}
           </button>
         </form>
 

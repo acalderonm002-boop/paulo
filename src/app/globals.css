@@ -18,6 +18,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Anchor scroll offset to clear the fixed navbar */
+[id] {
+  scroll-margin-top: 88px;
+}
+
 body {
   background-color: var(--cream);
   color: var(--text-primary);

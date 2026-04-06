@@ -1,8 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppFloat() {
+  const pathname = usePathname() ?? "/";
+  // Hide on mobile property detail routes to avoid overlap with the mobile bar
+  const isPropertyDetail = /^\/propiedades\/[^/]+$/.test(pathname);
+  const visibilityClass = isPropertyDetail ? "hidden lg:flex" : "flex";
+
   return (
     <motion.a
       href="https://wa.me/528128625350"
@@ -20,7 +26,7 @@ export default function WhatsAppFloat() {
       }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed flex items-center justify-center rounded-full"
+      className={`fixed items-center justify-center rounded-full ${visibilityClass}`}
       style={{
         bottom: "24px",
         right: "24px",

@@ -32,6 +32,7 @@ import {
 import PropertyGallery from "@/components/PropertyGallery";
 import PropertySidebar from "@/components/PropertySidebar";
 import PropertyCard from "@/components/PropertyCard";
+import PropertyMobileBar from "@/components/PropertyMobileBar";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 
@@ -50,9 +51,35 @@ export function generateMetadata({
       title: "Propiedad no encontrada | Paulo Leal Saviñón",
     };
   }
+  const title = `${property.title} | Paulo Leal Saviñón`;
+  const description = property.description.slice(0, 160);
+  // Use the first property image when available; fallback to Paulo's portrait
+  // so social shares never break while real property photos are pending.
+  const ogImage = property.images[0] ?? "/images/paulo-portrait.jpg";
   return {
-    title: `${property.title} | Paulo Leal Saviñón`,
-    description: property.description.slice(0, 160),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: "es_MX",
+      siteName: "Paulo Leal Saviñón",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: property.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
   };
 }
 
@@ -144,7 +171,7 @@ export default function PropertyPage({
   const related = getRelatedProperties(params.id, 3);
 
   return (
-    <main className="bg-white">
+    <main className="bg-white pb-28 lg:pb-0">
       <div className="pt-[76px]">
         {/* Gallery */}
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-8 lg:pt-10">
@@ -398,6 +425,9 @@ export default function PropertyPage({
         <CallToAction />
         <Footer />
       </div>
+
+      {/* Mobile quick-contact bar */}
+      <PropertyMobileBar property={property} />
     </main>
   );
 }

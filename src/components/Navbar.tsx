@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { label: "Sobre Mí", href: "#sobre-mi" },
-  { label: "Servicios", href: "#servicios" },
-  { label: "Propiedades", href: "#propiedades" },
-  { label: "Testimonios", href: "#testimonios" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Sobre Mí", href: "/#sobre-mi" },
+  { label: "Servicios", href: "/#servicios" },
+  { label: "Propiedades", href: "/propiedades" },
+  { label: "Testimonios", href: "/#testimonios" },
+  { label: "Contacto", href: "/#contacto" },
 ];
 
 export default function Navbar() {
@@ -47,22 +47,22 @@ export default function Navbar() {
 
           <div className="hidden lg:flex items-center gap-10">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="text-[12px] uppercase text-[color:var(--text-primary)] hover:text-[color:var(--accent)] transition-colors duration-300"
                 style={{ letterSpacing: "2px" }}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
-            <a
-              href="#contacto"
+            <Link
+              href="/#contacto"
               className="text-[12px] uppercase border border-[color:var(--accent)] text-[color:var(--accent)] px-5 py-3 hover:bg-[color:var(--accent)] hover:text-white transition-colors duration-300"
               style={{ letterSpacing: "2px" }}
             >
               Agendar Cita
-            </a>
+            </Link>
           </div>
 
           <button
@@ -103,7 +103,7 @@ export default function Navbar() {
       >
         <div className="h-full flex flex-col items-center justify-center gap-8 px-6">
           {navLinks.map((link, i) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
@@ -118,10 +118,10 @@ export default function Navbar() {
               }}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
-          <a
-            href="#contacto"
+          <Link
+            href="/#contacto"
             onClick={() => setMobileOpen(false)}
             className={`mt-6 text-[13px] uppercase border border-white text-white px-8 py-4 hover:bg-white hover:text-[color:var(--midnight)] transition-all duration-500 ${
               mobileOpen
@@ -136,7 +136,7 @@ export default function Navbar() {
             }}
           >
             Agendar Cita
-          </a>
+          </Link>
         </div>
       </div>
     </>
