@@ -115,13 +115,14 @@ export default function VideoFeature({
             )}
           </div>
 
-          {/* Video */}
+          {/* Video — vertical 9:16, contained (no crop) */}
           <motion.div
             variants={fadeUp}
             initial="hidden"
             animate={inView ? "show" : "hidden"}
             custom={2}
-            className="relative w-full aspect-video rounded-xl overflow-hidden shadow-[0_25px_60px_-20px_rgba(26,42,74,0.25)] bg-black"
+            className="relative w-full max-w-[280px] mx-auto aspect-[9/16] rounded-xl overflow-hidden shadow-[0_25px_60px_-20px_rgba(26,42,74,0.25)] bg-black"
+            style={{ maxHeight: "500px" }}
           >
             {video.kind === "file" ? (
               <video
@@ -130,7 +131,7 @@ export default function VideoFeature({
                 controls
                 preload="metadata"
                 playsInline
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-contain"
               />
             ) : (
               <iframe

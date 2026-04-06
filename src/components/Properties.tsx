@@ -61,9 +61,9 @@ export default function Properties() {
           </motion.h2>
         </div>
 
-        {/* GRID */}
+        {/* GRID — single row, first 3 properties */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((p, i) => (
+          {properties.slice(0, 3).map((p, i) => (
             <PropertyCard
               key={p.id}
               property={p}
@@ -78,7 +78,7 @@ export default function Properties() {
           variants={fadeUp}
           initial="hidden"
           animate={inView ? "show" : "hidden"}
-          custom={properties.length + 3}
+          custom={6}
           className="mt-12 flex justify-center"
         >
           <Link
@@ -86,7 +86,7 @@ export default function Properties() {
             className="group inline-flex items-center gap-2 border border-[color:var(--accent)] text-[color:var(--accent)] px-8 py-4 text-[12px] uppercase hover:bg-[color:var(--accent)] hover:text-white transition-colors duration-300"
             style={{ letterSpacing: "2px" }}
           >
-            Ver Todas
+            Ver Todas las Propiedades
             <ArrowRight
               size={16}
               className="transition-transform duration-300 group-hover:translate-x-1"
