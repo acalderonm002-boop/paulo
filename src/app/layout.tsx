@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Serif_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 const dmSerif = DM_Serif_Display({
   weight: "400",
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className={`${dmSerif.variable} ${dmSans.variable} antialiased`}>
         <Navbar />
         {children}
+        <WhatsAppFloat />
       </body>
     </html>
   );
