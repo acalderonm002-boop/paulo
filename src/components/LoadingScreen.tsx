@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const MIN_DURATION_MS = 3000;
@@ -70,12 +71,20 @@ const SKETCH_PATHS: PathConfig[] = [
 ];
 
 export default function LoadingScreen() {
+  const pathname = usePathname() ?? "/";
+  const isAdminRoute = pathname.startsWith("/admin");
+
   // Default visible so SSR and initial client render match (avoids hydration
   // mismatch). On mount we check sessionStorage and hide immediately if
   // already seen this session.
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(!isAdminRoute);
 
   useEffect(() => {
+    if (isAdminRoute) {
+      setVisible(false);
+      return;
+    }
+
     let alreadySeen = false;
     try {
       alreadySeen = sessionStorage.getItem(STORAGE_KEY) === "1";
@@ -104,7 +113,7 @@ export default function LoadingScreen() {
       window.clearTimeout(timer);
       document.body.style.overflow = prevOverflow;
     };
-  }, []);
+  }, [isAdminRoute]);
 
   // Release scroll lock as soon as the screen hides, even before AnimatePresence
   // finishes the exit animation, so content can scroll instantly.

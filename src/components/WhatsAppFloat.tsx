@@ -9,6 +9,10 @@ export default function WhatsAppFloat({
   whatsappNumber = "528128625350",
 }: Props = {}) {
   const pathname = usePathname() ?? "/";
+
+  // Always hide on any admin route.
+  if (pathname.startsWith("/admin")) return null;
+
   // Hide on mobile property detail routes to avoid overlap with the mobile bar
   const isPropertyDetail = /^\/propiedades\/[^/]+$/.test(pathname);
   const visibilityClass = isPropertyDetail ? "hidden lg:flex" : "flex";

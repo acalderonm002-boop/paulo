@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminDrawer from "../AdminDrawer";
 import PropertyWizard from "../PropertyWizard";
 import { useSiteData } from "@/context/SiteDataContext";
@@ -25,7 +25,7 @@ export default function PropertiesDrawer({ open, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/admin/properties", { cache: "no-store" });
@@ -37,11 +37,11 @@ export default function PropertiesDrawer({ open, onClose }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     if (open) fetchAll();
-  }, [open]);
+  }, [open, fetchAll]);
 
   const toggleVisible = async (row: AdminPropertyRow) => {
     try {

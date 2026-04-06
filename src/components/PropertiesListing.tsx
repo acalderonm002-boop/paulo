@@ -10,8 +10,10 @@ import type {
 } from "@/data/properties";
 import { mapDbToProperty } from "@/lib/properties-db";
 import PropertyCard from "./PropertyCard";
-import PropertyWizard from "./admin/PropertyWizard";
-import { useAdmin } from "@/hooks/useAdmin";
+import PropertyWizard, {
+  type WizardInitial,
+} from "./admin/PropertyWizard";
+import { Pencil } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 
 type TypeFilter = "Todos" | PropertyType;
@@ -35,10 +37,12 @@ type AdminPropertyRow = Parameters<typeof mapDbToProperty>[0] & {
   title: string;
 };
 
-type Props = { properties: Property[] };
+type Props = { properties: Property[]; adminMode?: boolean };
 
-export default function PropertiesListing({ properties: initial }: Props) {
-  const { isAdmin, loading: adminLoading } = useAdmin();
+export default function PropertiesListing({
+  properties: initial,
+  adminMode = false,
+}: Props) {
   const { showToast } = useToast();
 
   const [type, setType] = useState<TypeFilter>("Todos");
@@ -46,9 +50,12 @@ export default function PropertiesListing({ properties: initial }: Props) {
 
   const [adminRows, setAdminRows] = useState<AdminPropertyRow[] | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [editingInitial, setEditingInitial] =
+    useState<WizardInitial | null>(null);
+  const [editingId, setEditingId] = useState<string | undefined>(undefined);
 
   const fetchAdmin = useCallback(async () => {
-    if (!isAdmin) return;
+    if (!adminMode) return;
     try {
       const res = await fetch("/api/admin/properties", { cache: "no-store" });
       if (!res.ok) throw new Error("No se pudo cargar");
@@ -57,11 +64,53 @@ export default function PropertiesListing({ properties: initial }: Props) {
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Error al cargar");
     }
-  }, [isAdmin, showToast]);
+  }, [adminMode, showToast]);
 
   useEffect(() => {
     fetchAdmin();
   }, [fetchAdmin]);
+
+  const openEditWizard = (row: AdminPropertyRow) => {
+    setEditingId(row.id);
+    setEditingInitial({
+      id: row.id,
+      slug: row.slug,
+      title: row.title,
+      property_type: row.property_type as WizardInitial["property_type"],
+      operation: row.operation as WizardInitial["operation"],
+      price: Number(row.price),
+      currency: row.currency,
+      status: row.status as WizardInitial["status"],
+      location: row.location,
+      neighborhood: row.neighborhood ?? "",
+      city: row.city ?? "",
+      state: row.state ?? "",
+      bedrooms: row.bedrooms ?? 0,
+      bathrooms: row.bathrooms ?? 0,
+      parking_spots: row.parking_spots ?? 0,
+      construction_m2: row.construction_m2 ?? 0,
+      total_m2: row.total_m2 ?? 0,
+      floor: row.floor ?? "",
+      year_built: row.year_built ?? 0,
+      description: row.description ?? "",
+      features: row.features ?? [],
+      amenities: row.amenities ?? [],
+      video_url: row.video_url ?? "",
+      images: (row.property_images ?? [])
+        .slice()
+        .sort((a, b) => {
+          if (a.is_primary && !b.is_primary) return -1;
+          if (!a.is_primary && b.is_primary) return 1;
+          return a.sort_order - b.sort_order;
+        })
+        .map((img) => ({
+          id: img.id,
+          url: img.image_url,
+          is_primary: img.is_primary,
+        })),
+    });
+    setWizardOpen(true);
+  };
 
   const toggleVisibility = async (row: AdminPropertyRow) => {
     try {
@@ -87,11 +136,11 @@ export default function PropertiesListing({ properties: initial }: Props) {
   // Public rendering uses the server-provided list; admin rendering uses the
   // admin API's response (which includes hidden properties and DB uuids).
   const baseList = useMemo<Property[]>(() => {
-    if (isAdmin && adminRows) {
+    if (adminMode && adminRows) {
       return adminRows.map((r) => mapDbToProperty(r));
     }
     return initial;
-  }, [isAdmin, adminRows, initial]);
+  }, [adminMode, adminRows, initial]);
 
   const filtered = useMemo(() => {
     return baseList.filter((p) => {
@@ -127,10 +176,14 @@ export default function PropertiesListing({ properties: initial }: Props) {
               <ArrowLeft size={14} />
               Regresar
             </Link>
-            {isAdmin && !adminLoading && (
+            {adminMode && (
               <button
                 type="button"
-                onClick={() => setWizardOpen(true)}
+                onClick={() => {
+                  setEditingInitial(null);
+                  setEditingId(undefined);
+                  setWizardOpen(true);
+                }}
                 className="inline-flex items-center gap-2 bg-[color:var(--accent)] text-white px-4 py-2 rounded-lg text-[12px] uppercase hover:bg-[color:var(--accent-light)] transition-colors"
                 style={{ letterSpacing: "1.5px", fontWeight: 700 }}
               >
@@ -212,7 +265,7 @@ export default function PropertiesListing({ properties: initial }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((p, i) => {
                 const row = adminBySlug.get(p.id);
-                const hidden = isAdmin && row && row.visible === false;
+                const hidden = adminMode && row && row.visible === false;
                 return (
                   <div
                     key={p.id}
@@ -220,7 +273,7 @@ export default function PropertiesListing({ properties: initial }: Props) {
                       hidden ? "opacity-50" : ""
                     }`}
                   >
-                    {isAdmin && row && (
+                    {adminMode && row && (
                       <>
                         {hidden && (
                           <span
@@ -230,22 +283,36 @@ export default function PropertiesListing({ properties: initial }: Props) {
                             Oculta
                           </span>
                         )}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleVisibility(row);
-                          }}
-                          aria-label={row.visible ? "Ocultar" : "Mostrar"}
-                          className="absolute top-3 right-3 z-[45] w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-center text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
-                        >
-                          {row.visible ? (
-                            <Eye size={16} />
-                          ) : (
-                            <EyeOff size={16} />
-                          )}
-                        </button>
+                        <div className="absolute top-3 right-3 z-[45] flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              openEditWizard(row);
+                            }}
+                            aria-label="Editar propiedad"
+                            className="w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-center text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleVisibility(row);
+                            }}
+                            aria-label={row.visible ? "Ocultar" : "Mostrar"}
+                            className="w-9 h-9 rounded-full bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-center text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
+                          >
+                            {row.visible ? (
+                              <Eye size={16} />
+                            ) : (
+                              <EyeOff size={16} />
+                            )}
+                          </button>
+                        </div>
                       </>
                     )}
                     <PropertyCard property={p} index={i} />
@@ -261,8 +328,12 @@ export default function PropertiesListing({ properties: initial }: Props) {
         open={wizardOpen}
         onClose={() => {
           setWizardOpen(false);
+          setEditingInitial(null);
+          setEditingId(undefined);
           fetchAdmin();
         }}
+        initial={editingInitial}
+        editingId={editingId}
       />
     </>
   );

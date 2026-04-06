@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
@@ -13,6 +14,9 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname() ?? "/";
+  const isAdminLogin = pathname === "/admin";
+  const isAdminPanel = /^\/admin\/(sitio|propiedades)/.test(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -27,14 +31,17 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
+  if (isAdminLogin) return null;
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-[100] bg-white shadow-[0_1px_24px_rgba(26,42,74,0.06)] transition-all duration-500 ease-out ${
-          mounted
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 -translate-y-2"
+        className={`fixed top-0 right-0 bg-white shadow-[0_1px_24px_rgba(26,42,74,0.06)] transition-all duration-500 ease-out ${
+          isAdminPanel ? "left-0 lg:left-[240px]" : "left-0"
+        } ${
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
         }`}
+        style={{ zIndex: 9999 }}
       >
         <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
           <Link
@@ -70,7 +77,8 @@ export default function Navbar() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={mobileOpen}
-            className="lg:hidden relative z-[110] w-10 h-10 flex items-center justify-center"
+            className="lg:hidden relative w-10 h-10 flex items-center justify-center"
+            style={{ zIndex: 10001 }}
           >
             <Menu
               size={24}
@@ -94,11 +102,12 @@ export default function Navbar() {
 
       {/* Mobile fullscreen menu */}
       <div
-        className={`lg:hidden fixed inset-0 z-[90] bg-[color:var(--midnight)] transition-all duration-500 ease-out ${
+        className={`lg:hidden fixed inset-0 bg-[color:var(--midnight)] transition-all duration-500 ease-out ${
           mobileOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
+        style={{ zIndex: 10000 }}
         aria-hidden={!mobileOpen}
       >
         <div className="h-full flex flex-col items-center justify-center gap-8 px-6">

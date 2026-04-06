@@ -46,7 +46,7 @@ export default function AdminDrawer({
     <AnimatePresence>
       {open && (
         <>
-          {/* Overlay */}
+          {/* Overlay — above sidebar so it darkens the full viewport */}
           <motion.div
             key="overlay"
             initial={{ opacity: 0 }}
@@ -54,7 +54,8 @@ export default function AdminDrawer({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             onClick={() => !saving && onClose()}
-            className="fixed inset-0 bg-black/50 z-[9997]"
+            className="fixed inset-0 bg-black/60"
+            style={{ zIndex: 100000 }}
           />
 
           {/* Panel */}
@@ -64,7 +65,8 @@ export default function AdminDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed top-0 right-0 bottom-0 z-[9998] w-full md:w-[480px] bg-white shadow-2xl flex flex-col"
+            className="fixed top-0 right-0 bottom-0 w-full md:w-[480px] bg-white shadow-2xl flex flex-col"
+            style={{ zIndex: 100001 }}
             role="dialog"
             aria-modal="true"
             aria-label={title}

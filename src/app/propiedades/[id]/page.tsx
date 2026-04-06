@@ -34,7 +34,6 @@ import PropertyGallery from "@/components/PropertyGallery";
 import PropertySidebar from "@/components/PropertySidebar";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyMobileBar from "@/components/PropertyMobileBar";
-import PropertyAdminControls from "@/components/admin/PropertyAdminControls";
 import CallToAction from "@/components/CallToAction";
 import Footer from "@/components/Footer";
 
@@ -437,9 +436,6 @@ export default async function PropertyPage({
 
       {/* Mobile quick-contact bar */}
       <PropertyMobileBar property={property} />
-
-      {/* Admin-only floating edit/delete controls */}
-      <PropertyAdminControls slug={params.id} />
     </main>
   );
 }
