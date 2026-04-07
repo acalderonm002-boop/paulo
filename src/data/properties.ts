@@ -9,7 +9,8 @@ export type PropertyType =
   | "Casa"
   | "Terreno"
   | "Local Comercial"
-  | "Oficina";
+  | "Oficina"
+  | "Bodega";
 
 export type PriceLabel = "Venta" | "Renta";
 
@@ -47,6 +48,21 @@ export type Property = {
   agent: PropertyAgent;
   coordinates: { lat: number; lng: number };
   createdAt: string;
+  // Type-specific optional fields. Not all properties have all of these;
+  // the wizard fills the ones that apply to the chosen property type.
+  buildingName?: string;
+  apartmentNumber?: string;
+  ageRange?: string;
+  levels?: number;
+  frontageM?: number;
+  depthM?: number;
+  landUse?: string;
+  services?: string[];
+  ceilingHeightM?: number;
+  loadingDocks?: number;
+  industrialUse?: string;
+  furnished?: boolean;
+  privateOffices?: number;
 };
 
 const AGENT: PropertyAgent = {

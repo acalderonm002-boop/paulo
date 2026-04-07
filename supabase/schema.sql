@@ -327,3 +327,20 @@ on conflict (id) do nothing;
 drop policy if exists "media_public_read" on storage.objects;
 create policy "media_public_read" on storage.objects
   for select using (bucket_id = 'media');
+
+-- =============================================================================
+-- 2026-04 migration — type-specific property fields + Bodega support
+-- =============================================================================
+alter table properties add column if not exists building_name text;
+alter table properties add column if not exists apartment_number text;
+alter table properties add column if not exists age_range text;
+alter table properties add column if not exists levels int;
+alter table properties add column if not exists frontage_m numeric;
+alter table properties add column if not exists depth_m numeric;
+alter table properties add column if not exists land_use text;
+alter table properties add column if not exists services text[] not null default '{}';
+alter table properties add column if not exists ceiling_height_m numeric;
+alter table properties add column if not exists loading_docks int;
+alter table properties add column if not exists industrial_use text;
+alter table properties add column if not exists furnished boolean;
+alter table properties add column if not exists private_offices int;

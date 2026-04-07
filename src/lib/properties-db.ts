@@ -44,6 +44,20 @@ type DbProperty = {
   visible: boolean;
   sort_order: number;
   created_at: string;
+  // Type-specific optional columns added in 2026-04 migration.
+  building_name?: string | null;
+  apartment_number?: string | null;
+  age_range?: string | null;
+  levels?: number | null;
+  frontage_m?: number | null;
+  depth_m?: number | null;
+  land_use?: string | null;
+  services?: string[] | null;
+  ceiling_height_m?: number | null;
+  loading_docks?: number | null;
+  industrial_use?: string | null;
+  furnished?: boolean | null;
+  private_offices?: number | null;
   property_images?: DbPropertyImage[] | null;
 };
 
@@ -54,8 +68,19 @@ const AGENT = {
   whatsapp: "528128625350",
 };
 
+const PROPERTY_TYPE_VALUES: PropertyType[] = [
+  "Departamento",
+  "Casa",
+  "Terreno",
+  "Local Comercial",
+  "Oficina",
+  "Bodega",
+];
+
 function toPropertyType(v: string): PropertyType {
-  return (v as PropertyType) ?? "Departamento";
+  return (PROPERTY_TYPE_VALUES as string[]).includes(v)
+    ? (v as PropertyType)
+    : "Departamento";
 }
 
 function toPriceLabel(v: string): PriceLabel {
@@ -119,6 +144,19 @@ export function mapDbToProperty(row: DbProperty): Property {
       lng: Number(row.longitude ?? 0),
     },
     createdAt: row.created_at,
+    buildingName: row.building_name ?? undefined,
+    apartmentNumber: row.apartment_number ?? undefined,
+    ageRange: row.age_range ?? undefined,
+    levels: row.levels ?? undefined,
+    frontageM: row.frontage_m ?? undefined,
+    depthM: row.depth_m ?? undefined,
+    landUse: row.land_use ?? undefined,
+    services: row.services ?? undefined,
+    ceilingHeightM: row.ceiling_height_m ?? undefined,
+    loadingDocks: row.loading_docks ?? undefined,
+    industrialUse: row.industrial_use ?? undefined,
+    furnished: row.furnished ?? undefined,
+    privateOffices: row.private_offices ?? undefined,
   };
 }
 

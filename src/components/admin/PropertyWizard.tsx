@@ -1,14 +1,22 @@
 "use client";
 
 import {
+  Briefcase,
+  Building2,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Home,
   ImagePlus,
+  LandPlot,
   Loader2,
   Minus,
   Plus,
   Star,
+  Store,
+  Warehouse,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import {
   useEffect,
@@ -19,16 +27,25 @@ import {
   type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import AddressAutocomplete, {
+  type AddressSelection,
+} from "@/components/AddressAutocomplete";
 import { useSiteData } from "@/context/SiteDataContext";
 import { useToast } from "@/context/ToastContext";
 import { AdminInput, AdminTextarea } from "./AdminFields";
+
+// ---------------------------------------------------------------------------
+// Types & constants
+// ---------------------------------------------------------------------------
 
 type PropertyType =
   | "Departamento"
   | "Casa"
   | "Terreno"
   | "Local Comercial"
-  | "Oficina";
+  | "Oficina"
+  | "Bodega";
+
 type Operation = "Venta" | "Renta";
 type Status = "Disponible" | "Apartada" | "Vendida" | "Rentada";
 
@@ -57,43 +74,62 @@ export type WizardInitial = {
   amenities?: string[];
   video_url?: string;
   images?: { id?: string; url: string; is_primary: boolean }[];
+  // 2026-04 fields
+  building_name?: string;
+  apartment_number?: string;
+  age_range?: string;
+  levels?: number;
+  frontage_m?: number;
+  depth_m?: number;
+  land_use?: string;
+  services?: string[];
+  ceiling_height_m?: number;
+  loading_docks?: number;
+  industrial_use?: string;
+  furnished?: boolean;
+  private_offices?: number;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
-type WizardData = Required<
-  Pick<
-    WizardInitial,
-    | "title"
-    | "property_type"
-    | "operation"
-    | "price"
-    | "currency"
-    | "status"
-    | "location"
-    | "neighborhood"
-    | "city"
-    | "state"
-    | "bedrooms"
-    | "bathrooms"
-    | "parking_spots"
-    | "construction_m2"
-    | "total_m2"
-    | "floor"
-    | "year_built"
-    | "description"
-    | "features"
-    | "amenities"
-    | "video_url"
-  >
-> & {
+type WizardData = {
+  title: string;
+  property_type: PropertyType;
+  operation: Operation;
+  price: number;
+  currency: string;
+  status: Status;
+  location: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  building_name: string;
+  latitude: number | null;
+  longitude: number | null;
+  bedrooms: number;
+  bathrooms: number;
+  parking_spots: number;
+  construction_m2: number;
+  total_m2: number;
+  floor: string;
+  year_built: number;
+  apartment_number: string;
+  age_range: string;
+  levels: number;
+  frontage_m: number;
+  depth_m: number;
+  land_use: string;
+  services: string[];
+  ceiling_height_m: number;
+  loading_docks: number;
+  industrial_use: string;
+  furnished: boolean;
+  private_offices: number;
+  description: string;
+  features: string[];
+  amenities: string[];
+  video_url: string;
   images: { id?: string; url: string; is_primary: boolean }[];
-};
-
-type Props = {
-  open: boolean;
-  onClose: () => void;
-  initial?: WizardInitial | null;
-  /** DB id used for PUT when editing; undefined → create flow */
-  editingId?: string;
 };
 
 const EMPTY_DATA: WizardData = {
@@ -107,6 +143,9 @@ const EMPTY_DATA: WizardData = {
   neighborhood: "",
   city: "San Pedro Garza García",
   state: "N.L.",
+  building_name: "",
+  latitude: null,
+  longitude: null,
   bedrooms: 0,
   bathrooms: 0,
   parking_spots: 0,
@@ -114,6 +153,18 @@ const EMPTY_DATA: WizardData = {
   total_m2: 0,
   floor: "",
   year_built: 0,
+  apartment_number: "",
+  age_range: "",
+  levels: 1,
+  frontage_m: 0,
+  depth_m: 0,
+  land_use: "",
+  services: [],
+  ceiling_height_m: 0,
+  loading_docks: 0,
+  industrial_use: "",
+  furnished: false,
+  private_offices: 0,
   description: "",
   features: [],
   amenities: [],
@@ -121,33 +172,164 @@ const EMPTY_DATA: WizardData = {
   images: [],
 };
 
-const FEATURE_SUGGESTIONS = [
-  "Gimnasio",
-  "Alberca",
-  "Seguridad 24/7",
-  "Pet Friendly",
-  "Elevador",
-  "Balcón",
-  "Vista Panorámica",
-];
-const AMENITY_SUGGESTIONS = [
-  "Roof Garden",
-  "Business Center",
-  "Área de Juegos",
-  "Salón de Eventos",
-  "Áreas Verdes",
-  "Lobby",
+type TypeOption = {
+  value: PropertyType;
+  label: string;
+  icon: LucideIcon;
+};
+
+const TYPE_OPTIONS: TypeOption[] = [
+  { value: "Departamento", label: "Departamento", icon: Building2 },
+  { value: "Casa", label: "Casa", icon: Home },
+  { value: "Terreno", label: "Terreno", icon: LandPlot },
+  { value: "Local Comercial", label: "Local Comercial", icon: Store },
+  { value: "Oficina", label: "Oficina", icon: Briefcase },
+  { value: "Bodega", label: "Bodega/Nave Industrial", icon: Warehouse },
 ];
 
-const PROPERTY_TYPES: PropertyType[] = [
-  "Departamento",
-  "Casa",
-  "Terreno",
-  "Local Comercial",
-  "Oficina",
-];
-const OPERATIONS: Operation[] = ["Venta", "Renta"];
 const STATUSES: Status[] = ["Disponible", "Apartada", "Vendida", "Rentada"];
+
+const AGE_OPTIONS = [
+  "Nuevo",
+  "1-5 años",
+  "5-10 años",
+  "10-20 años",
+  "20+ años",
+];
+
+const LAND_USE_OPTIONS = ["Habitacional", "Comercial", "Industrial", "Mixto"];
+const INDUSTRIAL_USE_OPTIONS = [
+  "Almacenaje",
+  "Manufactura",
+  "Distribución",
+  "Mixto",
+];
+const SERVICE_OPTIONS = ["Agua", "Luz", "Drenaje", "Gas", "Pavimento"];
+
+const STEPS = [
+  "Tipo y Precio",
+  "Ubicación",
+  "Características",
+  "Descripción",
+  "Fotos y Video",
+  "Confirmación",
+] as const;
+
+// Type-specific suggestions for the description step.
+const FEATURE_SUGGESTIONS: Record<PropertyType, string[]> = {
+  Departamento: [
+    "Gimnasio",
+    "Alberca",
+    "Seguridad 24/7",
+    "Pet Friendly",
+    "Elevador",
+    "Balcón",
+    "Vista Panorámica",
+    "Amueblado",
+    "Roof Garden Privado",
+  ],
+  Casa: [
+    "Jardín",
+    "Alberca",
+    "Cochera Techada",
+    "Cuarto de Servicio",
+    "Roof Garden",
+    "Pet Friendly",
+    "Seguridad Privada",
+    "Calle Cerrada",
+  ],
+  Terreno: [
+    "Esquina",
+    "Plano",
+    "Bardado",
+    "Escriturado",
+    "Uso de Suelo Definido",
+  ],
+  "Local Comercial": [
+    "Aire Acondicionado",
+    "Estacionamiento Propio",
+    "Sobre Avenida",
+    "Mezzanine",
+    "Vitrina/Aparador",
+  ],
+  Oficina: [
+    "Aire Acondicionado",
+    "Estacionamiento Propio",
+    "Sobre Avenida",
+    "Mezzanine",
+    "Vitrina/Aparador",
+  ],
+  Bodega: [
+    "Andén de Carga",
+    "Piso de Concreto",
+    "Acceso Trailer",
+    "Oficinas Integradas",
+    "Patio de Maniobras",
+  ],
+};
+
+const AMENITY_SUGGESTIONS: Record<PropertyType, string[]> = {
+  Departamento: [
+    "Business Center",
+    "Salón de Eventos",
+    "Área de Juegos",
+    "Áreas Verdes",
+    "Lobby",
+    "Concierge",
+    "Coworking",
+  ],
+  Casa: [
+    "Business Center",
+    "Salón de Eventos",
+    "Área de Juegos",
+    "Áreas Verdes",
+    "Lobby",
+    "Concierge",
+    "Coworking",
+  ],
+  Terreno: [
+    "Vigilancia 24/7",
+    "CCTV",
+    "Subestación Eléctrica",
+    "Cisterna",
+    "Planta de Emergencia",
+  ],
+  "Local Comercial": [
+    "Vigilancia 24/7",
+    "CCTV",
+    "Subestación Eléctrica",
+    "Cisterna",
+    "Planta de Emergencia",
+  ],
+  Oficina: [
+    "Vigilancia 24/7",
+    "CCTV",
+    "Subestación Eléctrica",
+    "Cisterna",
+    "Planta de Emergencia",
+  ],
+  Bodega: [
+    "Vigilancia 24/7",
+    "CCTV",
+    "Subestación Eléctrica",
+    "Cisterna",
+    "Planta de Emergencia",
+  ],
+};
+
+function mediaHelper(t: PropertyType): string {
+  if (t === "Terreno") {
+    return "Sube fotos del terreno desde distintos ángulos";
+  }
+  if (t === "Local Comercial" || t === "Oficina" || t === "Bodega") {
+    return "Sube fotos del local/oficina/bodega";
+  }
+  return "Sube fotos del interior y exterior";
+}
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
 
 function formatNumber(n: number): string {
   if (!n) return "";
@@ -158,14 +340,121 @@ function parseNumber(s: string): number {
   return clean ? Number(clean) : 0;
 }
 
-const STEPS = [
-  "Información Básica",
-  "Ubicación",
-  "Características",
-  "Descripción",
-  "Fotos y Video",
-  "Confirmación",
-] as const;
+function autoTitle(d: WizardData): string {
+  const where =
+    d.building_name?.trim() ||
+    d.neighborhood?.trim() ||
+    d.city?.trim() ||
+    d.location?.trim();
+  if (!where) return d.property_type;
+  return `${d.property_type} en ${where}`;
+}
+
+// ---------------------------------------------------------------------------
+// Reusable input building blocks
+// ---------------------------------------------------------------------------
+
+function Field({
+  label,
+  children,
+  error,
+}: {
+  label: string;
+  children: ReactNode;
+  error?: string;
+}) {
+  return (
+    <div className="mb-5">
+      <div
+        className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-1.5"
+        style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+      >
+        {label}
+      </div>
+      {children}
+      {error && (
+        <p className="mt-1 text-[11px] text-red-500">{error}</p>
+      )}
+    </div>
+  );
+}
+
+function Select<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: readonly T[];
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value as T)}
+      className="w-full bg-white border border-black/[0.12] rounded-lg px-3 py-2.5 text-[14px] focus:outline-none focus:border-[color:var(--accent)]"
+    >
+      {options.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function NumberStepper({
+  value,
+  onChange,
+  step = 1,
+  min = 0,
+}: {
+  value: number;
+  onChange: (n: number) => void;
+  step?: number;
+  min?: number;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(min, value - step))}
+        aria-label="Disminuir"
+        className="w-11 h-11 rounded-full border border-black/[0.12] flex items-center justify-center text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] transition-colors"
+      >
+        <Minus size={16} />
+      </button>
+      <input
+        type="number"
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="flex-1 min-w-0 bg-white border border-black/[0.12] rounded-lg px-3 py-2 text-center text-[16px] focus:outline-none focus:border-[color:var(--accent)]"
+        style={{ fontWeight: 700 }}
+      />
+      <button
+        type="button"
+        onClick={() => onChange(value + step)}
+        aria-label="Aumentar"
+        className="w-11 h-11 rounded-full border border-black/[0.12] flex items-center justify-center text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] transition-colors"
+      >
+        <Plus size={16} />
+      </button>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Wizard
+// ---------------------------------------------------------------------------
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  initial?: WizardInitial | null;
+  /** DB id used for PUT when editing; undefined → create flow */
+  editingId?: string;
+};
 
 export default function PropertyWizard({
   open,
@@ -176,13 +465,17 @@ export default function PropertyWizard({
   const { refreshData } = useSiteData();
   const { showToast } = useToast();
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const [data, setData] = useState<WizardData>(EMPTY_DATA);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
   // Reset / hydrate when opened.
   useEffect(() => {
     if (!open) return;
     setStep(0);
+    setErrors({});
+    setDirection(1);
     setData({
       ...EMPTY_DATA,
       ...(initial ?? {}),
@@ -191,8 +484,12 @@ export default function PropertyWizard({
       neighborhood: initial?.neighborhood ?? "",
       city: initial?.city ?? "San Pedro Garza García",
       state: initial?.state ?? "N.L.",
+      building_name: initial?.building_name ?? "",
+      latitude: initial?.latitude ?? null,
+      longitude: initial?.longitude ?? null,
       features: initial?.features ?? [],
       amenities: initial?.amenities ?? [],
+      services: initial?.services ?? [],
       images: initial?.images ?? [],
       price: initial?.price ?? 0,
       property_type: initial?.property_type ?? "Departamento",
@@ -206,77 +503,207 @@ export default function PropertyWizard({
       total_m2: initial?.total_m2 ?? 0,
       floor: initial?.floor ?? "",
       year_built: initial?.year_built ?? 0,
+      apartment_number: initial?.apartment_number ?? "",
+      age_range: initial?.age_range ?? "",
+      levels: initial?.levels ?? 1,
+      frontage_m: initial?.frontage_m ?? 0,
+      depth_m: initial?.depth_m ?? 0,
+      land_use: initial?.land_use ?? "",
+      ceiling_height_m: initial?.ceiling_height_m ?? 0,
+      loading_docks: initial?.loading_docks ?? 0,
+      industrial_use: initial?.industrial_use ?? "",
+      furnished: initial?.furnished ?? false,
+      private_offices: initial?.private_offices ?? 0,
       description: initial?.description ?? "",
       video_url: initial?.video_url ?? "",
     });
   }, [open, initial]);
 
-  // Step validation.
-  const canAdvance = useMemo(() => {
-    if (step === 0) {
-      return (
-        data.title.trim().length > 0 &&
-        data.property_type &&
-        data.operation &&
-        data.price > 0
-      );
-    }
-    if (step === 1) {
-      return data.location.trim().length > 0;
-    }
-    return true;
-  }, [step, data]);
-
-  const next = () => {
-    if (!canAdvance) {
-      showToast("Completa los campos requeridos antes de avanzar");
-      return;
-    }
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
-  };
-  const prev = () => setStep((s) => Math.max(s - 1, 0));
-
-  const handleClose = () => {
-    if (
-      !window.confirm(
-        "¿Seguro? Los cambios no guardados se perderán."
-      )
-    )
-      return;
-    onClose();
-  };
-
   const update = <K extends keyof WizardData>(
     key: K,
     value: WizardData[K]
-  ) => setData((d) => ({ ...d, [key]: value }));
+  ) => {
+    setData((d) => ({ ...d, [key]: value }));
+    setErrors((e) => {
+      if (!e[key as string]) return e;
+      const next = { ...e };
+      delete next[key as string];
+      return next;
+    });
+  };
+
+  // Step validation — returns errors map (empty = OK).
+  const validateStep = (s: number): Record<string, string> => {
+    const next: Record<string, string> = {};
+    if (s === 0) {
+      if (!data.price || data.price <= 0) next.price = "Precio requerido";
+    }
+    if (s === 1) {
+      if (!data.location.trim()) next.location = "Dirección requerida";
+    }
+    if (s === 2) {
+      if (data.property_type === "Terreno") {
+        if (!data.total_m2 || data.total_m2 <= 0)
+          next.total_m2 = "Superficie del terreno requerida";
+      } else if (
+        data.property_type === "Local Comercial" ||
+        data.property_type === "Oficina" ||
+        data.property_type === "Bodega"
+      ) {
+        if (!data.construction_m2 || data.construction_m2 <= 0)
+          next.construction_m2 = "m² de construcción requeridos";
+      } else {
+        if (!data.construction_m2 || data.construction_m2 <= 0)
+          next.construction_m2 = "m² de construcción requeridos";
+      }
+    }
+    return next;
+  };
+
+  const next = () => {
+    const errs = validateStep(step);
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      showToast("Completa los campos requeridos antes de avanzar");
+      return;
+    }
+    setDirection(1);
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
+  const prev = () => {
+    setDirection(-1);
+    setStep((s) => Math.max(s - 1, 0));
+  };
+  const goto = (n: number) => {
+    setDirection(n > step ? 1 : -1);
+    setStep(n);
+  };
+
+  const dirty = useMemo(() => {
+    if (!open) return false;
+    return JSON.stringify(data) !== JSON.stringify({
+      ...EMPTY_DATA,
+      ...(initial ?? {}),
+      title: initial?.title ?? "",
+      location: initial?.location ?? "",
+      neighborhood: initial?.neighborhood ?? "",
+      city: initial?.city ?? "San Pedro Garza García",
+      state: initial?.state ?? "N.L.",
+      building_name: initial?.building_name ?? "",
+      latitude: initial?.latitude ?? null,
+      longitude: initial?.longitude ?? null,
+      features: initial?.features ?? [],
+      amenities: initial?.amenities ?? [],
+      services: initial?.services ?? [],
+      images: initial?.images ?? [],
+      price: initial?.price ?? 0,
+      property_type: initial?.property_type ?? "Departamento",
+      operation: initial?.operation ?? "Venta",
+      currency: initial?.currency ?? "MXN",
+      status: initial?.status ?? "Disponible",
+      bedrooms: initial?.bedrooms ?? 0,
+      bathrooms: initial?.bathrooms ?? 0,
+      parking_spots: initial?.parking_spots ?? 0,
+      construction_m2: initial?.construction_m2 ?? 0,
+      total_m2: initial?.total_m2 ?? 0,
+      floor: initial?.floor ?? "",
+      year_built: initial?.year_built ?? 0,
+      apartment_number: initial?.apartment_number ?? "",
+      age_range: initial?.age_range ?? "",
+      levels: initial?.levels ?? 1,
+      frontage_m: initial?.frontage_m ?? 0,
+      depth_m: initial?.depth_m ?? 0,
+      land_use: initial?.land_use ?? "",
+      ceiling_height_m: initial?.ceiling_height_m ?? 0,
+      loading_docks: initial?.loading_docks ?? 0,
+      industrial_use: initial?.industrial_use ?? "",
+      furnished: initial?.furnished ?? false,
+      private_offices: initial?.private_offices ?? 0,
+      description: initial?.description ?? "",
+      video_url: initial?.video_url ?? "",
+    });
+  }, [data, initial, open]);
+
+  const handleClose = () => {
+    if (dirty && !window.confirm("¿Seguro? Los cambios no guardados se perderán.")) {
+      return;
+    }
+    onClose();
+  };
 
   const publish = async () => {
     setSaving(true);
     try {
-      const payload = {
-        title: data.title,
-        property_type: data.property_type,
+      const finalTitle = data.title.trim() || autoTitle(data);
+      const t = data.property_type;
+      const payload: Record<string, unknown> = {
+        title: finalTitle,
+        property_type: t,
         operation: data.operation,
         price: data.price,
         currency: data.currency,
         status: data.status,
         location: data.location,
-        neighborhood: data.neighborhood,
-        city: data.city,
-        state: data.state,
-        bedrooms: data.bedrooms || null,
-        bathrooms: data.bathrooms || null,
-        parking_spots: data.parking_spots || null,
-        construction_m2: data.construction_m2 || null,
-        total_m2: data.total_m2 || null,
-        floor: data.floor || null,
-        year_built: data.year_built || null,
+        neighborhood: data.neighborhood || null,
+        city: data.city || null,
+        state: data.state || null,
+        building_name: data.building_name || null,
+        latitude: data.latitude,
+        longitude: data.longitude,
         description: data.description,
         features: data.features,
         amenities: data.amenities,
         video_url: data.video_url || null,
       };
+
+      // Specs that apply to residential types (depa/casa).
+      if (t === "Departamento" || t === "Casa") {
+        payload.bedrooms = data.bedrooms || null;
+        payload.bathrooms = data.bathrooms || null;
+        payload.parking_spots = data.parking_spots || null;
+        payload.construction_m2 = data.construction_m2 || null;
+        payload.age_range = data.age_range || null;
+      }
+      if (t === "Departamento") {
+        payload.floor = data.floor || null;
+        payload.apartment_number = data.apartment_number || null;
+      }
+      if (t === "Casa") {
+        payload.total_m2 = data.total_m2 || null;
+        payload.levels = data.levels || null;
+      }
+      if (t === "Terreno") {
+        payload.total_m2 = data.total_m2 || null;
+        payload.frontage_m = data.frontage_m || null;
+        payload.depth_m = data.depth_m || null;
+        payload.land_use = data.land_use || null;
+        payload.services = data.services;
+      }
+      if (t === "Local Comercial") {
+        payload.construction_m2 = data.construction_m2 || null;
+        payload.total_m2 = data.total_m2 || null;
+        payload.bathrooms = data.bathrooms || null;
+        payload.parking_spots = data.parking_spots || null;
+        payload.floor = data.floor || null;
+        payload.frontage_m = data.frontage_m || null;
+        payload.ceiling_height_m = data.ceiling_height_m || null;
+      }
+      if (t === "Oficina") {
+        payload.construction_m2 = data.construction_m2 || null;
+        payload.bathrooms = data.bathrooms || null;
+        payload.parking_spots = data.parking_spots || null;
+        payload.floor = data.floor || null;
+        payload.private_offices = data.private_offices || null;
+        payload.furnished = data.furnished;
+      }
+      if (t === "Bodega") {
+        payload.construction_m2 = data.construction_m2 || null;
+        payload.total_m2 = data.total_m2 || null;
+        payload.ceiling_height_m = data.ceiling_height_m || null;
+        payload.loading_docks = data.loading_docks || null;
+        payload.parking_spots = data.parking_spots || null;
+        payload.industrial_use = data.industrial_use || null;
+      }
 
       let propertyId: string | undefined = editingId;
 
@@ -291,7 +718,6 @@ export default function PropertyWizard({
           throw new Error(err?.error || "Error al guardar");
         }
 
-        // Delete images that were removed in the wizard.
         const originalIds = new Set(
           (initial?.images ?? [])
             .map((img) => img.id)
@@ -311,8 +737,6 @@ export default function PropertyWizard({
             { method: "DELETE" }
           );
         }
-
-        // Update sort_order + is_primary for existing images.
         const existingPatch = data.images
           .map((img, i) =>
             img.id
@@ -345,7 +769,6 @@ export default function PropertyWizard({
         propertyId = result.property?.id;
       }
 
-      // Attach NEW images (those without an id).
       if (propertyId) {
         for (let i = 0; i < data.images.length; i++) {
           const img = data.images[i];
@@ -372,6 +795,23 @@ export default function PropertyWizard({
     }
   };
 
+  // -------------------------------------------------------------------------
+  // Step renderers
+  // -------------------------------------------------------------------------
+
+  const renderStep = () => {
+    if (step === 0)
+      return <StepBasic data={data} update={update} errors={errors} />;
+    if (step === 1)
+      return <StepLocation data={data} update={update} errors={errors} />;
+    if (step === 2)
+      return <StepSpecs data={data} update={update} errors={errors} />;
+    if (step === 3) return <StepDescription data={data} update={update} />;
+    if (step === 4) return <StepMedia data={data} update={update} />;
+    if (step === 5) return <StepConfirm data={data} goto={goto} />;
+    return null;
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -381,7 +821,7 @@ export default function PropertyWizard({
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[10000] bg-white overflow-y-auto"
         >
-          {/* Progress + close */}
+          {/* Sticky header — progress bar + step pill list + close */}
           <div className="sticky top-0 bg-white border-b border-black/[0.06] z-10">
             <div className="h-1 bg-black/[0.04]">
               <div
@@ -389,16 +829,16 @@ export default function PropertyWizard({
                 style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
               />
             </div>
-            <div className="max-w-3xl mx-auto flex items-center justify-between px-6 py-4">
-              <div>
+            <div className="max-w-3xl mx-auto flex items-center justify-between px-4 sm:px-6 py-4 gap-3">
+              <div className="min-w-0 flex-1">
                 <div
-                  className="text-[11px] uppercase text-[color:var(--text-secondary)]"
+                  className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-0.5"
                   style={{ letterSpacing: "1.5px" }}
                 >
                   Paso {step + 1} / {STEPS.length}
                 </div>
                 <h2
-                  className="text-[color:var(--text-primary)] text-xl leading-tight"
+                  className="text-[color:var(--text-primary)] text-lg sm:text-xl leading-tight truncate"
                   style={{
                     fontFamily: "var(--font-dm-serif), Georgia, serif",
                   }}
@@ -410,20 +850,51 @@ export default function PropertyWizard({
                 type="button"
                 onClick={handleClose}
                 aria-label="Cerrar"
-                className="w-10 h-10 rounded-full flex items-center justify-center text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-black/[0.04]"
+                className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-black/[0.04]"
               >
                 <X size={20} />
               </button>
             </div>
+            {/* Step pills (desktop only, scrollable) */}
+            <div className="hidden md:flex max-w-3xl mx-auto px-6 pb-3 gap-2 overflow-x-auto">
+              {STEPS.map((s, i) => {
+                const active = i === step;
+                const past = i < step;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => (past ? goto(i) : null)}
+                    disabled={!past && !active}
+                    className={`text-[11px] uppercase px-3 py-1.5 rounded-full whitespace-nowrap transition-colors ${
+                      active
+                        ? "bg-[color:var(--accent)] text-white"
+                        : past
+                        ? "bg-[color:var(--accent)]/10 text-[color:var(--accent)] hover:bg-[color:var(--accent)]/20"
+                        : "bg-black/[0.04] text-[color:var(--text-secondary)]"
+                    }`}
+                    style={{ letterSpacing: "1.2px", fontWeight: 700 }}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="max-w-3xl mx-auto px-6 py-10">
-            {step === 0 && <StepBasic data={data} update={update} />}
-            {step === 1 && <StepLocation data={data} update={update} />}
-            {step === 2 && <StepSpecs data={data} update={update} />}
-            {step === 3 && <StepDescription data={data} update={update} />}
-            {step === 4 && <StepMedia data={data} update={update} />}
-            {step === 5 && <StepConfirm data={data} goto={setStep} />}
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={step}
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -30 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
 
             {/* Nav buttons */}
             <div className="flex items-center justify-between mt-10">
@@ -454,9 +925,7 @@ export default function PropertyWizard({
                   className="inline-flex items-center gap-2 bg-[color:var(--accent)] text-white px-6 py-3 rounded-lg text-[12px] uppercase hover:bg-[color:var(--accent-light)] transition-colors disabled:opacity-70"
                   style={{ letterSpacing: "1.5px", fontWeight: 700 }}
                 >
-                  {saving ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : null}
+                  {saving ? <Loader2 size={14} className="animate-spin" /> : null}
                   {editingId ? "Guardar cambios" : "Publicar propiedad"}
                 </button>
               )}
@@ -468,79 +937,93 @@ export default function PropertyWizard({
   );
 }
 
-// ---------- Step components ------------------------------------------------
+// ---------------------------------------------------------------------------
+// Step components
+// ---------------------------------------------------------------------------
 
 type StepProps = {
   data: WizardData;
   update: <K extends keyof WizardData>(key: K, value: WizardData[K]) => void;
+  errors: Record<string, string>;
 };
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="mb-5">
-      <div
-        className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-1.5"
-        style={{ letterSpacing: "1.5px", fontWeight: 700 }}
-      >
-        {label}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Select<T extends string>({
-  value,
-  onChange,
-  options,
-}: {
-  value: T;
-  onChange: (v: T) => void;
-  options: readonly T[];
-}) {
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value as T)}
-      className="w-full bg-white border border-black/[0.12] rounded-lg px-3 py-2.5 text-[14px] focus:outline-none focus:border-[color:var(--accent)]"
-    >
-      {options.map((opt) => (
-        <option key={opt} value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function StepBasic({ data, update }: StepProps) {
+function StepBasic({ data, update, errors }: StepProps) {
   return (
     <div>
-      <Field label="Nombre de la propiedad *">
-        <AdminInput
-          value={data.title}
-          onChange={(e) => update("title", e.target.value)}
-          placeholder="Departamento en Torre Dana"
-        />
-      </Field>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Tipo *">
-          <Select
-            value={data.property_type}
-            onChange={(v) => update("property_type", v)}
-            options={PROPERTY_TYPES}
-          />
-        </Field>
-        <Field label="Operación *">
-          <Select
-            value={data.operation}
-            onChange={(v) => update("operation", v)}
-            options={OPERATIONS}
-          />
-        </Field>
+      <div
+        className="text-[12px] uppercase text-[color:var(--text-secondary)] mb-3"
+        style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+      >
+        ¿Qué tipo de propiedad es?
       </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+        {TYPE_OPTIONS.map((opt) => {
+          const Icon = opt.icon;
+          const active = data.property_type === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => update("property_type", opt.value)}
+              className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 px-4 py-6 text-center transition-all ${
+                active
+                  ? "border-[color:var(--accent)] bg-[color:var(--accent)]/[0.06]"
+                  : "border-transparent bg-[color:var(--cream)] hover:border-[color:var(--accent)]/40"
+              }`}
+            >
+              <Icon
+                size={32}
+                strokeWidth={1.6}
+                className={
+                  active
+                    ? "text-[color:var(--accent)]"
+                    : "text-[color:var(--text-secondary)]"
+                }
+              />
+              <span
+                className={`text-[13px] leading-tight ${
+                  active
+                    ? "text-[color:var(--accent)]"
+                    : "text-[color:var(--text-primary)]"
+                }`}
+                style={{ fontWeight: 700 }}
+              >
+                {opt.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        className="text-[12px] uppercase text-[color:var(--text-secondary)] mb-3"
+        style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+      >
+        Operación
+      </div>
+      <div className="grid grid-cols-2 gap-3 mb-8">
+        {(["Venta", "Renta"] as Operation[]).map((op) => {
+          const active = data.operation === op;
+          return (
+            <button
+              key={op}
+              type="button"
+              onClick={() => update("operation", op)}
+              className={`rounded-xl border-2 py-4 text-[14px] uppercase transition-all ${
+                active
+                  ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-white"
+                  : "border-black/[0.1] bg-white text-[color:var(--text-primary)] hover:border-[color:var(--accent)]/40"
+              }`}
+              style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+            >
+              {op}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_120px] gap-4">
-        <Field label="Precio *">
+        <Field label="Precio *" error={errors.price}>
           <AdminInput
             value={formatNumber(data.price)}
             onChange={(e) => update("price", parseNumber(e.target.value))}
@@ -556,6 +1039,7 @@ function StepBasic({ data, update }: StepProps) {
           />
         </Field>
       </div>
+
       <Field label="Status">
         <Select
           value={data.status}
@@ -567,16 +1051,35 @@ function StepBasic({ data, update }: StepProps) {
   );
 }
 
-function StepLocation({ data, update }: StepProps) {
+function StepLocation({ data, update, errors }: StepProps) {
+  const handleSelect = (sel: AddressSelection) => {
+    update("location", sel.fullAddress);
+    if (sel.neighborhood) update("neighborhood", sel.neighborhood);
+    if (sel.city) update("city", sel.city);
+    if (sel.state) update("state", sel.state);
+    if (sel.lat != null) update("latitude", sel.lat);
+    if (sel.lng != null) update("longitude", sel.lng);
+  };
+
   return (
     <div>
-      <Field label="Dirección / ubicación *">
-        <AdminInput
+      <Field label="Dirección *" error={errors.location}>
+        <AddressAutocomplete
           value={data.location}
-          onChange={(e) => update("location", e.target.value)}
-          placeholder="Torre Dana, Del Valle"
+          onChange={(v) => update("location", v)}
+          onSelect={handleSelect}
+          placeholder="Escribe la dirección, ej: Av. Vasconcelos 200"
         />
       </Field>
+
+      <Field label="Nombre del desarrollo / edificio (opcional)">
+        <AdminInput
+          value={data.building_name}
+          onChange={(e) => update("building_name", e.target.value)}
+          placeholder="Torre Dana, Saqqara, etc."
+        />
+      </Field>
+
       <Field label="Colonia">
         <AdminInput
           value={data.neighborhood}
@@ -584,6 +1087,7 @@ function StepLocation({ data, update }: StepProps) {
           placeholder="Del Valle"
         />
       </Field>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Ciudad">
           <AdminInput
@@ -598,106 +1102,389 @@ function StepLocation({ data, update }: StepProps) {
           />
         </Field>
       </div>
+
+      {data.latitude != null && data.longitude != null && (
+        <p className="text-[11px] text-[color:var(--text-secondary)] -mt-2">
+          Coordenadas: {data.latitude.toFixed(5)}, {data.longitude.toFixed(5)}
+        </p>
+      )}
     </div>
   );
 }
 
-function NumberStepper({
+// ----- Specs (per-type) ----------------------------------------------------
+
+function NumericField({
+  label,
   value,
   onChange,
-  step = 1,
-  min = 0,
+  placeholder,
+  error,
 }: {
+  label: string;
   value: number;
   onChange: (n: number) => void;
-  step?: number;
-  min?: number;
+  placeholder?: string;
+  error?: string;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <button
-        type="button"
-        onClick={() => onChange(Math.max(min, value - step))}
-        className="w-9 h-9 rounded-lg border border-black/[0.12] flex items-center justify-center text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)]"
-      >
-        <Minus size={14} />
-      </button>
-      <input
+    <Field label={label} error={error}>
+      <AdminInput
         type="number"
-        step={step}
-        value={value}
+        value={value || ""}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 bg-white border border-black/[0.12] rounded-lg px-3 py-2 text-center text-[14px] focus:outline-none focus:border-[color:var(--accent)]"
+        placeholder={placeholder}
       />
-      <button
-        type="button"
-        onClick={() => onChange(value + step)}
-        className="w-9 h-9 rounded-lg border border-black/[0.12] flex items-center justify-center text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)]"
-      >
-        <Plus size={14} />
-      </button>
-    </div>
+    </Field>
   );
 }
 
-function StepSpecs({ data, update }: StepProps) {
-  return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Recámaras">
-          <NumberStepper
-            value={data.bedrooms}
-            onChange={(n) => update("bedrooms", n)}
+function StepSpecs({ data, update, errors }: StepProps) {
+  const t = data.property_type;
+
+  if (t === "Departamento") {
+    return (
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Recámaras">
+            <NumberStepper
+              value={data.bedrooms}
+              onChange={(n) => update("bedrooms", n)}
+            />
+          </Field>
+          <Field label="Baños">
+            <NumberStepper
+              value={data.bathrooms}
+              onChange={(n) => update("bathrooms", n)}
+              step={0.5}
+            />
+          </Field>
+          <Field label="Estacionamientos">
+            <NumberStepper
+              value={data.parking_spots}
+              onChange={(n) => update("parking_spots", n)}
+            />
+          </Field>
+          <NumericField
+            label="m² de construcción *"
+            value={data.construction_m2}
+            onChange={(n) => update("construction_m2", n)}
+            placeholder="120"
+            error={errors.construction_m2}
           />
-        </Field>
-        <Field label="Baños">
-          <NumberStepper
-            value={data.bathrooms}
-            onChange={(n) => update("bathrooms", n)}
-            step={0.5}
-          />
-        </Field>
-        <Field label="Estacionamientos">
-          <NumberStepper
-            value={data.parking_spots}
-            onChange={(n) => update("parking_spots", n)}
-          />
-        </Field>
-        <Field label="Año de construcción">
-          <AdminInput
-            type="number"
-            value={data.year_built || ""}
-            onChange={(e) => update("year_built", Number(e.target.value))}
-            placeholder="2020"
-          />
-        </Field>
-        <Field label="m² construcción">
-          <AdminInput
-            type="number"
-            value={data.construction_m2 || ""}
-            onChange={(e) =>
-              update("construction_m2", Number(e.target.value))
-            }
-          />
-        </Field>
-        <Field label="m² terreno">
-          <AdminInput
-            type="number"
-            value={data.total_m2 || ""}
-            onChange={(e) => update("total_m2", Number(e.target.value))}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Piso / Nivel">
+            <AdminInput
+              value={data.floor}
+              onChange={(e) => update("floor", e.target.value)}
+              placeholder="Piso 15"
+            />
+          </Field>
+          <Field label="Número de departamento">
+            <AdminInput
+              value={data.apartment_number}
+              onChange={(e) => update("apartment_number", e.target.value)}
+              placeholder="1503"
+            />
+          </Field>
+        </div>
+        <Field label="Antigüedad">
+          <Select
+            value={(data.age_range || AGE_OPTIONS[0]) as (typeof AGE_OPTIONS)[number]}
+            onChange={(v) => update("age_range", v)}
+            options={AGE_OPTIONS}
           />
         </Field>
       </div>
-      <Field label="Piso">
-        <AdminInput
-          value={data.floor}
-          onChange={(e) => update("floor", e.target.value)}
-          placeholder="Piso 15"
+    );
+  }
+
+  if (t === "Casa") {
+    return (
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Recámaras">
+            <NumberStepper
+              value={data.bedrooms}
+              onChange={(n) => update("bedrooms", n)}
+            />
+          </Field>
+          <Field label="Baños">
+            <NumberStepper
+              value={data.bathrooms}
+              onChange={(n) => update("bathrooms", n)}
+              step={0.5}
+            />
+          </Field>
+          <Field label="Estacionamientos">
+            <NumberStepper
+              value={data.parking_spots}
+              onChange={(n) => update("parking_spots", n)}
+            />
+          </Field>
+          <Field label="Pisos / Niveles">
+            <NumberStepper
+              value={data.levels}
+              min={1}
+              onChange={(n) => update("levels", n)}
+            />
+          </Field>
+          <NumericField
+            label="m² de construcción *"
+            value={data.construction_m2}
+            onChange={(n) => update("construction_m2", n)}
+            placeholder="380"
+            error={errors.construction_m2}
+          />
+          <NumericField
+            label="m² de terreno"
+            value={data.total_m2}
+            onChange={(n) => update("total_m2", n)}
+            placeholder="500"
+          />
+        </div>
+        <Field label="Antigüedad">
+          <Select
+            value={(data.age_range || AGE_OPTIONS[0]) as (typeof AGE_OPTIONS)[number]}
+            onChange={(v) => update("age_range", v)}
+            options={AGE_OPTIONS}
+          />
+        </Field>
+      </div>
+    );
+  }
+
+  if (t === "Terreno") {
+    return (
+      <div>
+        <NumericField
+          label="m² de terreno *"
+          value={data.total_m2}
+          onChange={(n) => update("total_m2", n)}
+          placeholder="5000"
+          error={errors.total_m2}
         />
-      </Field>
-    </div>
-  );
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <NumericField
+            label="Frente (m)"
+            value={data.frontage_m}
+            onChange={(n) => update("frontage_m", n)}
+            placeholder="20"
+          />
+          <NumericField
+            label="Fondo (m)"
+            value={data.depth_m}
+            onChange={(n) => update("depth_m", n)}
+            placeholder="50"
+          />
+        </div>
+        <Field label="Uso de suelo">
+          <Select
+            value={
+              (data.land_use || LAND_USE_OPTIONS[0]) as (typeof LAND_USE_OPTIONS)[number]
+            }
+            onChange={(v) => update("land_use", v)}
+            options={LAND_USE_OPTIONS}
+          />
+        </Field>
+        <Field label="Servicios disponibles">
+          <div className="flex flex-wrap gap-2">
+            {SERVICE_OPTIONS.map((s) => {
+              const active = data.services.includes(s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    const next = active
+                      ? data.services.filter((x) => x !== s)
+                      : [...data.services, s];
+                    update("services", next);
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] border transition-colors ${
+                    active
+                      ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-white"
+                      : "border-black/[0.12] bg-white text-[color:var(--text-secondary)] hover:border-[color:var(--accent)]"
+                  }`}
+                  style={{ fontWeight: 600 }}
+                >
+                  {active && <Check size={12} />}
+                  {s}
+                </button>
+              );
+            })}
+          </div>
+        </Field>
+      </div>
+    );
+  }
+
+  if (t === "Local Comercial") {
+    return (
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <NumericField
+            label="m² de construcción *"
+            value={data.construction_m2}
+            onChange={(n) => update("construction_m2", n)}
+            placeholder="120"
+            error={errors.construction_m2}
+          />
+          <NumericField
+            label="m² de terreno"
+            value={data.total_m2}
+            onChange={(n) => update("total_m2", n)}
+          />
+          <Field label="Baños">
+            <NumberStepper
+              value={data.bathrooms}
+              onChange={(n) => update("bathrooms", n)}
+              step={0.5}
+            />
+          </Field>
+          <Field label="Estacionamientos">
+            <NumberStepper
+              value={data.parking_spots}
+              onChange={(n) => update("parking_spots", n)}
+            />
+          </Field>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Piso / Nivel">
+            <AdminInput
+              value={data.floor}
+              onChange={(e) => update("floor", e.target.value)}
+              placeholder="Planta baja"
+            />
+          </Field>
+          <NumericField
+            label="Frente del local (m)"
+            value={data.frontage_m}
+            onChange={(n) => update("frontage_m", n)}
+            placeholder="8"
+          />
+        </div>
+        <NumericField
+          label="Altura (m)"
+          value={data.ceiling_height_m}
+          onChange={(n) => update("ceiling_height_m", n)}
+          placeholder="4"
+        />
+      </div>
+    );
+  }
+
+  if (t === "Oficina") {
+    return (
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <NumericField
+            label="m² de construcción *"
+            value={data.construction_m2}
+            onChange={(n) => update("construction_m2", n)}
+            placeholder="200"
+            error={errors.construction_m2}
+          />
+          <Field label="Baños">
+            <NumberStepper
+              value={data.bathrooms}
+              onChange={(n) => update("bathrooms", n)}
+              step={0.5}
+            />
+          </Field>
+          <Field label="Estacionamientos">
+            <NumberStepper
+              value={data.parking_spots}
+              onChange={(n) => update("parking_spots", n)}
+            />
+          </Field>
+          <Field label="Privados / Espacios">
+            <NumberStepper
+              value={data.private_offices}
+              onChange={(n) => update("private_offices", n)}
+            />
+          </Field>
+        </div>
+        <Field label="Piso / Nivel">
+          <AdminInput
+            value={data.floor}
+            onChange={(e) => update("floor", e.target.value)}
+            placeholder="Piso 8"
+          />
+        </Field>
+        <Field label="¿Amueblada?">
+          <button
+            type="button"
+            onClick={() => update("furnished", !data.furnished)}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] border transition-colors ${
+              data.furnished
+                ? "border-[color:var(--accent)] bg-[color:var(--accent)] text-white"
+                : "border-black/[0.12] bg-white text-[color:var(--text-secondary)] hover:border-[color:var(--accent)]"
+            }`}
+            style={{ fontWeight: 600 }}
+          >
+            {data.furnished ? "Sí" : "No"}
+          </button>
+        </Field>
+      </div>
+    );
+  }
+
+  if (t === "Bodega") {
+    return (
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <NumericField
+            label="m² de construcción *"
+            value={data.construction_m2}
+            onChange={(n) => update("construction_m2", n)}
+            placeholder="1500"
+            error={errors.construction_m2}
+          />
+          <NumericField
+            label="m² de terreno"
+            value={data.total_m2}
+            onChange={(n) => update("total_m2", n)}
+            placeholder="2500"
+          />
+          <NumericField
+            label="Altura libre (m)"
+            value={data.ceiling_height_m}
+            onChange={(n) => update("ceiling_height_m", n)}
+            placeholder="8"
+          />
+          <Field label="Andenes de carga">
+            <NumberStepper
+              value={data.loading_docks}
+              onChange={(n) => update("loading_docks", n)}
+            />
+          </Field>
+          <Field label="Estacionamientos">
+            <NumberStepper
+              value={data.parking_spots}
+              onChange={(n) => update("parking_spots", n)}
+            />
+          </Field>
+        </div>
+        <Field label="Uso">
+          <Select
+            value={
+              (data.industrial_use ||
+                INDUSTRIAL_USE_OPTIONS[0]) as (typeof INDUSTRIAL_USE_OPTIONS)[number]
+            }
+            onChange={(v) => update("industrial_use", v)}
+            options={INDUSTRIAL_USE_OPTIONS}
+          />
+        </Field>
+      </div>
+    );
+  }
+
+  return null;
 }
+
+// ----- Description ---------------------------------------------------------
 
 function ChipInput({
   label,
@@ -783,7 +1570,15 @@ function ChipInput({
   );
 }
 
-function StepDescription({ data, update }: StepProps) {
+type DescriptionStepProps = {
+  data: WizardData;
+  update: <K extends keyof WizardData>(key: K, value: WizardData[K]) => void;
+};
+
+function StepDescription({ data, update }: DescriptionStepProps) {
+  const featureSugs = FEATURE_SUGGESTIONS[data.property_type] ?? [];
+  const amenitySugs = AMENITY_SUGGESTIONS[data.property_type] ?? [];
+
   return (
     <div>
       <Field label="Descripción de la propiedad">
@@ -791,26 +1586,39 @@ function StepDescription({ data, update }: StepProps) {
           rows={6}
           value={data.description}
           onChange={(e) => update("description", e.target.value)}
-          placeholder="Departamento de lujo con acabados de primera…"
+          placeholder="Describe lo más atractivo de la propiedad…"
         />
+        <button
+          type="button"
+          disabled
+          title="Disponible próximamente"
+          className="mt-2 inline-flex items-center gap-1.5 text-[11px] uppercase text-[color:var(--text-secondary)] border border-dashed border-[color:var(--text-secondary)]/40 rounded-md px-3 py-1.5 cursor-not-allowed"
+          style={{ letterSpacing: "1.2px", fontWeight: 700 }}
+        >
+          Generar descripción (próximamente)
+        </button>
       </Field>
       <ChipInput
         label="Características"
         values={data.features}
         onChange={(v) => update("features", v)}
-        suggestions={FEATURE_SUGGESTIONS}
+        suggestions={featureSugs}
       />
       <ChipInput
-        label="Amenidades"
+        label="Amenidades del desarrollo"
         values={data.amenities}
         onChange={(v) => update("amenities", v)}
-        suggestions={AMENITY_SUGGESTIONS}
+        suggestions={amenitySugs}
       />
     </div>
   );
 }
 
-function StepMedia({ data, update }: StepProps) {
+// ----- Media ---------------------------------------------------------------
+
+type MediaStepProps = DescriptionStepProps;
+
+function StepMedia({ data, update }: MediaStepProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const { showToast } = useToast();
@@ -885,7 +1693,7 @@ function StepMedia({ data, update }: StepProps) {
               : "Arrastra tus fotos aquí o haz click para seleccionar"}
           </p>
           <p className="text-[12px] text-[color:var(--text-secondary)] mt-1">
-            JPG, PNG, WebP hasta 50 MB
+            {mediaHelper(data.property_type)} · JPG, PNG, WebP hasta 50 MB
           </p>
         </div>
         <input
@@ -948,6 +1756,8 @@ function StepMedia({ data, update }: StepProps) {
   );
 }
 
+// ----- Confirmation --------------------------------------------------------
+
 function StepConfirm({
   data,
   goto,
@@ -955,13 +1765,76 @@ function StepConfirm({
   data: WizardData;
   goto: (step: number) => void;
 }) {
+  const t = data.property_type;
   const sections = [
-    { step: 0, title: "Información Básica" },
+    { step: 0, title: "Tipo y Precio" },
     { step: 1, title: "Ubicación" },
     { step: 2, title: "Características" },
     { step: 3, title: "Descripción" },
     { step: 4, title: "Fotos y Video" },
   ];
+
+  // Build a list of relevant spec rows for the chosen type.
+  const specRows: Array<[string, string]> = [];
+  const pushIf = (label: string, value: string | number | undefined | null) => {
+    if (value === undefined || value === null || value === "" || value === 0)
+      return;
+    specRows.push([label, String(value)]);
+  };
+
+  if (t === "Departamento" || t === "Casa") {
+    pushIf("Recámaras", data.bedrooms);
+    pushIf("Baños", data.bathrooms);
+    pushIf("Estacionamientos", data.parking_spots);
+    pushIf("m² Construcción", data.construction_m2);
+  }
+  if (t === "Casa") {
+    pushIf("m² Terreno", data.total_m2);
+    pushIf("Niveles", data.levels);
+  }
+  if (t === "Departamento") {
+    pushIf("Piso", data.floor);
+    pushIf("Número", data.apartment_number);
+  }
+  if (t === "Departamento" || t === "Casa") {
+    pushIf("Antigüedad", data.age_range);
+  }
+  if (t === "Terreno") {
+    pushIf("m² Terreno", data.total_m2);
+    pushIf("Frente (m)", data.frontage_m);
+    pushIf("Fondo (m)", data.depth_m);
+    pushIf("Uso de suelo", data.land_use);
+    if (data.services.length) {
+      pushIf("Servicios", data.services.join(", "));
+    }
+  }
+  if (t === "Local Comercial") {
+    pushIf("m² Construcción", data.construction_m2);
+    pushIf("m² Terreno", data.total_m2);
+    pushIf("Baños", data.bathrooms);
+    pushIf("Estacionamientos", data.parking_spots);
+    pushIf("Piso", data.floor);
+    pushIf("Frente (m)", data.frontage_m);
+    pushIf("Altura (m)", data.ceiling_height_m);
+  }
+  if (t === "Oficina") {
+    pushIf("m² Construcción", data.construction_m2);
+    pushIf("Baños", data.bathrooms);
+    pushIf("Estacionamientos", data.parking_spots);
+    pushIf("Piso", data.floor);
+    pushIf("Privados", data.private_offices);
+    pushIf("Amueblada", data.furnished ? "Sí" : "No");
+  }
+  if (t === "Bodega") {
+    pushIf("m² Construcción", data.construction_m2);
+    pushIf("m² Terreno", data.total_m2);
+    pushIf("Altura libre (m)", data.ceiling_height_m);
+    pushIf("Andenes", data.loading_docks);
+    pushIf("Estacionamientos", data.parking_spots);
+    pushIf("Uso", data.industrial_use);
+  }
+
+  const previewTitle = data.title.trim() || autoTitle(data);
 
   return (
     <div>
@@ -974,10 +1847,12 @@ function StepConfirm({
           className="text-[color:var(--text-primary)] text-xl mb-1"
           style={{ fontFamily: "var(--font-dm-serif), Georgia, serif" }}
         >
-          {data.title || "Sin título"}
+          {previewTitle}
         </h3>
         <p className="text-[13px] text-[color:var(--text-secondary)] mb-3">
-          {[data.neighborhood, data.city, data.state].filter(Boolean).join(", ")}
+          {[data.building_name, data.neighborhood, data.city, data.state]
+            .filter(Boolean)
+            .join(", ")}
         </p>
         <div
           className="text-[color:var(--midnight)] text-2xl"
@@ -997,6 +1872,30 @@ function StepConfirm({
             {data.status}
           </span>
         </div>
+
+        {specRows.length > 0 && (
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {specRows.map(([k, v]) => (
+              <div
+                key={k}
+                className="bg-white rounded-md p-3 border border-black/[0.04]"
+              >
+                <div
+                  className="text-[10px] uppercase text-[color:var(--text-secondary)]"
+                  style={{ letterSpacing: "1.2px", fontWeight: 700 }}
+                >
+                  {k}
+                </div>
+                <div
+                  className="text-[14px] text-[color:var(--text-primary)] mt-0.5"
+                  style={{ fontWeight: 700 }}
+                >
+                  {v}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">

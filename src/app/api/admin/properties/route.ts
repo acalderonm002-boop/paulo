@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth";
+import { pickPropertyColumns } from "@/lib/property-fields";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -67,10 +68,8 @@ export async function POST(request: Request) {
     candidate = `${baseSlug}-${i}`;
   }
 
-  const rest = { ...(body as Record<string, unknown>) };
-  delete rest.id;
   const insertRow = {
-    ...rest,
+    ...pickPropertyColumns(body),
     slug: candidate,
     updated_at: new Date().toISOString(),
   };

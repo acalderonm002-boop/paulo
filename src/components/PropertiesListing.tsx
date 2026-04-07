@@ -25,6 +25,7 @@ const TYPE_FILTERS: TypeFilter[] = [
   "Terreno",
   "Local Comercial",
   "Oficina",
+  "Bodega",
 ];
 
 const OP_FILTERS: OpFilter[] = ["Todos", "Venta", "Renta"];

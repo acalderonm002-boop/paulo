@@ -37,6 +37,7 @@ const TYPE_OPTIONS: Option<TypeFilter>[] = [
   { value: "Terreno", label: "Terreno" },
   { value: "Local Comercial", label: "Local Comercial" },
   { value: "Oficina", label: "Oficina" },
+  { value: "Bodega", label: "Bodega" },
 ];
 
 const PRICE_OPTIONS: Option<PriceBucket>[] = [

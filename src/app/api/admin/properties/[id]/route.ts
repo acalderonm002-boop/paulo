@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth";
+import { pickPropertyColumns } from "@/lib/property-fields";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -18,13 +19,19 @@ export async function PUT(
   } catch {
     return NextResponse.json({ error: "Cuerpo inválido" }, { status: 400 });
   }
-  delete patch.id;
-  delete patch.property_images;
+
+  const safePatch = pickPropertyColumns(patch);
+  if (Object.keys(safePatch).length === 0) {
+    return NextResponse.json(
+      { error: "Sin campos válidos para actualizar" },
+      { status: 400 }
+    );
+  }
 
   const admin = getSupabaseAdmin();
   const { data, error } = await admin
     .from("properties")
-    .update({ ...patch, updated_at: new Date().toISOString() })
+    .update({ ...safePatch, updated_at: new Date().toISOString() })
     .eq("id", params.id)
     .select("*, property_images(*)")
     .maybeSingle();
