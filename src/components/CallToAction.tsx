@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { MessageCircle, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { useRef } from "react";
+import { WhatsAppIcon } from "./SocialIcons";
 import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
 
 type Props = { config?: SiteConfig };
@@ -93,7 +94,7 @@ export default function CallToAction({
             className="group inline-flex items-center justify-center gap-2 bg-[color:var(--accent)] text-white px-8 py-4 text-[12px] uppercase transition-transform duration-300 hover:scale-[1.03]"
             style={{ letterSpacing: "2px" }}
           >
-            <MessageCircle size={16} />
+            <WhatsAppIcon size={16} />
             Agendar por WhatsApp
           </a>
 

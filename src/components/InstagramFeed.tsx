@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { ArrowRight, Instagram } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
+import { InstagramIcon } from "./SocialIcons";
 import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
 
 type Props = { config?: SiteConfig };
@@ -111,11 +112,11 @@ export default function InstagramFeed({
               />
               {/* Subtle IG mark at rest */}
               <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-0 transition-opacity duration-300">
-                <Instagram className="text-white" size={28} strokeWidth={1.5} />
+                <InstagramIcon className="text-white" size={28} />
               </div>
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <Instagram className="text-white" size={32} strokeWidth={1.8} />
+                <InstagramIcon className="text-white" size={32} />
               </div>
             </motion.a>
           ))}
