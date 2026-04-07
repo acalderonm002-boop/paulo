@@ -280,14 +280,14 @@ export default function PropertiesListing({
               No hay propiedades disponibles con estos filtros.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filtered.map((p, i) => {
                 const row = adminBySlug.get(p.id);
                 const hidden = adminMode && row && row.visible === false;
                 return (
                   <div
                     key={p.id}
-                    className={`relative transition-opacity ${
+                    className={`relative w-full max-w-[320px] mx-auto transition-opacity ${
                       hidden ? "opacity-50" : ""
                     }`}
                   >

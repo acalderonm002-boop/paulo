@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Bath, BedDouble, LandPlot, MapPin, Maximize } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { useState } from "react";
 import { formatPrice, type Property } from "@/data/properties";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
@@ -21,128 +22,108 @@ export default function PropertyCard({
   inView = true,
   hrefPrefix = "/propiedades",
 }: Props) {
-  const hasRooms = property.bedrooms > 0;
+  const [imgError, setImgError] = useState(false);
+  const heroImage = property.images?.[0];
+
+  const specs: string[] = [];
+  if (property.bedrooms > 0) specs.push(`${property.bedrooms} rec`);
+  if (property.bathrooms > 0) specs.push(`${property.bathrooms} ba`);
+  if (property.constructionM2) specs.push(`${property.constructionM2} m²`);
+  else if (property.totalM2) specs.push(`${property.totalM2} m²`);
+
+  const locationLabel = property.neighborhood
+    ? `${property.neighborhood}, ${property.city}`
+    : property.city;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{
-        duration: 0.8,
-        delay: 0.1 + index * 0.08,
+        duration: 0.6,
+        delay: 0.05 + index * 0.06,
         ease: easeOut,
       }}
+      className="w-full max-w-[320px] mx-auto"
     >
       <Link
         href={`${hrefPrefix}/${property.id}`}
-        className="group block bg-white rounded-xl shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_-15px_rgba(26,42,74,0.18)] transition-shadow duration-300 overflow-hidden"
+        className="group block bg-white rounded-t-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_28px_-10px_rgba(26,42,74,0.22)] hover:-translate-y-0.5 transition-all duration-200"
       >
-        {/* Image */}
-        <div className="relative w-full aspect-[3/2] overflow-hidden">
-          <div
-            className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--midnight) 0%, var(--dark-blue) 100%)",
-            }}
-          >
+        {/* Image — 16:10, photo or clean placeholder, no overlays */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-[color:var(--cream)]">
+          {heroImage && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={heroImage}
+              alt={property.title}
+              loading="lazy"
+              onError={() => setImgError(true)}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+            />
+          ) : (
             <div
               aria-hidden
-              className="absolute inset-0 opacity-[0.12] pointer-events-none"
+              className="absolute inset-0 transition-transform duration-300 ease-out group-hover:scale-[1.03]"
               style={{
-                backgroundImage:
-                  "radial-gradient(circle at 30% 25%, #ffffff 0%, transparent 55%)",
+                background:
+                  "linear-gradient(135deg, var(--midnight) 0%, var(--dark-blue) 100%)",
               }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
-              <span
-                className="text-white/70 text-[11px] uppercase tracking-[0.3em]"
-                style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
-              >
-                {property.title}
-              </span>
-            </div>
-          </div>
-
-          {/* Price badge */}
-          <div
-            className="absolute left-3 bottom-3 bg-white/95 backdrop-blur-sm rounded-md shadow-sm"
-            style={{ padding: "4px 12px" }}
-          >
-            <span
-              className="text-[13px] text-[color:var(--midnight)]"
-              style={{ fontFamily: "var(--font-dm-serif), Georgia, serif" }}
             >
-              {formatPrice(property)}
-            </span>
-          </div>
+              <div
+                className="absolute inset-0 opacity-[0.12] pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 30% 25%, #ffffff 0%, transparent 55%)",
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Body */}
         <div className="p-4">
-          <div className="flex items-center gap-2 mb-2.5">
+          {/* Price */}
+          <div
+            className="text-[20px] leading-none text-[color:var(--midnight)] mb-2"
+            style={{
+              fontFamily: "var(--font-dm-serif), Georgia, serif",
+              fontWeight: 700,
+            }}
+          >
+            {formatPrice(property)}
+          </div>
+
+          {/* Specs */}
+          {specs.length > 0 && (
+            <div
+              className="text-[13px] text-[color:var(--text-secondary)] mb-1"
+              style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+            >
+              {specs.join(" | ")}
+            </div>
+          )}
+
+          {/* Location */}
+          <div className="flex items-center gap-1.5 text-[13px] text-[color:var(--text-secondary)] mb-3">
+            <MapPin size={13} className="shrink-0" />
+            <span className="truncate">{locationLabel}</span>
+          </div>
+
+          {/* Badges */}
+          <div className="flex items-center gap-1.5">
             <span
-              className="text-[10px] uppercase px-2 py-[3px] bg-[color:var(--accent)]/10 text-[color:var(--accent)] rounded-full"
-              style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+              className="text-[11px] bg-[color:var(--accent)]/10 text-[color:var(--accent)] rounded"
+              style={{ padding: "2px 8px", fontWeight: 600 }}
             >
               {property.propertyType}
             </span>
             <span
-              className="text-[10px] uppercase px-2 py-[3px] border border-[color:var(--text-secondary)]/30 text-[color:var(--text-secondary)] rounded-full"
-              style={{ letterSpacing: "1.5px", fontWeight: 700 }}
+              className="text-[11px] border border-[color:var(--text-secondary)]/30 text-[color:var(--text-secondary)] rounded"
+              style={{ padding: "2px 8px", fontWeight: 600 }}
             >
               {property.priceLabel}
             </span>
-          </div>
-
-          <h3
-            className="text-[16px] text-[color:var(--text-primary)] mb-1.5 leading-snug"
-            style={{
-              fontFamily: "var(--font-dm-sans), sans-serif",
-              fontWeight: 700,
-            }}
-          >
-            {property.title}
-          </h3>
-
-          <div className="flex items-center gap-1.5 text-[13px] text-[color:var(--text-secondary)] mb-3">
-            <MapPin size={13} className="shrink-0" />
-            <span>
-              {property.neighborhood}, {property.city}
-            </span>
-          </div>
-
-          {/* Specs row */}
-          <div className="flex items-center gap-3 text-[13px] text-[color:var(--text-secondary)] pt-3 border-t border-black/[0.05]">
-            {hasRooms ? (
-              <>
-                <span className="flex items-center gap-1">
-                  <BedDouble size={14} strokeWidth={1.8} />
-                  {property.bedrooms}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Bath size={14} strokeWidth={1.8} />
-                  {property.bathrooms}
-                </span>
-                {property.constructionM2 && (
-                  <span className="flex items-center gap-1">
-                    <Maximize size={14} strokeWidth={1.8} />
-                    {property.constructionM2} m²
-                  </span>
-                )}
-              </>
-            ) : (
-              property.totalM2 && (
-                <span className="flex items-center gap-1">
-                  <LandPlot size={14} strokeWidth={1.8} />
-                  {property.totalM2} m² terreno
-                </span>
-              )
-            )}
-          </div>
-
-          <div className="mt-3 inline-flex items-center gap-1 text-[13px] text-[color:var(--accent)] group-hover:gap-2 transition-all">
-            Ver detalles →
           </div>
         </div>
       </Link>
