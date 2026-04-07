@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
+  ArrowLeft,
   Baby,
   Bath,
   BedDouble,
@@ -181,8 +183,19 @@ export default async function PropertyPage({
   return (
     <main className="bg-white pb-28 lg:pb-0">
       <div className="pt-[76px]">
+        {/* Back button */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-6 lg:pt-8">
+          <Link
+            href="/propiedades"
+            className="inline-flex items-center gap-1.5 text-[14px] text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Regresar a propiedades
+          </Link>
+        </div>
+
         {/* Gallery */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-8 lg:pt-10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-4 lg:pt-5">
           <PropertyGallery property={property} />
         </div>
 
