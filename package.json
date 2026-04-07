@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.8",
     "@supabase/supabase-js": "^2.101.1",
     "framer-motion": "^12.38.0",
     "jsonwebtoken": "^9.0.3",

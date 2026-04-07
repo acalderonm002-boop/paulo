@@ -317,3 +317,24 @@ export function formatPrice(property: Property): string {
   const base = `$${formatted} ${property.currency}`;
   return property.priceLabel === "Renta" ? `${base}/mes` : base;
 }
+
+/**
+ * Compact price label for map markers / chips. Examples:
+ *   $8,500,000 venta → "$8.5M"
+ *   $35,000 renta    → "$35K/mes"
+ *   $750 renta       → "$750/mes"
+ */
+export function abbreviatePrice(property: Property): string {
+  const isRent = property.priceLabel === "Renta";
+  const v = property.price;
+  let label: string;
+  if (v >= 1_000_000) {
+    const m = v / 1_000_000;
+    label = `$${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`;
+  } else if (v >= 1_000) {
+    label = `$${Math.round(v / 1_000)}K`;
+  } else {
+    label = `$${v}`;
+  }
+  return isRent ? `${label}/mes` : label;
+}
