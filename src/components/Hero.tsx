@@ -58,7 +58,7 @@ export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
   return (
     <section
       id="top"
-      className="relative w-full min-h-screen lg:h-screen bg-[color:var(--cream)] overflow-hidden pt-20 lg:pt-[76px]"
+      className="relative w-full min-h-screen lg:h-screen bg-[color:var(--cream)] overflow-hidden"
     >
       <div className="flex flex-col lg:flex-row h-full min-h-[calc(100vh-5rem)] lg:min-h-0 lg:h-full">
         {/* LEFT COLUMN */}

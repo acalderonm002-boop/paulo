@@ -19,9 +19,7 @@ export default async function PropertiesPage() {
 
   return (
     <main className="bg-white min-h-screen">
-      <div className="pt-[76px]">
-        <PropertiesExplorer properties={properties} />
-      </div>
+      <PropertiesExplorer properties={properties} />
     </main>
   );
 }

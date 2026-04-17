@@ -125,7 +125,7 @@ export default function PropertySidebar({
     ) : null;
 
   return (
-    <aside className="lg:sticky lg:top-28 lg:self-start">
+    <aside className="lg:sticky lg:top-6 lg:self-start">
       <div className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] p-7 sm:p-8">
         {/* Agent header */}
         <div className="flex items-center gap-4 mb-6">

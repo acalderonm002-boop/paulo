@@ -417,10 +417,10 @@ export default function PropertiesExplorer({ properties }: Props) {
 
   return (
     <div className="bg-white">
-      {/* Filter bar — sticky just below the fixed navbar, full-width white */}
+      {/* Filter bar — sticky at the top of the viewport, full-width white */}
       <div
         className="sticky bg-white border-b border-[#e5e7eb]"
-        style={{ top: "76px", zIndex: 30 }}
+        style={{ top: 0, zIndex: 30 }}
       >
         <div className="max-w-7xl mx-auto px-6 md:px-10 py-3 flex items-center gap-3 overflow-x-auto md:flex-wrap">
           <SearchBar value={searchInput} onChange={setSearchInput} />
@@ -482,8 +482,8 @@ export default function PropertiesExplorer({ properties }: Props) {
           <aside
             className="hidden lg:block lg:sticky"
             style={{
-              top: "150px",
-              height: "calc(100vh - 170px)",
+              top: "74px",
+              height: "calc(100vh - 94px)",
             }}
           >
             <PropertyMap

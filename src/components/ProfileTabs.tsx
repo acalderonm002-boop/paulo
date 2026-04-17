@@ -60,7 +60,7 @@ export default function ProfileTabs({ broker, properties }: Props) {
       {/* Sticky tab strip — sits just under the Hero and pins to the top
           (below the navbar) when the user scrolls. */}
       <div
-        className="sticky top-[76px] z-40 bg-[color:var(--cream)]/95 backdrop-blur-sm border-b border-black/[0.06]"
+        className="sticky top-0 z-40 bg-[color:var(--cream)]/95 backdrop-blur-sm border-b border-black/[0.06]"
         id="tabs"
       >
         <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-12">
@@ -108,7 +108,7 @@ export default function ProfileTabs({ broker, properties }: Props) {
         </div>
       </div>
 
-      <div ref={contentRef} className="scroll-mt-[140px]">
+      <div ref={contentRef} className="scroll-mt-[56px]">
         {/* We render all three panels and hide the inactive ones so the
             editorial scroll experience feels instant (no remount flicker) */}
         <div

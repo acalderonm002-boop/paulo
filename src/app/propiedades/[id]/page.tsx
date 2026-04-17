@@ -179,7 +179,7 @@ export default async function PropertyPage({
 
   return (
     <main className="bg-white pb-28 lg:pb-0">
-      <div className="pt-[76px]">
+      <div>
         {/* Back button */}
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-6 lg:pt-8">
           <Link

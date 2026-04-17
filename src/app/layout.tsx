@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Serif_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import LoadingScreen from "@/components/LoadingScreen";
-import Navbar from "@/components/Navbar";
 import { ToastProvider } from "@/context/ToastContext";
 import { fetchBrokerBundle } from "@/lib/brokers";
 
@@ -60,19 +59,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { broker } = await fetchBrokerBundle();
-
   return (
     <html lang="es">
       <body className={`${dmSerif.variable} ${dmSans.variable} antialiased`}>
         <ToastProvider>
           <LoadingScreen />
-          <Navbar brokerName={broker.nombre} />
           {children}
         </ToastProvider>
       </body>
