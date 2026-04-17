@@ -36,6 +36,7 @@ import PropertyGallery from "@/components/PropertyGallery";
 import PropertySidebar from "@/components/PropertySidebar";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyMobileBar from "@/components/PropertyMobileBar";
+import PropertyLocationMap from "@/components/PropertyLocationMap";
 
 export const dynamic = "force-dynamic";
 
@@ -386,26 +387,12 @@ export default async function PropertyPage({
               <SectionDivider />
 
               <SectionHeading>Ubicación</SectionHeading>
-              <div className="relative w-full h-[300px] rounded-xl overflow-hidden border border-black/[0.05] bg-[color:var(--cream)]">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPin
-                      size={32}
-                      className="text-[color:var(--accent)] mx-auto mb-3"
-                      strokeWidth={1.5}
-                    />
-                    <div
-                      className="text-[color:var(--text-primary)] text-sm"
-                      style={{ fontWeight: 600 }}
-                    >
-                      Mapa — {property.neighborhood}, {property.city}
-                    </div>
-                    <div className="text-[color:var(--text-secondary)] text-[13px] mt-1">
-                      {property.state}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <PropertyLocationMap
+                lat={property.coordinates.lat}
+                lng={property.coordinates.lng}
+                label={`${property.neighborhood}, ${property.city}`}
+                height="360px"
+              />
               <p className="mt-4 inline-flex items-center gap-1.5 text-[color:var(--text-secondary)] text-[14px]">
                 <MapPin size={14} className="text-[color:var(--accent)]" />
                 {property.location}, {property.city}, {property.state}
@@ -413,7 +400,14 @@ export default async function PropertyPage({
             </div>
 
             {/* RIGHT: sidebar */}
-            <PropertySidebar property={property} />
+            <PropertySidebar
+              property={property}
+              brokerId={broker.id}
+              listingId={listing.id}
+              agentCertification={
+                broker.certificaciones[0]?.nombre ?? null
+              }
+            />
           </div>
         </div>
 

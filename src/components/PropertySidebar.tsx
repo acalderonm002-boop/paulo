@@ -8,11 +8,35 @@ import { useToast } from "@/context/ToastContext";
 
 type SidebarField = "name" | "phone" | "message";
 
-export default function PropertySidebar({ property }: { property: Property }) {
+type Props = {
+  property: Property;
+  brokerId?: string;
+  listingId?: string;
+  agentInitials?: string;
+  agentCertification?: string | null;
+};
+
+export default function PropertySidebar({
+  property,
+  brokerId,
+  listingId,
+  agentInitials,
+  agentCertification,
+}: Props) {
   const { showToast } = useToast();
 
+  const agentName = property.agent.name;
+  const firstName = agentName.split(/\s+/)[0] || agentName;
+  const initials =
+    agentInitials ??
+    agentName
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((s) => s[0]?.toUpperCase() ?? "")
+      .join("");
+
   const waText = encodeURIComponent(
-    `Hola Paulo, me interesa la propiedad ${property.title}`
+    `Hola ${firstName}, me interesa la propiedad ${property.title}`
   );
   const waUrl = `https://wa.me/${property.agent.whatsapp}?text=${waText}`;
   const mailUrl = `mailto:${property.agent.email}?subject=${encodeURIComponent(
@@ -65,16 +89,15 @@ export default function PropertySidebar({ property }: { property: Property }) {
         body: JSON.stringify({
           ...form,
           source: "property_page",
-          // Only send a UUID property_id if we recognize it as one; the
-          // public Property.id is the slug, not the DB uuid.
-          property_id: null,
+          broker_id: brokerId ?? null,
+          listing_id: listingId ?? null,
         }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || "Error al enviar");
       }
-      showToast("Mensaje enviado. Paulo te contactará pronto.");
+      showToast(`Mensaje enviado. ${firstName} te contactará pronto.`);
       setForm(initialForm);
       setErrors({});
     } catch (err) {
@@ -119,7 +142,7 @@ export default function PropertySidebar({ property }: { property: Property }) {
                 fontFamily: "var(--font-dm-serif), Georgia, serif",
               }}
             >
-              PL
+              {initials || "·"}
             </div>
           </div>
           <div>
@@ -132,13 +155,15 @@ export default function PropertySidebar({ property }: { property: Property }) {
             <div className="text-[12px] text-[color:var(--text-secondary)]">
               Asesor Inmobiliario
             </div>
-            <div
-              className="mt-1.5 inline-flex items-center gap-1 text-[9px] uppercase px-2 py-0.5 rounded-full bg-[color:var(--accent)]/10 text-[color:var(--accent)]"
-              style={{ letterSpacing: "1.2px", fontWeight: 700 }}
-            >
-              <Check size={9} strokeWidth={3} />
-              Certificado AMPI
-            </div>
+            {agentCertification && (
+              <div
+                className="mt-1.5 inline-flex items-center gap-1 text-[9px] uppercase px-2 py-0.5 rounded-full bg-[color:var(--accent)]/10 text-[color:var(--accent)]"
+                style={{ letterSpacing: "1.2px", fontWeight: 700 }}
+              >
+                <Check size={9} strokeWidth={3} />
+                Certificado {agentCertification}
+              </div>
+            )}
           </div>
         </div>
 

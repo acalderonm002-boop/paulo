@@ -7,8 +7,10 @@ import { formatPrice, type Property } from "@/data/properties";
 type Props = { property: Property };
 
 export default function PropertyMobileBar({ property }: Props) {
+  const firstName =
+    property.agent.name.split(/\s+/)[0] || property.agent.name;
   const waText = encodeURIComponent(
-    `Hola Paulo, me interesa la propiedad ${property.title}`
+    `Hola ${firstName}, me interesa la propiedad ${property.title}`
   );
   const waUrl = `https://wa.me/${property.agent.whatsapp}?text=${waText}`;
   const telUrl = `tel:+${property.agent.whatsapp}`;
@@ -38,7 +40,7 @@ export default function PropertyMobileBar({ property }: Props) {
         </div>
         <a
           href={telUrl}
-          aria-label="Llamar a Paulo"
+          aria-label={`Llamar a ${firstName}`}
           className="w-11 h-11 rounded-full border border-[color:var(--midnight)] flex items-center justify-center text-[color:var(--text-primary)] shrink-0"
         >
           <Phone size={17} />
