@@ -12,15 +12,12 @@ type Props = {
   property: Property;
   index?: number;
   inView?: boolean;
-  /** Path prefix for the card link (defaults to public detail). */
-  hrefPrefix?: string;
 };
 
 export default function PropertyCard({
   property,
   index = 0,
   inView = true,
-  hrefPrefix = "/propiedades",
 }: Props) {
   const [imgError, setImgError] = useState(false);
   const heroImage = property.images?.[0];
@@ -47,7 +44,7 @@ export default function PropertyCard({
       className="w-full max-w-[320px] mx-auto"
     >
       <Link
-        href={`${hrefPrefix}/${property.id}`}
+        href={`/propiedades/${property.id}`}
         className="group block bg-white rounded-t-lg overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_28px_-10px_rgba(26,42,74,0.22)] hover:-translate-y-0.5 transition-all duration-200"
       >
         {/* Image — 16:10, photo or clean placeholder, no overlays */}

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
@@ -14,9 +13,6 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const pathname = usePathname() ?? "/";
-  const isAdminLogin = pathname === "/admin";
-  const isAdminPanel = /^\/admin\/(sitio|propiedades)/.test(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -31,16 +27,10 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  if (isAdminLogin) return null;
-
   return (
     <>
       <header
-        className={`fixed top-0 right-0 bg-white shadow-[0_1px_24px_rgba(26,42,74,0.06)] transition-all duration-500 ease-out ${
-          isAdminPanel
-            ? "hidden lg:block left-0 lg:left-[240px]"
-            : "block left-0"
-        } ${
+        className={`fixed top-0 right-0 left-0 bg-white shadow-[0_1px_24px_rgba(26,42,74,0.06)] transition-all duration-500 ease-out ${
           mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
         }`}
         style={{ zIndex: 9999 }}
