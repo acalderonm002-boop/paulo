@@ -2,14 +2,6 @@
 
 import type { SVGProps } from "react";
 
-export const SOCIAL_LINKS = {
-  instagram: "https://www.instagram.com/paulolealsav/",
-  facebook:
-    "https://www.facebook.com/people/Paulo-Leal-Bienes-Ra%C3%ADces/61572709677439/",
-  tiktok: "https://www.tiktok.com/@paulolealsav",
-  linkedin: "https://www.linkedin.com/in/paulo-leal-savi%C3%B1on",
-} as const;
-
 type BrandIconProps = {
   size?: number;
   className?: string;
@@ -48,11 +40,6 @@ export const LinkedInIcon = makeBrandIcon(
   "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
 );
 
-// Official TikTok glyph (musical note silhouette).
-export const TikTokIcon = makeBrandIcon(
-  "M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"
-);
-
 // Official WhatsApp glyph (chat bubble with phone).
 export function WhatsAppIcon({
   size = 20,
@@ -84,10 +71,9 @@ type SocialEntry = {
 };
 
 export type SocialLinks = {
-  instagram?: string;
-  facebook?: string;
-  tiktok?: string;
-  linkedin?: string;
+  instagram?: string | null;
+  facebook?: string | null;
+  linkedin?: string | null;
 };
 
 type SocialIconsProps = {
@@ -103,28 +89,27 @@ export default function SocialIcons({
   linkClass = "text-[color:var(--text-secondary)] hover:text-[color:var(--accent)]",
   links,
 }: SocialIconsProps) {
-  const resolved: SocialEntry[] = [
-    {
+  const resolved: SocialEntry[] = [];
+  if (links?.instagram)
+    resolved.push({
       name: "Instagram",
-      href: links?.instagram || SOCIAL_LINKS.instagram,
+      href: links.instagram,
       Icon: InstagramIcon,
-    },
-    {
+    });
+  if (links?.facebook)
+    resolved.push({
       name: "Facebook",
-      href: links?.facebook || SOCIAL_LINKS.facebook,
+      href: links.facebook,
       Icon: FacebookIcon,
-    },
-    {
-      name: "TikTok",
-      href: links?.tiktok || SOCIAL_LINKS.tiktok,
-      Icon: TikTokIcon,
-    },
-    {
+    });
+  if (links?.linkedin)
+    resolved.push({
       name: "LinkedIn",
-      href: links?.linkedin || SOCIAL_LINKS.linkedin,
+      href: links.linkedin,
       Icon: LinkedInIcon,
-    },
-  ];
+    });
+
+  if (resolved.length === 0) return null;
 
   return (
     <div className={`flex items-center ${gapClass}`}>

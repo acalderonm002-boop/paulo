@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { fetchProperties } from "@/lib/properties-db";
+import { fetchBrokerBundle, listingsToProperties } from "@/lib/brokers";
 import PropertiesExplorer from "@/components/PropertiesExplorer";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Propiedades Disponibles | Paulo Leal Saviñón",
-  description:
-    "Explora las propiedades disponibles en Monterrey con Paulo Leal Saviñón, asesor inmobiliario certificado por AMPI.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { broker } = await fetchBrokerBundle();
+  const cityBit = broker.ciudad ? ` en ${broker.ciudad}` : "";
+  return {
+    title: `Propiedades Disponibles | ${broker.nombre}`,
+    description: `Explora las propiedades disponibles${cityBit} con ${broker.nombre}.`,
+  };
+}
 
 export default async function PropertiesPage() {
-  const properties = await fetchProperties();
+  const { broker, activeListings } = await fetchBrokerBundle();
+  const properties = listingsToProperties(activeListings, broker);
 
   return (
     <main className="bg-white min-h-screen">

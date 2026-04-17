@@ -5,14 +5,17 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
+  { label: "Propiedades", href: "/#propiedades" },
   { label: "Sobre Mí", href: "/#sobre-mi" },
-  { label: "Servicios", href: "/#servicios" },
-  { label: "Propiedades", href: "/propiedades" },
-  { label: "Testimonios", href: "/#testimonios" },
+  { label: "Portafolio", href: "/propiedades" },
   { label: "Contacto", href: "/#contacto" },
 ];
 
-export default function Navbar() {
+type Props = {
+  brokerName?: string;
+};
+
+export default function Navbar({ brokerName = "PAULO LEAL" }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -26,6 +29,8 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  const displayName = brokerName.toUpperCase();
 
   return (
     <>
@@ -41,7 +46,7 @@ export default function Navbar() {
             className="text-xl md:text-2xl tracking-[0.18em] text-[color:var(--text-primary)]"
             style={{ fontFamily: "var(--font-dm-serif), Georgia, serif" }}
           >
-            PAULO LEAL
+            {displayName}
           </Link>
 
           <div className="hidden lg:flex items-center gap-10">

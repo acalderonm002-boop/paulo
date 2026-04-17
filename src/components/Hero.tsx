@@ -4,24 +4,55 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import SocialIcons from "./SocialIcons";
-import { DEFAULT_CONFIG, type SiteConfig } from "@/lib/content";
+import { DEFAULT_BROKER, type Broker } from "@/lib/brokers";
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
-type Props = { config?: SiteConfig };
+type Props = { broker?: Broker };
 
-export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
-  const stats = [
-    { value: config.hero_stat_1_number, label: config.hero_stat_1_label },
-    { value: config.hero_stat_2_number, label: config.hero_stat_2_label },
-    { value: config.hero_stat_3_number, label: config.hero_stat_3_label },
-  ];
-  const heroImage = config.hero_image_url ?? "/images/paulo-portrait.jpg";
+type HeroStat = { value: string; label: string };
+
+function deriveStats(broker: Broker): HeroStat[] {
+  const stats: HeroStat[] = [];
+
+  if (broker.anios_experiencia != null && broker.anios_experiencia > 0) {
+    stats.push({
+      value: `${broker.anios_experiencia}+`,
+      label: "Años de Experiencia",
+    });
+  }
+  if (broker.stats.propiedades_vendidas > 0) {
+    stats.push({
+      value: `${broker.stats.propiedades_vendidas}+`,
+      label: "Propiedades",
+    });
+  }
+  const primaryCert = broker.certificaciones[0];
+  if (primaryCert) {
+    stats.push({ value: primaryCert.nombre, label: "Certificado" });
+  }
+
+  return stats.slice(0, 3);
+}
+
+export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
+  const stats = deriveStats(broker);
+  const heroImage = broker.foto_url ?? "/images/paulo-portrait.jpg";
+  const tagline = broker.ciudad
+    ? `ASESOR INMOBILIARIO · ${broker.ciudad.toUpperCase()}`
+    : "ASESOR INMOBILIARIO";
+  const title =
+    broker.headline ??
+    "¿Buscas comprar, rentar, vender o invertir en bienes raíces?";
+  const subtitle =
+    broker.bio_corta ??
+    "Te acompaño en cada paso del proceso inmobiliario con estrategia, transparencia y un trato personalizado.";
+  const primaryCertShort = broker.certificaciones[0]?.nombre ?? "Certificado";
+
   const socialLinks = {
-    instagram: config.instagram_url,
-    facebook: config.facebook_url,
-    tiktok: config.tiktok_url,
-    linkedin: config.linkedin_url,
+    instagram: broker.instagram,
+    facebook: broker.facebook,
+    linkedin: broker.linkedin,
   };
 
   return (
@@ -40,7 +71,7 @@ export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
               className="text-[11px] sm:text-[12px] uppercase text-[color:var(--accent)] mb-5"
               style={{ letterSpacing: "3px" }}
             >
-              {config.hero_tagline}
+              {tagline}
             </motion.p>
 
             <motion.h1
@@ -53,7 +84,7 @@ export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
                 fontSize: "clamp(28px, 3.4vw, 46px)",
               }}
             >
-              {config.hero_title}
+              {title}
             </motion.h1>
 
             <motion.p
@@ -63,7 +94,7 @@ export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
               className="text-[color:var(--text-secondary)] text-[15px] sm:text-base mb-8"
               style={{ lineHeight: 1.75, maxWidth: "500px" }}
             >
-              {config.hero_subtitle}
+              {subtitle}
             </motion.p>
 
             <motion.div
@@ -101,39 +132,41 @@ export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
               <SocialIcons size={20} gapClass="gap-6" links={socialLinks} />
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 1, ease: easeOut }}
-              className="flex items-stretch gap-5 sm:gap-8"
-            >
-              {stats.map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className={`${
-                    i > 0
-                      ? "pl-5 sm:pl-8 border-l border-[color:var(--accent)]/40"
-                      : ""
-                  }`}
-                >
+            {stats.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 1, ease: easeOut }}
+                className="flex items-stretch gap-5 sm:gap-8"
+              >
+                {stats.map((stat, i) => (
                   <div
-                    className="text-[color:var(--midnight)] leading-none mb-1.5"
-                    style={{
-                      fontFamily: "var(--font-dm-serif), Georgia, serif",
-                      fontSize: "clamp(26px, 2.4vw, 36px)",
-                    }}
+                    key={stat.label}
+                    className={`${
+                      i > 0
+                        ? "pl-5 sm:pl-8 border-l border-[color:var(--accent)]/40"
+                        : ""
+                    }`}
                   >
-                    {stat.value}
+                    <div
+                      className="text-[color:var(--midnight)] leading-none mb-1.5"
+                      style={{
+                        fontFamily: "var(--font-dm-serif), Georgia, serif",
+                        fontSize: "clamp(26px, 2.4vw, 36px)",
+                      }}
+                    >
+                      {stat.value}
+                    </div>
+                    <div
+                      className="text-[10px] sm:text-[11px] uppercase text-[color:var(--text-secondary)]"
+                      style={{ letterSpacing: "1.5px" }}
+                    >
+                      {stat.label}
+                    </div>
                   </div>
-                  <div
-                    className="text-[10px] sm:text-[11px] uppercase text-[color:var(--text-secondary)]"
-                    style={{ letterSpacing: "1.5px" }}
-                  >
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+                ))}
+              </motion.div>
+            )}
           </div>
         </div>
 
@@ -148,7 +181,7 @@ export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
             <div className="relative w-full h-full lg:rounded-bl-[60px] overflow-hidden">
               <Image
                 src={heroImage}
-                alt="Paulo Leal Saviñón, asesor inmobiliario en Monterrey"
+                alt={`${broker.nombre}, asesor inmobiliario`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"
                 className="object-cover object-top"
@@ -190,7 +223,7 @@ export default function Hero({ config = DEFAULT_CONFIG }: Props = {}) {
                   fontWeight: 600,
                 }}
               >
-                AMPI
+                {primaryCertShort}
               </div>
             </div>
           </motion.div>

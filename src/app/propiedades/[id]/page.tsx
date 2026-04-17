@@ -26,23 +26,21 @@ import {
 } from "lucide-react";
 import { formatPrice, type Property } from "@/data/properties";
 import {
-  fetchAllPropertySlugs,
-  fetchProperties,
-  fetchPropertyBySlug,
-  getRelatedFromList,
-} from "@/lib/properties-db";
-import { fetchSiteContent } from "@/lib/content";
+  fetchAllListingSlugs,
+  fetchBrokerBundle,
+  getRelatedListings,
+  listingToProperty,
+  listingsToProperties,
+} from "@/lib/brokers";
 import PropertyGallery from "@/components/PropertyGallery";
 import PropertySidebar from "@/components/PropertySidebar";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyMobileBar from "@/components/PropertyMobileBar";
-import CallToAction from "@/components/CallToAction";
-import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-  const slugs = await fetchAllPropertySlugs();
+  const slugs = await fetchAllListingSlugs();
   return slugs.map((slug) => ({ id: slug }));
 }
 
@@ -51,17 +49,16 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const property = await fetchPropertyBySlug(params.id);
-  if (!property) {
-    return {
-      title: "Propiedad no encontrada | Paulo Leal Saviñón",
-    };
+  const { broker, activeListings } = await fetchBrokerBundle();
+  const listing = activeListings.find((l) => l.slug === params.id);
+  if (!listing) {
+    return { title: `Propiedad no encontrada | ${broker.nombre}` };
   }
-  const title = `${property.title} | Paulo Leal Saviñón`;
+  const property = listingToProperty(listing, broker);
+  const title = `${property.title} | ${broker.nombre}`;
   const description = property.description.slice(0, 160);
-  // Use the first property image when available; fallback to Paulo's portrait
-  // so social shares never break while real property photos are pending.
-  const ogImage = property.images[0] ?? "/images/paulo-portrait.jpg";
+  const ogImage =
+    property.images[0] ?? broker.foto_url ?? "/images/paulo-portrait.jpg";
   return {
     title,
     description,
@@ -70,7 +67,7 @@ export async function generateMetadata({
       description,
       type: "website",
       locale: "es_MX",
-      siteName: "Paulo Leal Saviñón",
+      siteName: broker.nombre,
       images: [
         {
           url: ogImage,
@@ -171,14 +168,13 @@ export default async function PropertyPage({
 }: {
   params: { id: string };
 }) {
-  const [property, allProperties, { config }] = await Promise.all([
-    fetchPropertyBySlug(params.id),
-    fetchProperties(),
-    fetchSiteContent(),
-  ]);
-  if (!property) notFound();
+  const { broker, activeListings } = await fetchBrokerBundle();
+  const listing = activeListings.find((l) => l.slug === params.id);
+  if (!listing) notFound();
 
-  const related = getRelatedFromList(allProperties, params.id, 3);
+  const property = listingToProperty(listing, broker);
+  const relatedListings = getRelatedListings(activeListings, params.id, 3);
+  const related = listingsToProperties(relatedListings, broker);
 
   return (
     <main className="bg-white pb-28 lg:pb-0">
@@ -443,8 +439,6 @@ export default async function PropertyPage({
           </section>
         )}
 
-        <CallToAction config={config} />
-        <Footer config={config} />
       </div>
 
       {/* Mobile quick-contact bar */}

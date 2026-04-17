@@ -8,7 +8,8 @@ type ContactPayload = {
   email?: string;
   phone?: string;
   message?: string;
-  property_id?: string | null;
+  broker_id?: string | null;
+  listing_id?: string | null;
   source?: "website" | "property_page";
 };
 
@@ -24,7 +25,8 @@ export async function POST(request: Request) {
   const email = body.email?.trim() || null;
   const phone = body.phone?.trim() || null;
   const message = body.message?.trim() || null;
-  const propertyId = body.property_id ?? null;
+  const brokerId = body.broker_id ?? null;
+  const listingId = body.listing_id ?? null;
   const source = body.source === "property_page" ? "property_page" : "website";
 
   if (!name) {
@@ -47,7 +49,8 @@ export async function POST(request: Request) {
       email,
       phone,
       message,
-      property_id: propertyId,
+      broker_id: brokerId,
+      listing_id: listingId,
       source,
     });
     if (error) {

@@ -1,27 +1,17 @@
-import HomeContent from "@/components/HomeContent";
-import { SiteDataProvider } from "@/context/SiteDataContext";
-import { fetchSiteContent } from "@/lib/content";
-import { fetchProperties } from "@/lib/properties-db";
+import Hero from "@/components/Hero";
+import ProfileTabs from "@/components/ProfileTabs";
+import { fetchBrokerBundle, listingsToProperties } from "@/lib/brokers";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [content, properties] = await Promise.all([
-    fetchSiteContent(),
-    fetchProperties(),
-  ]);
+  const { broker, activeListings } = await fetchBrokerBundle();
+  const properties = listingsToProperties(activeListings, broker);
 
   return (
-    <SiteDataProvider
-      initial={{
-        config: content.config,
-        services: content.services,
-        testimonials: content.testimonials,
-        clients: content.clients,
-        properties,
-      }}
-    >
-      <HomeContent />
-    </SiteDataProvider>
+    <main>
+      <Hero broker={broker} />
+      <ProfileTabs broker={broker} properties={properties} />
+    </main>
   );
 }
