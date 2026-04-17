@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Broker } from "@/lib/brokers";
 import type { Property } from "@/data/properties";
 import TabPropiedades from "./tabs/TabPropiedades";
@@ -29,7 +30,7 @@ type Props = {
 };
 
 export default function ProfileTabs({ broker, properties }: Props) {
-  const [active, setActive] = useState<TabKey>("propiedades");
+  const [active, setActive] = useState<TabKey>("sobre-mi");
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   // Sync the selected tab with the URL hash so the Hero CTAs ("#contacto",
@@ -80,7 +81,7 @@ export default function ProfileTabs({ broker, properties }: Props) {
                   aria-controls={`panel-${t.key}`}
                   id={`tab-${t.key}`}
                   onClick={() => selectTab(t.key)}
-                  className={`relative py-4 whitespace-nowrap text-[13px] uppercase transition-colors duration-300 ${
+                  className={`relative min-h-[44px] py-3.5 px-1 whitespace-nowrap text-[13px] uppercase transition-colors duration-300 ${
                     isActive
                       ? "text-[color:var(--text-primary)]"
                       : "text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
@@ -109,32 +110,24 @@ export default function ProfileTabs({ broker, properties }: Props) {
       </div>
 
       <div ref={contentRef} className="scroll-mt-[56px]">
-        {/* We render all three panels and hide the inactive ones so the
-            editorial scroll experience feels instant (no remount flicker) */}
-        <div
-          role="tabpanel"
-          id="panel-propiedades"
-          aria-labelledby="tab-propiedades"
-          hidden={active !== "propiedades"}
-        >
-          <TabPropiedades properties={properties} />
-        </div>
-        <div
-          role="tabpanel"
-          id="panel-sobre-mi"
-          aria-labelledby="tab-sobre-mi"
-          hidden={active !== "sobre-mi"}
-        >
-          <TabSobreMi broker={broker} />
-        </div>
-        <div
-          role="tabpanel"
-          id="panel-contacto"
-          aria-labelledby="tab-contacto"
-          hidden={active !== "contacto"}
-        >
-          <TabContacto broker={broker} />
-        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={active}
+            role="tabpanel"
+            id={`panel-${active}`}
+            aria-labelledby={`tab-${active}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {active === "propiedades" && (
+              <TabPropiedades properties={properties} />
+            )}
+            {active === "sobre-mi" && <TabSobreMi broker={broker} />}
+            {active === "contacto" && <TabContacto broker={broker} />}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </>
   );
