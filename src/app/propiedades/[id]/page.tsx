@@ -3,40 +3,21 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
   ArrowLeft,
-  Baby,
   Bath,
   BedDouble,
-  Briefcase,
-  Building,
   Car,
-  Check,
-  Dog,
-  Dumbbell,
-  LandPlot,
   MapPin,
-  Maximize,
-  PartyPopper,
-  Shield,
-  Sparkles,
-  Sun,
-  TreePine,
-  Users,
-  Waves,
-  type LucideIcon,
+  Ruler,
+  Trees,
 } from "lucide-react";
 import { formatPrice, type Property } from "@/data/properties";
 import {
   fetchAllListingSlugs,
   fetchBrokerBundle,
-  getRelatedListings,
   listingToProperty,
-  listingsToProperties,
 } from "@/lib/brokers";
-import PropertyGallery from "@/components/PropertyGallery";
-import PropertySidebar from "@/components/PropertySidebar";
-import PropertyCard from "@/components/PropertyCard";
-import PropertyMobileBar from "@/components/PropertyMobileBar";
-import PropertyLocationMap from "@/components/PropertyLocationMap";
+import PropertyDetailGallery from "@/components/PropertyDetailGallery";
+import PropertyBrokerCTA from "@/components/PropertyBrokerCTA";
 
 export const dynamic = "force-dynamic";
 
@@ -87,81 +68,50 @@ export async function generateMetadata({
   };
 }
 
-const STATUS_STYLES: Record<Property["status"], string> = {
-  Disponible: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
-  Apartada: "bg-amber-500/10 text-amber-700 border-amber-500/20",
-  Vendida: "bg-rose-500/10 text-rose-700 border-rose-500/20",
-  Rentada: "bg-neutral-500/10 text-neutral-700 border-neutral-500/20",
-};
+const serifStyle = {
+  fontFamily: "var(--font-dm-serif), Georgia, serif",
+} as const;
 
-const AMENITY_ICONS: Record<string, LucideIcon> = {
-  Gimnasio: Dumbbell,
-  Alberca: Waves,
-  "Seguridad 24/7": Shield,
-  "Caseta de Vigilancia": Shield,
-  "Pet Friendly": Dog,
-  "Roof Garden": Sun,
-  "Business Center": Briefcase,
-  "Áreas Verdes": TreePine,
-  "Área de Juegos": Baby,
-  "Salón de Eventos": PartyPopper,
-  "Salón de Usos Múltiples": Users,
-  "Valet Parking": Car,
-};
+const labelStyle = {
+  color: "#5C5C5C",
+  letterSpacing: "1.5px",
+  fontWeight: 600,
+} as const;
 
-function SectionDivider() {
-  return <hr className="border-black/[0.06] my-10" />;
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2
-      className="text-[color:var(--text-primary)] mb-5"
-      style={{
-        fontFamily: "var(--font-dm-sans), sans-serif",
-        fontWeight: 700,
-        fontSize: "20px",
-      }}
-    >
-      {children}
-    </h2>
-  );
-}
-
-function SpecCard({
+function SpecItem({
   icon: Icon,
   value,
   label,
 }: {
-  icon: LucideIcon;
+  icon: typeof BedDouble;
   value: string;
   label: string;
 }) {
   return (
-    <div className="bg-[color:var(--cream)] rounded-xl p-5 text-center">
-      <Icon
-        size={22}
-        className="mx-auto text-[color:var(--accent)] mb-3"
-        strokeWidth={1.8}
-      />
+    <div className="flex flex-col items-start">
+      <Icon size={20} strokeWidth={1.8} style={{ color: "#1A1A1A" }} />
       <div
-        className="text-[color:var(--text-primary)] leading-none mb-1.5"
+        className="mt-3 leading-none"
         style={{
-          fontFamily: "var(--font-dm-sans), sans-serif",
-          fontWeight: 700,
-          fontSize: "17px",
+          ...serifStyle,
+          fontSize: "clamp(20px, 2.2vw, 26px)",
+          color: "#1A1A1A",
         }}
       >
         {value}
       </div>
       <div
-        className="text-[10px] uppercase text-[color:var(--text-secondary)]"
-        style={{ letterSpacing: "1.2px" }}
+        className="mt-2 text-[11px] uppercase"
+        style={labelStyle}
       >
         {label}
       </div>
     </div>
   );
+}
+
+function mapsEmbed(lat: number, lng: number): string {
+  return `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
 }
 
 export default async function PropertyPage({
@@ -173,270 +123,263 @@ export default async function PropertyPage({
   const listing = activeListings.find((l) => l.slug === params.id);
   if (!listing) notFound();
 
-  const property = listingToProperty(listing, broker);
-  const relatedListings = getRelatedListings(activeListings, params.id, 3);
-  const related = listingsToProperties(relatedListings, broker);
+  const property = ((): Property => listingToProperty(listing, broker))();
+
+  const hasCoords =
+    Number.isFinite(property.coordinates.lat) &&
+    Number.isFinite(property.coordinates.lng) &&
+    (property.coordinates.lat !== 0 || property.coordinates.lng !== 0);
 
   return (
-    <main className="bg-white pb-28 lg:pb-0">
-      <div>
-        {/* Back button */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-6 lg:pt-8">
-          <Link
-            href="/propiedades"
-            className="inline-flex items-center gap-1.5 text-[14px] text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] transition-colors"
-          >
-            <ArrowLeft size={14} />
-            Regresar a propiedades
-          </Link>
-        </div>
-
-        {/* Gallery */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-4 lg:pt-5">
-          <PropertyGallery property={property} />
-        </div>
-
-        {/* Main content */}
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 py-12 lg:py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-14 items-start">
-            {/* LEFT: details */}
-            <div>
-              {/* Badges */}
-              <div className="flex items-center gap-2 flex-wrap mb-4">
-                <span
-                  className={`text-[10px] uppercase px-3 py-1.5 rounded-full border ${
-                    STATUS_STYLES[property.status]
-                  }`}
-                  style={{ letterSpacing: "1.5px", fontWeight: 700 }}
-                >
-                  {property.status}
-                </span>
-                <span
-                  className="text-[10px] uppercase px-3 py-1.5 rounded-full bg-[color:var(--accent)]/10 text-[color:var(--accent)]"
-                  style={{ letterSpacing: "1.5px", fontWeight: 700 }}
-                >
-                  {property.propertyType}
-                </span>
-                <span
-                  className="text-[10px] uppercase px-3 py-1.5 rounded-full border border-[color:var(--text-secondary)]/30 text-[color:var(--text-secondary)]"
-                  style={{ letterSpacing: "1.5px", fontWeight: 700 }}
-                >
-                  {property.priceLabel}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1
-                className="text-[color:var(--text-primary)] leading-[1.1] mb-3"
-                style={{
-                  fontFamily: "var(--font-dm-serif), Georgia, serif",
-                  fontSize: "clamp(26px, 2.6vw, 34px)",
-                }}
-              >
-                {property.title}
-              </h1>
-
-              {/* Location */}
-              <div className="flex items-center gap-2 text-[color:var(--text-secondary)] text-[15px] mb-6">
-                <MapPin size={16} className="shrink-0" />
-                <span>
-                  {property.neighborhood}, {property.city}, {property.state}
-                </span>
-              </div>
-
-              {/* Price */}
-              <div
-                className="text-[color:var(--midnight)] leading-none"
-                style={{
-                  fontFamily: "var(--font-dm-serif), Georgia, serif",
-                  fontSize: "clamp(30px, 3vw, 44px)",
-                }}
-              >
-                {formatPrice(property)}
-              </div>
-
-              <SectionDivider />
-
-              {/* Specs row */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {property.bedrooms > 0 && (
-                  <SpecCard
-                    icon={BedDouble}
-                    value={String(property.bedrooms)}
-                    label="Recámaras"
-                  />
-                )}
-                {property.bathrooms > 0 && (
-                  <SpecCard
-                    icon={Bath}
-                    value={String(property.bathrooms)}
-                    label="Baños"
-                  />
-                )}
-                {property.parkingSpots > 0 && (
-                  <SpecCard
-                    icon={Car}
-                    value={String(property.parkingSpots)}
-                    label="Estacionamiento"
-                  />
-                )}
-                {property.constructionM2 && (
-                  <SpecCard
-                    icon={Maximize}
-                    value={`${property.constructionM2} m²`}
-                    label="Construidos"
-                  />
-                )}
-                {property.totalM2 && (
-                  <SpecCard
-                    icon={LandPlot}
-                    value={`${property.totalM2} m²`}
-                    label="Terreno"
-                  />
-                )}
-                {property.floor && (
-                  <SpecCard
-                    icon={Building}
-                    value={property.floor}
-                    label="Ubicación"
-                  />
-                )}
-              </div>
-
-              <SectionDivider />
-
-              {/* Description */}
-              <SectionHeading>Descripción</SectionHeading>
-              <p
-                className="text-[color:var(--text-secondary)] text-[15px] sm:text-base"
-                style={{ lineHeight: 1.8 }}
-              >
-                {property.description}
-              </p>
-
-              {property.features.length > 0 && (
-                <>
-                  <SectionDivider />
-                  <SectionHeading>Características</SectionHeading>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {property.features.map((f) => (
-                      <div
-                        key={f}
-                        className="flex items-start gap-2.5 text-[15px] text-[color:var(--text-primary)]"
-                      >
-                        <Check
-                          size={18}
-                          className="text-[color:var(--accent)] shrink-0 mt-[2px]"
-                          strokeWidth={2.5}
-                        />
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {property.amenities.length > 0 && (
-                <>
-                  <SectionDivider />
-                  <SectionHeading>Amenidades del desarrollo</SectionHeading>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {property.amenities.map((a) => {
-                      const Icon = AMENITY_ICONS[a] ?? Sparkles;
-                      return (
-                        <div
-                          key={a}
-                          className="flex items-center gap-3 bg-[color:var(--cream)] rounded-lg p-4"
-                        >
-                          <Icon
-                            size={20}
-                            className="text-[color:var(--accent)] shrink-0"
-                            strokeWidth={1.8}
-                          />
-                          <span
-                            className="text-[13px] sm:text-[14px] text-[color:var(--text-primary)]"
-                            style={{ fontWeight: 600 }}
-                          >
-                            {a}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-
-              {property.videoUrl && (
-                <>
-                  <SectionDivider />
-                  <SectionHeading>Video de la propiedad</SectionHeading>
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-[0_20px_50px_-20px_rgba(26,42,74,0.25)] bg-black">
-                    <iframe
-                      src={property.videoUrl}
-                      title={`Video de ${property.title}`}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                      className="absolute inset-0 w-full h-full border-0"
-                    />
-                  </div>
-                </>
-              )}
-
-              <SectionDivider />
-
-              <SectionHeading>Ubicación</SectionHeading>
-              <PropertyLocationMap
-                lat={property.coordinates.lat}
-                lng={property.coordinates.lng}
-                label={`${property.neighborhood}, ${property.city}`}
-                height="360px"
-              />
-              <p className="mt-4 inline-flex items-center gap-1.5 text-[color:var(--text-secondary)] text-[14px]">
-                <MapPin size={14} className="text-[color:var(--accent)]" />
-                {property.location}, {property.city}, {property.state}
-              </p>
-            </div>
-
-            {/* RIGHT: sidebar */}
-            <PropertySidebar
-              property={property}
-              brokerId={broker.id}
-              listingId={listing.id}
-              agentCertification={
-                broker.certificaciones[0]?.nombre ?? null
-              }
-            />
-          </div>
-        </div>
-
-        {/* Related properties */}
-        {related.length > 0 && (
-          <section className="bg-[color:var(--cream)] py-12 lg:py-16">
-            <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
-              <h2
-                className="text-[color:var(--text-primary)] mb-10 lg:mb-12 text-center leading-[1.1]"
-                style={{
-                  fontFamily: "var(--font-dm-serif), Georgia, serif",
-                  fontSize: "clamp(28px, 3vw, 42px)",
-                }}
-              >
-                Propiedades similares
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {related.map((p, i) => (
-                  <PropertyCard key={p.id} property={p} index={i} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
+    <main
+      className="bg-[color:var(--cream)] text-[color:var(--text-primary)] pb-28 lg:pb-16"
+    >
+      <div className="max-w-[1200px] mx-auto px-5 sm:px-8 lg:px-12 pt-6">
+        {/* Back */}
+        <Link
+          href="/propiedades"
+          className="inline-flex items-center gap-1.5 text-[13px] uppercase transition-colors"
+          style={{
+            color: "#5C5C5C",
+            letterSpacing: "1.5px",
+            fontWeight: 500,
+          }}
+        >
+          <ArrowLeft size={14} />
+          Regresar
+        </Link>
       </div>
 
-      {/* Mobile quick-contact bar */}
-      <PropertyMobileBar property={property} />
+      {/* Gallery */}
+      <div className="max-w-[1200px] mx-auto px-5 sm:px-8 lg:px-12 pt-5">
+        <PropertyDetailGallery
+          images={property.images}
+          alt={property.title}
+        />
+      </div>
+
+      {/* Body */}
+      <div className="max-w-[1200px] mx-auto px-5 sm:px-8 lg:px-12 py-10 lg:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 lg:gap-14 items-start">
+          {/* LEFT: editorial content */}
+          <div>
+            {/* Type + operation eyebrows */}
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                className="text-[11px] uppercase"
+                style={labelStyle}
+              >
+                {property.propertyType}
+              </span>
+              <span aria-hidden style={{ color: "#D9D2C3" }}>
+                ·
+              </span>
+              <span
+                className="text-[11px] uppercase"
+                style={labelStyle}
+              >
+                {property.priceLabel}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1
+              className="leading-[1.05] mb-4"
+              style={{
+                ...serifStyle,
+                fontSize: "clamp(30px, 4vw, 44px)",
+                color: "#1A1A1A",
+              }}
+            >
+              {property.title}
+            </h1>
+
+            {/* Location */}
+            <div
+              className="flex items-center gap-2 text-[15px] mb-6"
+              style={{ color: "#5C5C5C" }}
+            >
+              <MapPin size={15} className="shrink-0" />
+              <span>
+                {[property.neighborhood, property.city, property.state]
+                  .filter(Boolean)
+                  .join(", ")}
+              </span>
+            </div>
+
+            {/* Price */}
+            <div
+              className="leading-none"
+              style={{
+                ...serifStyle,
+                fontSize: "clamp(28px, 3.2vw, 40px)",
+                color: "#1A1A1A",
+              }}
+            >
+              {formatPrice(property)}
+            </div>
+
+            <hr
+              className="my-10 border-0 h-px"
+              style={{ backgroundColor: "#D9D2C3" }}
+            />
+
+            {/* Specs grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {property.bedrooms > 0 && (
+                <SpecItem
+                  icon={BedDouble}
+                  value={String(property.bedrooms)}
+                  label="Recámaras"
+                />
+              )}
+              {property.bathrooms > 0 && (
+                <SpecItem
+                  icon={Bath}
+                  value={String(property.bathrooms)}
+                  label="Baños"
+                />
+              )}
+              {property.constructionM2 != null && (
+                <SpecItem
+                  icon={Ruler}
+                  value={`${property.constructionM2} m²`}
+                  label="Construidos"
+                />
+              )}
+              {property.totalM2 != null && (
+                <SpecItem
+                  icon={Trees}
+                  value={`${property.totalM2} m²`}
+                  label="Terreno"
+                />
+              )}
+              {property.parkingSpots > 0 && (
+                <SpecItem
+                  icon={Car}
+                  value={String(property.parkingSpots)}
+                  label="Estacionamiento"
+                />
+              )}
+            </div>
+
+            <hr
+              className="my-10 border-0 h-px"
+              style={{ backgroundColor: "#D9D2C3" }}
+            />
+
+            {/* Description */}
+            <h2
+              className="mb-5 leading-tight"
+              style={{
+                ...serifStyle,
+                fontSize: "clamp(22px, 2.4vw, 30px)",
+                color: "#1A1A1A",
+              }}
+            >
+              Descripción
+            </h2>
+            <p
+              className="text-[15px] md:text-base"
+              style={{
+                color: "#1A1A1A",
+                lineHeight: 1.8,
+                maxWidth: "65ch",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {property.description}
+            </p>
+
+            {/* Amenities */}
+            {property.amenities.length > 0 && (
+              <>
+                <hr
+                  className="my-10 border-0 h-px"
+                  style={{ backgroundColor: "#D9D2C3" }}
+                />
+                <h2
+                  className="mb-5 leading-tight"
+                  style={{
+                    ...serifStyle,
+                    fontSize: "clamp(22px, 2.4vw, 30px)",
+                    color: "#1A1A1A",
+                  }}
+                >
+                  Amenidades
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {property.amenities.map((a) => (
+                    <span
+                      key={a}
+                      className="inline-flex items-center text-[13px]"
+                      style={{
+                        border: "1px solid #D9D2C3",
+                        borderRadius: 999,
+                        padding: "6px 14px",
+                        color: "#1A1A1A",
+                        backgroundColor: "transparent",
+                      }}
+                    >
+                      {a}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Map */}
+            {hasCoords && (
+              <>
+                <hr
+                  className="my-10 border-0 h-px"
+                  style={{ backgroundColor: "#D9D2C3" }}
+                />
+                <h2
+                  className="mb-5 leading-tight"
+                  style={{
+                    ...serifStyle,
+                    fontSize: "clamp(22px, 2.4vw, 30px)",
+                    color: "#1A1A1A",
+                  }}
+                >
+                  Ubicación
+                </h2>
+                <div
+                  className="overflow-hidden"
+                  style={{
+                    border: "1px solid #D9D2C3",
+                    borderRadius: 12,
+                  }}
+                >
+                  <iframe
+                    src={mapsEmbed(
+                      property.coordinates.lat,
+                      property.coordinates.lng
+                    )}
+                    title={`Ubicación de ${property.title}`}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full border-0"
+                    style={{ height: 360 }}
+                  />
+                </div>
+                <p
+                  className="mt-3 text-[13px]"
+                  style={{ color: "#5C5C5C" }}
+                >
+                  {[property.neighborhood, property.city, property.state]
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
+              </>
+            )}
+          </div>
+
+          {/* RIGHT: sticky broker CTA */}
+          <PropertyBrokerCTA broker={broker} property={property} />
+        </div>
+      </div>
     </main>
   );
 }
