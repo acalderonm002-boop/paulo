@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, DM_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/context/ToastContext";
 import { fetchBrokerBundle } from "@/lib/brokers";
 
-const dmSerif = DM_Serif_Display({
-  weight: "400",
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-dm-serif",
+  variable: "--font-inter",
   display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const SITE_URL =
@@ -65,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${dmSerif.variable} ${dmSans.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`}>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

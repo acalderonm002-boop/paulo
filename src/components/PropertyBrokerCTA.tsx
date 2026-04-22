@@ -26,7 +26,7 @@ function whatsappHref(
 
 export default function PropertyBrokerCTA({ broker, property }: Props) {
   const serif: CSSProperties = {
-    fontFamily: "var(--font-dm-serif), Georgia, serif",
+    fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
   };
 
   const wa = whatsappHref(broker.whatsapp, broker.nombre, property);
@@ -61,16 +61,16 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
         padding: "11px 16px",
         fontSize: 14,
         fontWeight: 500,
-        color: "#1A1A1A",
+        color: "#001751",
         backgroundColor: "transparent",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#1A1A1A";
-        e.currentTarget.style.color = "#F5F1EA";
+        e.currentTarget.style.backgroundColor = "#001751";
+        e.currentTarget.style.color = "#FFFFFF";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "transparent";
-        e.currentTarget.style.color = "#1A1A1A";
+        e.currentTarget.style.color = "#001751";
       }}
     >
       {icon}
@@ -96,7 +96,7 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
             className="relative w-14 h-14 rounded-full overflow-hidden shrink-0"
             style={{
               border: "2px solid #F5F1EA",
-              backgroundColor: "#EAE4D8",
+              backgroundColor: "#F7FAFD",
             }}
           >
             {photo ? (
@@ -112,7 +112,7 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
                 className="w-full h-full flex items-center justify-center"
                 style={{
                   ...serif,
-                  color: "#1A1A1A",
+                  color: "#001751",
                   fontSize: 18,
                 }}
               >
@@ -123,14 +123,14 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
           <div className="min-w-0">
             <div
               className="text-[15px] truncate"
-              style={{ color: "#1A1A1A", fontWeight: 600 }}
+              style={{ color: "#001751", fontWeight: 600 }}
             >
               {broker.nombre}
             </div>
             <div
               className="text-[12px] uppercase mt-0.5"
               style={{
-                color: "#5C5C5C",
+                color: "#4A5C7A",
                 letterSpacing: "1.5px",
               }}
             >
@@ -164,8 +164,8 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
               aria-label="WhatsApp"
               className="inline-flex items-center justify-center flex-1 gap-2 transition-colors"
               style={{
-                backgroundColor: "#1A1A1A",
-                color: "#F5F1EA",
+                backgroundColor: "#001751",
+                color: "#FFFFFF",
                 borderRadius: 10,
                 padding: "12px 16px",
                 fontSize: 14,
@@ -185,7 +185,7 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
                 border: "1px solid #1A1A1A",
                 borderRadius: 10,
                 padding: "12px 14px",
-                color: "#1A1A1A",
+                color: "#001751",
                 backgroundColor: "transparent",
               }}
             >
@@ -201,7 +201,7 @@ export default function PropertyBrokerCTA({ broker, property }: Props) {
                 border: "1px solid #1A1A1A",
                 borderRadius: 10,
                 padding: "12px 14px",
-                color: "#1A1A1A",
+                color: "#001751",
                 backgroundColor: "transparent",
               }}
             >

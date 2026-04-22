@@ -69,11 +69,11 @@ export async function generateMetadata({
 }
 
 const serifStyle = {
-  fontFamily: "var(--font-dm-serif), Georgia, serif",
+  fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
 } as const;
 
 const labelStyle = {
-  color: "#5C5C5C",
+  color: "#4A5C7A",
   letterSpacing: "1.5px",
   fontWeight: 600,
 } as const;
@@ -89,13 +89,13 @@ function SpecItem({
 }) {
   return (
     <div className="flex flex-col items-start">
-      <Icon size={20} strokeWidth={1.8} style={{ color: "#1A1A1A" }} />
+      <Icon size={20} strokeWidth={1.8} style={{ color: "#001751" }} />
       <div
         className="mt-3 leading-none"
         style={{
           ...serifStyle,
           fontSize: "clamp(20px, 2.2vw, 26px)",
-          color: "#1A1A1A",
+          color: "#001751",
         }}
       >
         {value}
@@ -140,7 +140,7 @@ export default async function PropertyPage({
           href="/propiedades"
           className="inline-flex items-center gap-1.5 text-[13px] uppercase transition-colors"
           style={{
-            color: "#5C5C5C",
+            color: "#4A5C7A",
             letterSpacing: "1.5px",
             fontWeight: 500,
           }}
@@ -171,7 +171,7 @@ export default async function PropertyPage({
               >
                 {property.propertyType}
               </span>
-              <span aria-hidden style={{ color: "#D9D2C3" }}>
+              <span aria-hidden style={{ color: "#E3EAF2" }}>
                 ·
               </span>
               <span
@@ -188,7 +188,7 @@ export default async function PropertyPage({
               style={{
                 ...serifStyle,
                 fontSize: "clamp(30px, 4vw, 44px)",
-                color: "#1A1A1A",
+                color: "#001751",
               }}
             >
               {property.title}
@@ -197,7 +197,7 @@ export default async function PropertyPage({
             {/* Location */}
             <div
               className="flex items-center gap-2 text-[15px] mb-6"
-              style={{ color: "#5C5C5C" }}
+              style={{ color: "#4A5C7A" }}
             >
               <MapPin size={15} className="shrink-0" />
               <span>
@@ -213,7 +213,7 @@ export default async function PropertyPage({
               style={{
                 ...serifStyle,
                 fontSize: "clamp(28px, 3.2vw, 40px)",
-                color: "#1A1A1A",
+                color: "#001751",
               }}
             >
               {formatPrice(property)}
@@ -221,7 +221,7 @@ export default async function PropertyPage({
 
             <hr
               className="my-10 border-0 h-px"
-              style={{ backgroundColor: "#D9D2C3" }}
+              style={{ backgroundColor: "#E3EAF2" }}
             />
 
             {/* Specs grid */}
@@ -265,7 +265,7 @@ export default async function PropertyPage({
 
             <hr
               className="my-10 border-0 h-px"
-              style={{ backgroundColor: "#D9D2C3" }}
+              style={{ backgroundColor: "#E3EAF2" }}
             />
 
             {/* Description */}
@@ -274,7 +274,7 @@ export default async function PropertyPage({
               style={{
                 ...serifStyle,
                 fontSize: "clamp(22px, 2.4vw, 30px)",
-                color: "#1A1A1A",
+                color: "#001751",
               }}
             >
               Descripción
@@ -282,7 +282,7 @@ export default async function PropertyPage({
             <p
               className="text-[15px] md:text-base"
               style={{
-                color: "#1A1A1A",
+                color: "#001751",
                 lineHeight: 1.8,
                 maxWidth: "65ch",
                 whiteSpace: "pre-wrap",
@@ -296,14 +296,14 @@ export default async function PropertyPage({
               <>
                 <hr
                   className="my-10 border-0 h-px"
-                  style={{ backgroundColor: "#D9D2C3" }}
+                  style={{ backgroundColor: "#E3EAF2" }}
                 />
                 <h2
                   className="mb-5 leading-tight"
                   style={{
                     ...serifStyle,
                     fontSize: "clamp(22px, 2.4vw, 30px)",
-                    color: "#1A1A1A",
+                    color: "#001751",
                   }}
                 >
                   Amenidades
@@ -317,7 +317,7 @@ export default async function PropertyPage({
                         border: "1px solid #D9D2C3",
                         borderRadius: 999,
                         padding: "6px 14px",
-                        color: "#1A1A1A",
+                        color: "#001751",
                         backgroundColor: "transparent",
                       }}
                     >
@@ -333,14 +333,14 @@ export default async function PropertyPage({
               <>
                 <hr
                   className="my-10 border-0 h-px"
-                  style={{ backgroundColor: "#D9D2C3" }}
+                  style={{ backgroundColor: "#E3EAF2" }}
                 />
                 <h2
                   className="mb-5 leading-tight"
                   style={{
                     ...serifStyle,
                     fontSize: "clamp(22px, 2.4vw, 30px)",
-                    color: "#1A1A1A",
+                    color: "#001751",
                   }}
                 >
                   Ubicación
@@ -366,7 +366,7 @@ export default async function PropertyPage({
                 </div>
                 <p
                   className="mt-3 text-[13px]"
-                  style={{ color: "#5C5C5C" }}
+                  style={{ color: "#4A5C7A" }}
                 >
                   {[property.neighborhood, property.city, property.state]
                     .filter(Boolean)

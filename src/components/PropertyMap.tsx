@@ -127,7 +127,7 @@ function MapFallback() {
           <div
             className="text-[15px] text-[color:var(--text-primary)] mb-1"
             style={{
-              fontFamily: "var(--font-dm-serif), Georgia, serif",
+              fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
             }}
           >
             Mapa de Propiedades
@@ -271,7 +271,7 @@ export default function PropertyMap({ properties, hoveredId, onHover }: Props) {
                   : "border border-[color:var(--accent)]/60 text-[color:var(--midnight)] hover:scale-105"
               }`}
               style={{
-                fontFamily: "var(--font-dm-sans), sans-serif",
+                fontFamily: "var(--font-inter), sans-serif",
                 fontWeight: 700,
               }}
             >
@@ -326,7 +326,7 @@ function MapInfoCard({ property }: { property: Property }) {
       <div
         className="text-[16px] text-[color:var(--midnight)] mb-1"
         style={{
-          fontFamily: "var(--font-dm-serif), Georgia, serif",
+          fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
           fontWeight: 700,
         }}
       >

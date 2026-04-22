@@ -50,12 +50,12 @@ export default function PropertyDetailGallery({ images, alt }: Props) {
         className="w-full flex items-center justify-center"
         style={{
           height: "60vh",
-          backgroundColor: "#EAE4D8",
+          backgroundColor: "#F7FAFD",
           border: "1px solid #D9D2C3",
           borderRadius: 12,
         }}
       >
-        <span style={{ color: "#5C5C5C" }}>Sin fotos disponibles</span>
+        <span style={{ color: "#4A5C7A" }}>Sin fotos disponibles</span>
       </div>
     );
   }
@@ -78,11 +78,11 @@ export default function PropertyDetailGallery({ images, alt }: Props) {
             <div
               key={`${src}-${i}`}
               className="relative shrink-0 grow-0 basis-full h-full"
-              style={{ backgroundColor: "#EAE4D8" }}
+              style={{ backgroundColor: "#F7FAFD" }}
             >
               {failedIndexes.has(i) ? (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span style={{ color: "#5C5C5C" }}>
+                  <span style={{ color: "#4A5C7A" }}>
                     Imagen no disponible
                   </span>
                 </div>
@@ -110,7 +110,7 @@ export default function PropertyDetailGallery({ images, alt }: Props) {
             className="absolute left-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white transition-colors"
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }}
           >
-            <ChevronLeft size={20} strokeWidth={2} color="#1A1A1A" />
+            <ChevronLeft size={20} strokeWidth={2} color="#001751" />
           </button>
           <button
             type="button"
@@ -119,7 +119,7 @@ export default function PropertyDetailGallery({ images, alt }: Props) {
             className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white transition-colors"
             style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }}
           >
-            <ChevronRight size={20} strokeWidth={2} color="#1A1A1A" />
+            <ChevronRight size={20} strokeWidth={2} color="#001751" />
           </button>
         </>
       )}
@@ -129,7 +129,7 @@ export default function PropertyDetailGallery({ images, alt }: Props) {
         className="absolute right-3 bottom-3 text-[12px] px-3 py-1.5 rounded-full"
         style={{
           backgroundColor: "rgba(26,26,26,0.75)",
-          color: "#F5F1EA",
+          color: "#FFFFFF",
           fontWeight: 500,
           letterSpacing: "0.5px",
         }}

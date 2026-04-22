@@ -22,7 +22,7 @@ export default function ProfileSection({
   className = "",
 }: Props) {
   const serif: CSSProperties = {
-    fontFamily: "var(--font-dm-serif), Georgia, serif",
+    fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
   };
 
   return (
@@ -33,7 +33,7 @@ export default function ProfileSection({
           style={{
             letterSpacing: "2.5px",
             fontWeight: 600,
-            color: "#5C5C5C",
+            color: "#4A5C7A",
           }}
         >
           {eyebrow}

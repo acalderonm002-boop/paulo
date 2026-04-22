@@ -37,7 +37,7 @@ export default function Toast({ message, onDismiss, duration = 4000 }: Props) {
         </span>
         <p
           className="text-[14px] leading-snug"
-          style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+          style={{ fontFamily: "var(--font-inter), sans-serif" }}
         >
           {message}
         </p>

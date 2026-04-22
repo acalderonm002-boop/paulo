@@ -1,34 +1,60 @@
+@import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,600,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --midnight: #1a2a4a;
-  --dark-blue: #1e3a5f;
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --cream: #f5f1ea;
-  --cream-secondary: #eae4d8;
-  --cream-border: #d9d2c3;
-  --warm-white: #f5f2ed;
+  /* Proptech brand system — blue primary, gold accent. */
+
+  /* Blues (dominant ~70%) */
+  --brand: #006aff;              /* CTA / primary */
+  --brand-hover: #0051cc;
+  --sky-blue: #e0f2ff;           /* soft surfaces, hover states */
+  --aqua-blue: #a6e5ff;          /* focus ring, light accent */
+  --lark-blue: #0d4599;          /* secondary headers */
+  --midnight: #001751;           /* primary text */
+
+  /* Golds (accent ~30%) */
+  --deep-gold: #f2a619;          /* verified / AMPI badge */
+  --true-gold: #ffd237;          /* micro badges */
+  --light-gold: #ffdc69;         /* soft featured bg */
+  --dark-gold: #c88205;          /* text on light gold */
+
+  /* Neutrals */
+  --bg-app: #ffffff;
+  --bg-card: #ffffff;
+  --bg-subtle: #f7fafd;
+  --border: #e3eaf2;
+  --divider: #edf2f8;
+  --text-primary: #001751;
+  --text-secondary: #4a5c7a;
+  --text-tertiary: #8895a8;
+
+  /* Legacy aliases (kept so existing var(--cream*) refs don't break) */
+  --cream: #ffffff;
+  --cream-secondary: #f7fafd;
+  --cream-border: #e3eaf2;
+  --accent: #006aff;
+  --accent-light: #a6e5ff;
+  --dark-blue: #0d4599;
+  --warm-white: #f7fafd;
   --white: #ffffff;
-  --text-primary: #1a1a1a;
-  --text-secondary: #5c5c5c;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Anchor scroll offset to clear the fixed navbar */
 [id] {
   scroll-margin-top: 88px;
 }
 
 body {
-  background-color: var(--cream);
+  background-color: var(--bg-app);
   color: var(--text-primary);
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -39,7 +65,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-dm-serif), Georgia, serif;
+  font-family: "Cabinet Grotesk", var(--font-inter), -apple-system,
+    BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }
 
 @layer utilities {
@@ -52,6 +80,10 @@ h6 {
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+  .font-display {
+    font-family: "Cabinet Grotesk", var(--font-inter), -apple-system,
+      BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
   }
 }
 

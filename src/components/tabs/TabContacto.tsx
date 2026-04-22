@@ -60,11 +60,11 @@ export default function TabContacto({ broker }: Props) {
   };
 
   const serif: CSSProperties = {
-    fontFamily: "var(--font-dm-serif), Georgia, serif",
+    fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
   };
 
   const labelStyle: CSSProperties = {
-    color: "#5C5C5C",
+    color: "#4A5C7A",
     letterSpacing: "1.8px",
     fontWeight: 600,
   };
@@ -98,16 +98,16 @@ export default function TabContacto({ broker }: Props) {
         padding: "12px 18px",
         fontSize: 14,
         fontWeight: 500,
-        color: "#1A1A1A",
+        color: "#001751",
         backgroundColor: "transparent",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "#1A1A1A";
-        e.currentTarget.style.color = "#F5F1EA";
+        e.currentTarget.style.backgroundColor = "#001751";
+        e.currentTarget.style.color = "#FFFFFF";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = "transparent";
-        e.currentTarget.style.color = "#1A1A1A";
+        e.currentTarget.style.color = "#001751";
       }}
     >
       {icon}
@@ -128,7 +128,7 @@ export default function TabContacto({ broker }: Props) {
         <p
           className="text-[11px] uppercase mb-3"
           style={{
-            color: "#5C5C5C",
+            color: "#4A5C7A",
             letterSpacing: "2.5px",
             fontWeight: 600,
           }}
@@ -140,7 +140,7 @@ export default function TabContacto({ broker }: Props) {
           style={{
             ...serif,
             fontSize: "clamp(32px, 5vw, 48px)",
-            color: "#1A1A1A",
+            color: "#001751",
           }}
         >
           Platiquemos sobre tu próximo proyecto.
@@ -148,7 +148,7 @@ export default function TabContacto({ broker }: Props) {
         <p
           className="text-[15px] md:text-base"
           style={{
-            color: "#5C5C5C",
+            color: "#4A5C7A",
             lineHeight: 1.6,
             maxWidth: "58ch",
           }}
@@ -159,7 +159,7 @@ export default function TabContacto({ broker }: Props) {
 
         <hr
           className="my-10 border-0 h-px"
-          style={{ backgroundColor: "#D9D2C3" }}
+          style={{ backgroundColor: "#E3EAF2" }}
         />
 
         {/* Form */}
@@ -238,17 +238,17 @@ export default function TabContacto({ broker }: Props) {
                 padding: "12px 24px",
                 fontSize: 15,
                 fontWeight: 500,
-                color: "#1A1A1A",
+                color: "#001751",
                 backgroundColor: "transparent",
               }}
               onMouseEnter={(e) => {
                 if (state === "submitting") return;
-                e.currentTarget.style.backgroundColor = "#1A1A1A";
-                e.currentTarget.style.color = "#F5F1EA";
+                e.currentTarget.style.backgroundColor = "#001751";
+                e.currentTarget.style.color = "#FFFFFF";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "#1A1A1A";
+                e.currentTarget.style.color = "#001751";
               }}
             >
               {state === "submitting" ? "Enviando..." : "Enviar mensaje"}
@@ -257,7 +257,7 @@ export default function TabContacto({ broker }: Props) {
             {state === "success" && (
               <p
                 className="mt-4 text-[14px]"
-                style={{ color: "#1A1A1A" }}
+                style={{ color: "#001751" }}
               >
                 Mensaje enviado. Te contactaré pronto.
               </p>
@@ -275,14 +275,14 @@ export default function TabContacto({ broker }: Props) {
 
         <hr
           className="my-10 border-0 h-px"
-          style={{ backgroundColor: "#D9D2C3" }}
+          style={{ backgroundColor: "#E3EAF2" }}
         />
 
         {/* Direct action row */}
         <p
           className="text-[11px] uppercase mb-4"
           style={{
-            color: "#5C5C5C",
+            color: "#4A5C7A",
             letterSpacing: "2px",
             fontWeight: 600,
           }}
@@ -317,7 +317,7 @@ export default function TabContacto({ broker }: Props) {
             <p
               className="text-[11px] uppercase mb-4"
               style={{
-                color: "#5C5C5C",
+                color: "#4A5C7A",
                 letterSpacing: "2px",
                 fontWeight: 600,
               }}

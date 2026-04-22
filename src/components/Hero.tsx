@@ -2,10 +2,16 @@
 
 import Image from "next/image";
 import {
+  ArrowLeft,
   Award,
-  BadgeCheck,
   Briefcase,
-  Clock,
+  Calendar,
+  Check,
+  Globe,
+  Mail,
+  MapPin,
+  MoreHorizontal,
+  Search,
 } from "lucide-react";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import type { CSSProperties } from "react";
@@ -24,61 +30,79 @@ function primaryBrokerage(broker: Broker): string | null {
   return first?.brokerage ?? null;
 }
 
+function handleFromSlug(slug: string): string {
+  const compact = slug.split("-").slice(0, 2).join("");
+  return `@${compact.toLowerCase()}`;
+}
+
+function websiteLabelFrom(urls: (string | null)[]): string | null {
+  for (const u of urls) {
+    if (!u) continue;
+    try {
+      const host = new URL(u).hostname.replace(/^www\./, "");
+      return host;
+    } catch {
+      // ignore
+    }
+  }
+  return null;
+}
+
 export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
   const banner = broker.banner_url;
   const photo = broker.foto_url;
   const siglas = certSiglas(broker);
   const brokerage = primaryBrokerage(broker);
   const years = broker.anios_experiencia;
+  const handle = handleFromSlug(broker.slug);
+  const website = websiteLabelFrom([
+    broker.linkedin,
+    broker.instagram,
+    broker.facebook,
+  ]);
 
-  const roleBit = "Asesor inmobiliario";
-  const cityBit = broker.ciudad;
-  const headline =
-    cityBit && roleBit ? `${roleBit} · ${cityBit}` : roleBit;
-
-  const stats: { value: string; label: string }[] = [];
-  if (broker.stats.propiedades_vendidas > 0) {
-    stats.push({
-      value: `${broker.stats.propiedades_vendidas}+`,
-      label: "Propiedades",
-    });
-  }
-  if (broker.stats.transacciones > 0) {
-    stats.push({
-      value: `${broker.stats.transacciones}+`,
-      label: "Transacciones",
-    });
-  }
-  if (broker.stats.clientes > 0) {
-    stats.push({
-      value: `${broker.stats.clientes}+`,
-      label: "Clientes",
-    });
-  }
-  if (years != null && years > 0) {
-    stats.push({
-      value: `${years}+`,
-      label: "Años",
-    });
-  }
-
-  const hasSocials = !!(broker.instagram || broker.facebook || broker.linkedin);
-  const hasMeta = !!(siglas || brokerage || (years != null && years > 0));
-
-  const serif: CSSProperties = {
-    fontFamily: "var(--font-dm-serif), Georgia, serif",
+  const cabinet: CSSProperties = {
+    fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
   };
 
-  const socialIconClass =
-    "text-[#1A1A1A] hover:text-[color:var(--brand)] transition-colors";
+  const sold = broker.stats?.propiedades_vendidas ?? 0;
+  const statsLine: string = [
+    sold > 0 ? `${sold} Propiedades vendidas` : null,
+    years != null && years > 0
+      ? `${years} ${years === 1 ? "año" : "años"}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const hasSocials = !!(broker.instagram || broker.facebook || broker.linkedin);
+
+  const goContacto = () => {
+    if (typeof window !== "undefined") {
+      window.location.hash = "contacto";
+    }
+  };
+
+  const goBack = () => {
+    if (typeof window !== "undefined") {
+      if (window.history.length > 1) window.history.back();
+      else window.location.href = "/";
+    }
+  };
+
+  const initials = broker.nombre
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((s) => s[0]?.toUpperCase() ?? "")
+    .join("");
 
   return (
     <section
       id="top"
-      className="bg-[color:var(--cream)] text-[color:var(--text-primary)]"
+      className="bg-white text-[color:var(--text-primary)]"
     >
-      {/* Banner */}
-      <div className="relative w-full h-[200px] md:h-[280px] overflow-hidden bg-[color:var(--cream-secondary)]">
+      {/* Banner full-bleed */}
+      <div className="relative w-full h-[140px] md:h-[180px] overflow-hidden bg-[color:var(--bg-subtle)]">
         {banner && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -88,25 +112,75 @@ export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
             loading="eager"
           />
         )}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
+
+        {/* Floating back button */}
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label="Regresar"
+          className="absolute top-3 left-3 md:top-4 md:left-4 w-9 h-9 rounded-full inline-flex items-center justify-center transition-transform active:scale-95"
           style={{
-            background:
-              "linear-gradient(to bottom, transparent 60%, rgba(245,241,234,0.6) 100%)",
+            backgroundColor: "rgba(0, 23, 81, 0.55)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
           }}
-        />
+        >
+          <ArrowLeft size={18} className="text-white" strokeWidth={2.25} />
+        </button>
+
+        {/* Floating actions row (top-right) */}
+        <div className="absolute top-3 right-3 md:top-4 md:right-4 flex items-center gap-2">
+          {broker.email && (
+            <a
+              href={`mailto:${broker.email}`}
+              aria-label="Enviar correo"
+              className="w-9 h-9 rounded-full inline-flex items-center justify-center transition-transform active:scale-95"
+              style={{
+                backgroundColor: "rgba(0, 23, 81, 0.55)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+              }}
+            >
+              <Mail size={17} className="text-white" strokeWidth={2} />
+            </a>
+          )}
+          <a
+            href="#propiedades"
+            aria-label="Buscar propiedades"
+            className="w-9 h-9 rounded-full inline-flex items-center justify-center transition-transform active:scale-95"
+            style={{
+              backgroundColor: "rgba(0, 23, 81, 0.55)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <Search size={17} className="text-white" strokeWidth={2} />
+          </a>
+          <button
+            type="button"
+            aria-label="Más opciones"
+            className="w-9 h-9 rounded-full inline-flex items-center justify-center transition-transform active:scale-95"
+            style={{
+              backgroundColor: "rgba(0, 23, 81, 0.55)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          >
+            <MoreHorizontal size={18} className="text-white" strokeWidth={2} />
+          </button>
+        </div>
       </div>
 
-      {/* Card body */}
-      <div className="max-w-[720px] mx-auto px-5 sm:px-8 text-center">
-        {/* Photo overlapping the banner */}
-        <div className="flex justify-center">
+      {/* Body — left-aligned Twitter feel */}
+      <div className="max-w-[720px] mx-auto px-4 sm:px-6">
+        {/* Photo + CTA row */}
+        <div className="flex items-end justify-between">
           <div
-            className="relative -mt-16 md:-mt-20 w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden"
+            className="relative -mt-14 w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden shrink-0"
             style={{
-              border: "4px solid #F5F1EA",
-              boxShadow: "0 1px 2px rgba(26,26,26,0.08)",
+              border: "4px solid #FFFFFF",
+              backgroundColor: "#F7FAFD",
+              boxShadow: "0 1px 2px rgba(0, 23, 81, 0.08)",
             }}
           >
             {photo ? (
@@ -114,7 +188,7 @@ export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
                 src={photo}
                 alt={broker.nombre}
                 fill
-                sizes="160px"
+                sizes="128px"
                 className="object-cover"
                 priority
               />
@@ -123,26 +197,47 @@ export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
                 className="w-full h-full flex items-center justify-center text-white"
                 style={{
                   background:
-                    "linear-gradient(135deg, #1a2a4a 0%, #1e3a5f 100%)",
-                  fontSize: 36,
-                  ...serif,
+                    "linear-gradient(135deg, #001751 0%, #006AFF 100%)",
+                  fontSize: 32,
+                  ...cabinet,
+                  fontWeight: 700,
                 }}
               >
-                {broker.nombre
-                  .split(/\s+/)
-                  .slice(0, 2)
-                  .map((s) => s[0]?.toUpperCase() ?? "")
-                  .join("")}
+                {initials}
               </div>
             )}
           </div>
+
+          <button
+            type="button"
+            onClick={goContacto}
+            className="inline-flex items-center justify-center transition-transform active:scale-95"
+            style={{
+              backgroundColor: "#006AFF",
+              color: "#FFFFFF",
+              fontWeight: 700,
+              fontSize: 15,
+              letterSpacing: "-0.01em",
+              borderRadius: 9999,
+              padding: "10px 20px",
+              boxShadow: "0 2px 8px rgba(0, 106, 255, 0.25)",
+            }}
+          >
+            Contáctame
+          </button>
         </div>
 
-        {/* Name + verified */}
-        <div className="mt-5 flex items-center justify-center gap-2">
+        {/* Name + gold verified */}
+        <div className="mt-3 flex items-center gap-1.5">
           <h1
-            className="text-3xl md:text-4xl leading-tight"
-            style={serif}
+            className="leading-[1.1]"
+            style={{
+              ...cabinet,
+              fontWeight: 700,
+              fontSize: 22,
+              color: "#001751",
+              letterSpacing: "-0.01em",
+            }}
           >
             {broker.nombre}
           </h1>
@@ -150,37 +245,34 @@ export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
             <span
               aria-label={`${siglas} Certificado`}
               title={`${siglas} Certificado`}
-              className="inline-flex items-center"
+              className="inline-flex items-center justify-center rounded-full shrink-0"
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: "#F2A619",
+              }}
             >
-              <BadgeCheck
-                size={22}
-                strokeWidth={2}
-                className="text-[#1A1A1A]"
-              />
+              <Check size={13} className="text-white" strokeWidth={3.5} />
             </span>
           )}
         </div>
 
-        {/* Headline */}
-        <p
-          className="mt-1.5 text-sm"
-          style={{ color: "#5C5C5C" }}
+        {/* @handle */}
+        <div
+          className="mt-0.5 text-[15px]"
+          style={{ color: "#8895A8" }}
         >
-          {headline}
-        </p>
+          {handle}
+        </div>
 
-        {/* Bio (filosofia) */}
+        {/* Bio */}
         {broker.filosofia && (
           <p
-            className="mt-4 text-[15px] md:text-base mx-auto"
+            className="mt-3 text-[15px]"
             style={{
-              color: "#1A1A1A",
-              lineHeight: 1.6,
-              maxWidth: "60ch",
-              display: "-webkit-box",
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3,
-              overflow: "hidden",
+              color: "#001751",
+              lineHeight: 1.5,
+              fontWeight: 400,
             }}
           >
             {broker.filosofia}
@@ -188,141 +280,105 @@ export default function Hero({ broker = DEFAULT_BROKER }: Props = {}) {
         )}
 
         {/* Metadata row */}
-        {hasMeta && (
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm" style={{ color: "#5C5C5C" }}>
-            {siglas && (
-              <span className="inline-flex items-center gap-1.5">
-                <Award size={14} />
-                {siglas}
-              </span>
-            )}
-            {siglas && brokerage && <span aria-hidden>·</span>}
-            {brokerage && (
-              <span className="inline-flex items-center gap-1.5">
-                <Briefcase size={14} />
-                {brokerage}
-              </span>
-            )}
-            {(siglas || brokerage) && years != null && years > 0 && (
-              <span aria-hidden>·</span>
-            )}
-            {years != null && years > 0 && (
-              <span className="inline-flex items-center gap-1.5">
-                <Clock size={14} />
-                {years} {years === 1 ? "año" : "años"}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Separator */}
-        <hr
-          className="my-6 md:my-8 border-0 h-px"
-          style={{ backgroundColor: "#D9D2C3" }}
-        />
-
-        {/* Action row — ghost button + social icons */}
-        <div className="flex items-center justify-center gap-4">
-          <a
-            href="#contacto"
-            className="inline-flex items-center justify-center border transition-colors"
-            style={{
-              borderColor: "#1A1A1A",
-              borderWidth: 1,
-              borderRadius: 10,
-              padding: "10px 20px",
-              fontSize: 15,
-              fontWeight: 500,
-              fontFamily:
-                'var(--font-dm-sans), "SF Pro Text", system-ui, sans-serif',
-              color: "#1A1A1A",
-              backgroundColor: "transparent",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#1A1A1A";
-              e.currentTarget.style.color = "#F5F1EA";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#1A1A1A";
-            }}
-          >
-            Contáctame
-          </a>
-          {hasSocials && (
-            <div className="flex items-center gap-4">
-              {broker.instagram && (
-                <a
-                  href={broker.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className={socialIconClass}
-                  style={{ ["--brand" as string]: "#E4405F" }}
-                >
-                  <FaInstagram size={22} />
-                </a>
-              )}
-              {broker.facebook && (
-                <a
-                  href={broker.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  className={socialIconClass}
-                  style={{ ["--brand" as string]: "#1877F2" }}
-                >
-                  <FaFacebook size={22} />
-                </a>
-              )}
-              {broker.linkedin && (
-                <a
-                  href={broker.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                  className={socialIconClass}
-                  style={{ ["--brand" as string]: "#0A66C2" }}
-                >
-                  <FaLinkedin size={22} />
-                </a>
-              )}
-            </div>
+        <div
+          className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[14px]"
+          style={{ color: "#4A5C7A" }}
+        >
+          {broker.ciudad && (
+            <span className="inline-flex items-center gap-1">
+              <MapPin size={15} strokeWidth={1.75} />
+              {broker.ciudad}
+            </span>
+          )}
+          {siglas && (
+            <span className="inline-flex items-center gap-1">
+              <Award
+                size={15}
+                strokeWidth={1.75}
+                style={{ color: "#F2A619" }}
+              />
+              {siglas}
+            </span>
+          )}
+          {brokerage && (
+            <span className="inline-flex items-center gap-1">
+              <Briefcase size={15} strokeWidth={1.75} />
+              {brokerage}
+            </span>
+          )}
+          {years != null && years > 0 && (
+            <span className="inline-flex items-center gap-1">
+              <Calendar size={15} strokeWidth={1.75} />
+              Desde {new Date().getFullYear() - years}
+            </span>
+          )}
+          {website && (
+            <a
+              href={broker.linkedin ?? broker.instagram ?? broker.facebook ?? "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:underline"
+              style={{ color: "#006AFF" }}
+            >
+              <Globe size={15} strokeWidth={1.75} />
+              {website}
+            </a>
           )}
         </div>
 
-        {/* Stats row */}
-        {stats.length > 0 && (
+        {/* Stats inline */}
+        {statsLine && (
           <div
-            className="mt-8 grid grid-cols-4 gap-2 md:gap-6"
-            style={{ color: "#1A1A1A" }}
+            className="mt-3 text-[14px]"
+            style={{ color: "#001751" }}
           >
-            {stats.slice(0, 4).map((s) => (
-              <div key={s.label} className="text-center">
-                <div
-                  className="leading-none"
-                  style={{
-                    ...serif,
-                    fontSize: "clamp(22px, 4vw, 30px)",
-                  }}
-                >
-                  {s.value}
-                </div>
-                <div
-                  className="mt-1.5 text-[10px] md:text-xs uppercase"
-                  style={{
-                    color: "#5C5C5C",
-                    letterSpacing: "1.2px",
-                  }}
-                >
-                  {s.label}
-                </div>
-              </div>
-            ))}
+            <span style={{ fontWeight: 700 }}>{statsLine}</span>
           </div>
         )}
 
-        <div className="h-8 md:h-10" />
+        {/* Social row */}
+        {hasSocials && (
+          <div className="mt-4 flex items-center gap-5">
+            {broker.instagram && (
+              <a
+                href={broker.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="transition-colors"
+                style={{ color: "#4A5C7A" }}
+              >
+                <FaInstagram size={18} />
+              </a>
+            )}
+            {broker.facebook && (
+              <a
+                href={broker.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="transition-colors"
+                style={{ color: "#4A5C7A" }}
+              >
+                <FaFacebook size={18} />
+              </a>
+            )}
+            {broker.linkedin && (
+              <a
+                href={broker.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="transition-colors"
+                style={{ color: "#4A5C7A" }}
+              >
+                <FaLinkedin size={18} />
+              </a>
+            )}
+          </div>
+        )}
+
+        <div className="h-5 md:h-6" />
       </div>
     </section>
   );

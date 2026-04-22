@@ -61,14 +61,18 @@ export default function ProfileTabs({ broker, properties }: Props) {
       {/* Sticky tab strip — sits just under the Hero and pins to the top
           (below the navbar) when the user scrolls. */}
       <div
-        className="sticky top-0 z-40 bg-[color:var(--cream)]/95 backdrop-blur-sm border-b border-black/[0.06]"
+        className="sticky top-0 z-40 backdrop-blur-md"
         id="tabs"
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderBottom: "1px solid #E3EAF2",
+        }}
       >
-        <div className="max-w-[1200px] mx-auto px-6 sm:px-10 lg:px-12">
+        <div className="max-w-[720px] mx-auto px-4 sm:px-6">
           <div
             role="tablist"
             aria-label="Secciones del perfil"
-            className="flex items-center gap-6 sm:gap-10 overflow-x-auto scrollbar-none"
+            className="flex items-center gap-8 overflow-x-auto scrollbar-none"
           >
             {TABS.map((t) => {
               const isActive = active === t.key;
@@ -81,26 +85,29 @@ export default function ProfileTabs({ broker, properties }: Props) {
                   aria-controls={`panel-${t.key}`}
                   id={`tab-${t.key}`}
                   onClick={() => selectTab(t.key)}
-                  className={`relative min-h-[44px] py-3.5 px-1 whitespace-nowrap text-[13px] uppercase transition-colors duration-300 ${
+                  className={`relative min-h-[48px] py-3.5 px-1 whitespace-nowrap text-[15px] transition-colors duration-200 ${
                     isActive
-                      ? "text-[color:var(--text-primary)]"
-                      : "text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
+                      ? ""
+                      : "hover:opacity-80"
                   }`}
                   style={{
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                    letterSpacing: "2px",
+                    fontFamily: "var(--font-inter), sans-serif",
                     fontWeight: isActive ? 700 : 500,
+                    color: isActive ? "#001751" : "#4A5C7A",
+                    letterSpacing: "-0.01em",
                   }}
                 >
                   {t.label}
                   <span
                     aria-hidden
-                    className={`absolute left-0 right-0 -bottom-[1px] h-[2px] transition-all duration-300 ${
-                      isActive
-                        ? "bg-[color:var(--accent)] opacity-100 scale-x-100"
-                        : "bg-[color:var(--accent)] opacity-0 scale-x-0"
+                    className={`absolute left-0 right-0 -bottom-[1px] transition-opacity duration-200 ${
+                      isActive ? "opacity-100" : "opacity-0"
                     }`}
-                    style={{ transformOrigin: "center" }}
+                    style={{
+                      height: 3,
+                      backgroundColor: "#006AFF",
+                      borderRadius: 2,
+                    }}
                   />
                 </button>
               );

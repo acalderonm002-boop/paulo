@@ -21,7 +21,7 @@ import type { Broker } from "@/lib/brokers";
 type Props = { broker: Broker };
 
 const serif: CSSProperties = {
-  fontFamily: "var(--font-dm-serif), Georgia, serif",
+  fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
 };
 
 function yearRange(
@@ -93,7 +93,7 @@ export default function TabSobreMi({ broker }: Props) {
   const hasFeatured = broker.featured.length > 0;
 
   const dividerClass = "border-0 h-px";
-  const dividerStyle: CSSProperties = { backgroundColor: "#D9D2C3" };
+  const dividerStyle: CSSProperties = { backgroundColor: "#E3EAF2" };
 
   return (
     <section
@@ -138,7 +138,7 @@ export default function TabSobreMi({ broker }: Props) {
                     key={i}
                     className="text-[15px] md:text-base"
                     style={{
-                      color: "#1A1A1A",
+                      color: "#001751",
                       lineHeight: 1.8,
                       maxWidth: "60ch",
                     }}
@@ -151,7 +151,7 @@ export default function TabSobreMi({ broker }: Props) {
                             ...serif,
                             fontSize: "56px",
                             lineHeight: 0.9,
-                            color: "#1A1A1A",
+                            color: "#001751",
                           }}
                         >
                           {p.charAt(0)}
@@ -181,7 +181,7 @@ export default function TabSobreMi({ broker }: Props) {
                       style={{
                         ...serif,
                         fontSize: "clamp(32px, 4vw, 44px)",
-                        color: "#1A1A1A",
+                        color: "#001751",
                       }}
                     >
                       {s.value}
@@ -189,7 +189,7 @@ export default function TabSobreMi({ broker }: Props) {
                     <div
                       className="mt-2 text-[11px] uppercase"
                       style={{
-                        color: "#5C5C5C",
+                        color: "#4A5C7A",
                         letterSpacing: "1.5px",
                         fontWeight: 600,
                       }}
@@ -213,7 +213,7 @@ export default function TabSobreMi({ broker }: Props) {
                   <p
                     className="text-[11px] uppercase mb-3"
                     style={{
-                      color: "#5C5C5C",
+                      color: "#4A5C7A",
                       letterSpacing: "1.5px",
                       fontWeight: 600,
                     }}
@@ -229,7 +229,7 @@ export default function TabSobreMi({ broker }: Props) {
                           border: "1px solid #D9D2C3",
                           borderRadius: 999,
                           padding: "6px 14px",
-                          color: "#1A1A1A",
+                          color: "#001751",
                           backgroundColor: "transparent",
                         }}
                       >
@@ -244,7 +244,7 @@ export default function TabSobreMi({ broker }: Props) {
                   <p
                     className="text-[11px] uppercase mb-3"
                     style={{
-                      color: "#5C5C5C",
+                      color: "#4A5C7A",
                       letterSpacing: "1.5px",
                       fontWeight: 600,
                     }}
@@ -260,7 +260,7 @@ export default function TabSobreMi({ broker }: Props) {
                           border: "1px solid #D9D2C3",
                           borderRadius: 999,
                           padding: "6px 14px",
-                          color: "#1A1A1A",
+                          color: "#001751",
                           backgroundColor: "transparent",
                         }}
                       >
@@ -284,7 +284,7 @@ export default function TabSobreMi({ broker }: Props) {
                   <li
                     key={s}
                     className="flex items-center gap-2 text-[15px]"
-                    style={{ color: "#1A1A1A" }}
+                    style={{ color: "#001751" }}
                   >
                     <Sparkles
                       size={14}
@@ -314,13 +314,13 @@ export default function TabSobreMi({ broker }: Props) {
                   <span
                     key={`${idi.idioma}-${i}`}
                     className="inline-flex items-center text-[15px]"
-                    style={{ color: "#1A1A1A" }}
+                    style={{ color: "#001751" }}
                   >
                     <span>{idi.idioma}</span>
                     {idi.nivel && (
                       <span
                         className="ml-1.5 text-[13px]"
-                        style={{ color: "#5C5C5C" }}
+                        style={{ color: "#4A5C7A" }}
                       >
                         — {idi.nivel}
                       </span>
@@ -329,7 +329,7 @@ export default function TabSobreMi({ broker }: Props) {
                       <span
                         className="mx-2"
                         aria-hidden
-                        style={{ color: "#D9D2C3" }}
+                        style={{ color: "#E3EAF2" }}
                       >
                         ·
                       </span>
@@ -359,20 +359,20 @@ export default function TabSobreMi({ broker }: Props) {
                         size={18}
                         strokeWidth={2}
                         className="mt-1 shrink-0"
-                        style={{ color: "#1A1A1A" }}
+                        style={{ color: "#001751" }}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline gap-x-2">
                           <span
                             className="text-[15px]"
-                            style={{ color: "#1A1A1A", fontWeight: 600 }}
+                            style={{ color: "#001751", fontWeight: 600 }}
                           >
                             {primary}
                           </span>
                           {cert.siglas && cert.siglas !== primary && (
                             <span
                               className="text-[13px]"
-                              style={{ color: "#5C5C5C" }}
+                              style={{ color: "#4A5C7A" }}
                             >
                               ({cert.siglas})
                             </span>
@@ -380,7 +380,7 @@ export default function TabSobreMi({ broker }: Props) {
                         </div>
                         <div
                           className="mt-1 text-[13px]"
-                          style={{ color: "#5C5C5C" }}
+                          style={{ color: "#4A5C7A" }}
                         >
                           {[cert.otorgante, año].filter(Boolean).join(" · ")}
                           {!cert.otorgante && !año && cert.descripcion}
@@ -388,7 +388,7 @@ export default function TabSobreMi({ broker }: Props) {
                         {cert.otorgante && cert.descripcion && (
                           <p
                             className="mt-1 text-[13px]"
-                            style={{ color: "#5C5C5C", lineHeight: 1.6 }}
+                            style={{ color: "#4A5C7A", lineHeight: 1.6 }}
                           >
                             {cert.descripcion}
                           </p>
@@ -417,18 +417,18 @@ export default function TabSobreMi({ broker }: Props) {
                       size={18}
                       strokeWidth={2}
                       className="mt-1 shrink-0"
-                      style={{ color: "#1A1A1A" }}
+                      style={{ color: "#001751" }}
                     />
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-[15px]"
-                        style={{ color: "#1A1A1A", fontWeight: 600 }}
+                        style={{ color: "#001751", fontWeight: 600 }}
                       >
                         {e.institucion}
                       </div>
                       <div
                         className="mt-1 text-[13px]"
-                        style={{ color: "#5C5C5C" }}
+                        style={{ color: "#4A5C7A" }}
                       >
                         {[e.grado, e.area].filter(Boolean).join(" · ")}
                       </div>
@@ -436,7 +436,7 @@ export default function TabSobreMi({ broker }: Props) {
                         <div
                           className="mt-0.5 text-[12px] uppercase"
                           style={{
-                            color: "#5C5C5C",
+                            color: "#4A5C7A",
                             letterSpacing: "1.5px",
                           }}
                         >
@@ -466,18 +466,18 @@ export default function TabSobreMi({ broker }: Props) {
                       size={18}
                       strokeWidth={2}
                       className="mt-1 shrink-0"
-                      style={{ color: "#1A1A1A" }}
+                      style={{ color: "#001751" }}
                     />
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-[15px]"
-                        style={{ color: "#1A1A1A", fontWeight: 600 }}
+                        style={{ color: "#001751", fontWeight: 600 }}
                       >
                         {c.nombre}
                       </div>
                       <div
                         className="mt-1 text-[13px]"
-                        style={{ color: "#5C5C5C" }}
+                        style={{ color: "#4A5C7A" }}
                       >
                         {[c.institucion, c.año].filter(Boolean).join(" · ")}
                       </div>
@@ -498,7 +498,7 @@ export default function TabSobreMi({ broker }: Props) {
                 <span
                   aria-hidden
                   className="absolute left-[6px] top-1 bottom-1 w-px"
-                  style={{ backgroundColor: "#D9D2C3" }}
+                  style={{ backgroundColor: "#E3EAF2" }}
                 />
                 {broker.trayectoria.map((t, i) => (
                   <li key={`${t.brokerage}-${i}`} className="relative">
@@ -506,7 +506,7 @@ export default function TabSobreMi({ broker }: Props) {
                       aria-hidden
                       className="absolute -left-[21px] top-1.5 w-3 h-3 rounded-full"
                       style={{
-                        backgroundColor: "#F5F1EA",
+                        backgroundColor: "#FFFFFF",
                         border: "2px solid #1A1A1A",
                       }}
                     />
@@ -514,11 +514,11 @@ export default function TabSobreMi({ broker }: Props) {
                       <Briefcase
                         size={14}
                         strokeWidth={2}
-                        style={{ color: "#1A1A1A" }}
+                        style={{ color: "#001751" }}
                       />
                       <span
                         className="text-[15px]"
-                        style={{ color: "#1A1A1A", fontWeight: 600 }}
+                        style={{ color: "#001751", fontWeight: 600 }}
                       >
                         {t.brokerage}
                       </span>
@@ -526,7 +526,7 @@ export default function TabSobreMi({ broker }: Props) {
                     {t.rol && (
                       <div
                         className="mt-1 text-[13px]"
-                        style={{ color: "#5C5C5C" }}
+                        style={{ color: "#4A5C7A" }}
                       >
                         {t.rol}
                       </div>
@@ -535,7 +535,7 @@ export default function TabSobreMi({ broker }: Props) {
                       <div
                         className="mt-0.5 text-[12px] uppercase"
                         style={{
-                          color: "#5C5C5C",
+                          color: "#4A5C7A",
                           letterSpacing: "1.5px",
                         }}
                       >
@@ -546,7 +546,7 @@ export default function TabSobreMi({ broker }: Props) {
                       <p
                         className="mt-2 text-[14px]"
                         style={{
-                          color: "#1A1A1A",
+                          color: "#001751",
                           lineHeight: 1.65,
                           maxWidth: "60ch",
                         }}
@@ -576,7 +576,7 @@ export default function TabSobreMi({ broker }: Props) {
                       size={18}
                       strokeWidth={2}
                       className="mt-1 shrink-0"
-                      style={{ color: "#1A1A1A" }}
+                      style={{ color: "#001751" }}
                     />
                     <div className="min-w-0 flex-1">
                       {p.url ? (
@@ -585,7 +585,7 @@ export default function TabSobreMi({ broker }: Props) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-[15px] hover:underline"
-                          style={{ color: "#1A1A1A", fontWeight: 600 }}
+                          style={{ color: "#001751", fontWeight: 600 }}
                         >
                           {p.titulo}
                           <ExternalLink size={13} />
@@ -593,14 +593,14 @@ export default function TabSobreMi({ broker }: Props) {
                       ) : (
                         <div
                           className="text-[15px]"
-                          style={{ color: "#1A1A1A", fontWeight: 600 }}
+                          style={{ color: "#001751", fontWeight: 600 }}
                         >
                           {p.titulo}
                         </div>
                       )}
                       <div
                         className="mt-1 text-[13px]"
-                        style={{ color: "#5C5C5C" }}
+                        style={{ color: "#4A5C7A" }}
                       >
                         {[p.medio, p.fecha].filter(Boolean).join(" · ")}
                       </div>
@@ -627,18 +627,18 @@ export default function TabSobreMi({ broker }: Props) {
                       size={18}
                       strokeWidth={2}
                       className="mt-1 shrink-0"
-                      style={{ color: "#1A1A1A" }}
+                      style={{ color: "#001751" }}
                     />
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-[15px]"
-                        style={{ color: "#1A1A1A", fontWeight: 600 }}
+                        style={{ color: "#001751", fontWeight: 600 }}
                       >
                         {a.titulo}
                       </div>
                       <div
                         className="mt-1 text-[13px]"
-                        style={{ color: "#5C5C5C" }}
+                        style={{ color: "#4A5C7A" }}
                       >
                         {[a.otorgante, a.año].filter(Boolean).join(" · ")}
                       </div>
@@ -665,19 +665,19 @@ export default function TabSobreMi({ broker }: Props) {
                       size={18}
                       strokeWidth={2}
                       className="mt-1 shrink-0"
-                      style={{ color: "#1A1A1A" }}
+                      style={{ color: "#001751" }}
                     />
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-[15px]"
-                        style={{ color: "#1A1A1A", fontWeight: 600 }}
+                        style={{ color: "#001751", fontWeight: 600 }}
                       >
                         {a.nombre}
                       </div>
                       {a.rol && (
                         <div
                           className="mt-1 text-[13px]"
-                          style={{ color: "#5C5C5C" }}
+                          style={{ color: "#4A5C7A" }}
                         >
                           {a.rol}
                         </div>
@@ -686,7 +686,7 @@ export default function TabSobreMi({ broker }: Props) {
                         <div
                           className="mt-0.5 text-[12px] uppercase"
                           style={{
-                            color: "#5C5C5C",
+                            color: "#4A5C7A",
                             letterSpacing: "1.5px",
                           }}
                         >
@@ -716,19 +716,19 @@ export default function TabSobreMi({ broker }: Props) {
                       size={18}
                       strokeWidth={2}
                       className="mt-1 shrink-0"
-                      style={{ color: "#1A1A1A" }}
+                      style={{ color: "#001751" }}
                     />
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-[15px]"
-                        style={{ color: "#1A1A1A", fontWeight: 600 }}
+                        style={{ color: "#001751", fontWeight: 600 }}
                       >
                         {v.organizacion}
                       </div>
                       {v.rol && (
                         <div
                           className="mt-1 text-[13px]"
-                          style={{ color: "#5C5C5C" }}
+                          style={{ color: "#4A5C7A" }}
                         >
                           {v.rol}
                         </div>
@@ -737,7 +737,7 @@ export default function TabSobreMi({ broker }: Props) {
                         <div
                           className="mt-0.5 text-[12px] uppercase"
                           style={{
-                            color: "#5C5C5C",
+                            color: "#4A5C7A",
                             letterSpacing: "1.5px",
                           }}
                         >
@@ -748,7 +748,7 @@ export default function TabSobreMi({ broker }: Props) {
                         <p
                           className="mt-2 text-[14px]"
                           style={{
-                            color: "#1A1A1A",
+                            color: "#001751",
                             lineHeight: 1.65,
                             maxWidth: "60ch",
                           }}
@@ -790,13 +790,13 @@ export default function TabSobreMi({ broker }: Props) {
                           style={{
                             borderRadius: 8,
                             border: "1px solid #D9D2C3",
-                            backgroundColor: "#EAE4D8",
+                            backgroundColor: "#F7FAFD",
                           }}
                         >
                           <Home
                             size={22}
                             strokeWidth={1.5}
-                            style={{ color: "#5C5C5C" }}
+                            style={{ color: "#4A5C7A" }}
                           />
                         </div>
                       )}
@@ -805,7 +805,7 @@ export default function TabSobreMi({ broker }: Props) {
                           <div
                             className="text-[11px] uppercase mb-1"
                             style={{
-                              color: "#5C5C5C",
+                              color: "#4A5C7A",
                               letterSpacing: "1.5px",
                               fontWeight: 600,
                             }}
@@ -815,7 +815,7 @@ export default function TabSobreMi({ broker }: Props) {
                         )}
                         <div
                           className="text-[15px]"
-                          style={{ color: "#1A1A1A", fontWeight: 600 }}
+                          style={{ color: "#001751", fontWeight: 600 }}
                         >
                           {f.titulo}
                         </div>
@@ -823,7 +823,7 @@ export default function TabSobreMi({ broker }: Props) {
                           <p
                             className="mt-1 text-[13px]"
                             style={{
-                              color: "#5C5C5C",
+                              color: "#4A5C7A",
                               lineHeight: 1.55,
                             }}
                           >

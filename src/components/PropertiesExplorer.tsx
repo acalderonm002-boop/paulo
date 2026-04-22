@@ -129,7 +129,7 @@ function FilterDropdown<T extends string>({
         }`}
         style={{
           padding: "8px 16px",
-          fontFamily: "var(--font-dm-sans), sans-serif",
+          fontFamily: "var(--font-inter), sans-serif",
           fontWeight: 600,
         }}
       >
@@ -159,7 +159,7 @@ function FilterDropdown<T extends string>({
                     ? "bg-[color:var(--accent)]/10 text-[color:var(--accent)]"
                     : "text-[color:var(--text-primary)] hover:bg-[color:var(--cream)]"
                 }`}
-                style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+                style={{ fontFamily: "var(--font-inter), sans-serif" }}
               >
                 {opt.label}
               </button>
@@ -242,7 +242,7 @@ function HorizontalCard({ property, hovered, onHover }: CardProps) {
         <div
           className="text-[20px] leading-none text-[color:var(--midnight)] mb-2"
           style={{
-            fontFamily: "var(--font-dm-serif), Georgia, serif",
+            fontFamily: '"Cabinet Grotesk", var(--font-inter), sans-serif',
             fontWeight: 700,
           }}
         >
@@ -252,7 +252,7 @@ function HorizontalCard({ property, hovered, onHover }: CardProps) {
         {specs.length > 0 && (
           <div
             className="text-[13px] text-[color:var(--text-secondary)] mb-1"
-            style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+            style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
             {specs.join(" | ")}
           </div>
@@ -305,7 +305,7 @@ function SearchBar({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Buscar por nombre o ubicación..."
         className="w-full bg-white border border-[#e5e7eb] rounded-lg pl-9 pr-9 py-2 text-[13px] text-[color:var(--text-primary)] placeholder-[color:var(--text-secondary)] focus:outline-none focus:border-[color:var(--accent)] transition-colors"
-        style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+        style={{ fontFamily: "var(--font-inter), sans-serif" }}
       />
       {value && (
         <button
@@ -467,7 +467,7 @@ export default function PropertiesExplorer({ properties }: Props) {
               type="button"
               onClick={clearAll}
               className="text-[12px] text-[color:var(--text-secondary)] hover:text-[color:var(--accent)] underline underline-offset-2 shrink-0"
-              style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               Limpiar filtros
             </button>
@@ -497,7 +497,7 @@ export default function PropertiesExplorer({ properties }: Props) {
           <div>
             <div
               className="text-[14px] text-[color:var(--text-secondary)] mb-4"
-              style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
+              style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               {filtered.length}{" "}
               {filtered.length === 1
