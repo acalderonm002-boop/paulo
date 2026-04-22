@@ -77,6 +77,63 @@ on conflict (slug) do update set
   zonas_especializacion = excluded.zonas_especializacion,
   stats = excluded.stats;
 
+-- Populate LinkedIn-style profile fields on the existing Paulo row.
+update public.brokers set
+  banner_url = 'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=2400&q=80',
+  filosofia = 'Te acompaño en cada paso del proceso inmobiliario con estrategia, transparencia y un trato personalizado.',
+  tipos_propiedad = array['Residencial','Lujo','Inversión'],
+  servicios = array['Compra','Venta','Renta','Asesoría','Valuación'],
+  idiomas = '[
+    {"idioma":"Español","nivel":"Nativo"},
+    {"idioma":"Inglés","nivel":"Profesional"}
+  ]'::jsonb,
+  certificaciones = '[
+    {
+      "nombre_completo": "Asociación Mexicana de Profesionales Inmobiliarios",
+      "siglas": "AMPI",
+      "año": 2021,
+      "otorgante": "AMPI Nuevo León"
+    }
+  ]'::jsonb,
+  educacion = '[
+    {
+      "institucion": "ITESM",
+      "grado": "Licenciatura",
+      "area": "Administración",
+      "año_inicio": 2010,
+      "año_fin": 2014
+    }
+  ]'::jsonb,
+  cursos = '[
+    {
+      "nombre": "Certificación en Bienes Raíces",
+      "institucion": "AMPI",
+      "año": 2021
+    }
+  ]'::jsonb,
+  trayectoria = '[
+    {
+      "brokerage": "Walls & People",
+      "rol": "Asesor Inmobiliario",
+      "desde": 2022,
+      "hasta": null,
+      "descripcion": "Especialización en propiedades residenciales de lujo en San Pedro y Valle Oriente."
+    }
+  ]'::jsonb,
+  asociaciones = '[
+    {
+      "nombre": "AMPI Nuevo León",
+      "rol": "Miembro activo",
+      "desde": 2021,
+      "hasta": null
+    }
+  ]'::jsonb,
+  awards = '[]'::jsonb,
+  publicaciones = '[]'::jsonb,
+  voluntariado = '[]'::jsonb,
+  featured = '[]'::jsonb
+where slug = 'paulo-leal';
+
 -- ---------------------------------------------------------------------------
 -- Listings — 6 Monterrey area properties across the broker's key zones.
 -- ---------------------------------------------------------------------------

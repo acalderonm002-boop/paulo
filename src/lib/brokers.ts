@@ -12,15 +12,73 @@ import type {
 // ---------------------------------------------------------------------------
 
 export type BrokerCertification = {
-  nombre: string;
+  // Older rows expose a single `nombre` field; newer rows use the richer
+  // linkedin-style shape below. The UI falls back to whichever is present.
+  nombre?: string;
   descripcion?: string;
   anio?: number;
+  nombre_completo?: string;
+  siglas?: string;
+  año?: number;
+  otorgante?: string;
 };
 
 export type BrokerStats = {
   propiedades_vendidas: number;
   transacciones: number;
   clientes: number;
+};
+
+export type BrokerIdioma = { idioma: string; nivel?: string };
+export type BrokerEducacion = {
+  institucion: string;
+  grado?: string;
+  area?: string;
+  año_inicio?: number | null;
+  año_fin?: number | null;
+};
+export type BrokerCurso = {
+  nombre: string;
+  institucion?: string;
+  año?: number;
+};
+export type BrokerTrayectoria = {
+  brokerage: string;
+  rol?: string;
+  desde?: number | null;
+  hasta?: number | null;
+  descripcion?: string;
+};
+export type BrokerPublicacion = {
+  titulo: string;
+  medio?: string;
+  fecha?: string;
+  url?: string;
+};
+export type BrokerAward = {
+  titulo: string;
+  otorgante?: string;
+  año?: number;
+};
+export type BrokerAsociacion = {
+  nombre: string;
+  rol?: string;
+  desde?: number | null;
+  hasta?: number | null;
+};
+export type BrokerVoluntariado = {
+  organizacion: string;
+  rol?: string;
+  desde?: number | null;
+  hasta?: number | null;
+  descripcion?: string;
+};
+export type BrokerFeatured = {
+  tipo?: string;
+  titulo: string;
+  descripcion?: string;
+  url?: string;
+  thumbnail_url?: string;
 };
 
 export type Broker = {
@@ -43,6 +101,18 @@ export type Broker = {
   certificaciones: BrokerCertification[];
   zonas_especializacion: string[];
   stats: BrokerStats;
+  filosofia: string | null;
+  tipos_propiedad: string[];
+  servicios: string[];
+  idiomas: BrokerIdioma[];
+  educacion: BrokerEducacion[];
+  cursos: BrokerCurso[];
+  trayectoria: BrokerTrayectoria[];
+  publicaciones: BrokerPublicacion[];
+  awards: BrokerAward[];
+  asociaciones: BrokerAsociacion[];
+  voluntariado: BrokerVoluntariado[];
+  featured: BrokerFeatured[];
   created_at?: string;
   updated_at?: string;
 };
@@ -93,7 +163,8 @@ export const DEFAULT_BROKER: Broker = {
   bio_larga:
     "Con más de 3 años en el sector y el respaldo de la inmobiliaria Walls & People, combino estrategia comercial con un trato humano y transparente. Me especializo en conectar personas con propiedades que no solo cumplen expectativas, sino que sean el proyecto ideal para ellos.\n\nSoy egresado de la UDEM de la Ingeniería en Gestión Empresarial e Ingeniería Industrial y de Sistemas. Mis estudios me han ayudado a buscar maneras de resolverle problemas a mis clientes y tener mayor organización al trabajar.",
   foto_url: "/images/paulo-portrait.jpg",
-  banner_url: null,
+  banner_url:
+    "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=2400&q=80",
   telefono: "81 2862 5350",
   whatsapp: "528128625350",
   email: "paulo.leal@w-p.mx",
@@ -105,13 +176,11 @@ export const DEFAULT_BROKER: Broker = {
   anios_experiencia: 3,
   certificaciones: [
     {
-      nombre: "AMPI",
-      descripcion:
-        "Asociación Mexicana de Profesionales Inmobiliarios — credencial vigente.",
-    },
-    {
-      nombre: "Walls & People",
-      descripcion: "Asesor inmobiliario afiliado a la inmobiliaria.",
+      nombre_completo:
+        "Asociación Mexicana de Profesionales Inmobiliarios",
+      siglas: "AMPI",
+      año: 2021,
+      otorgante: "AMPI Nuevo León",
     },
   ],
   zonas_especializacion: [
@@ -127,6 +196,52 @@ export const DEFAULT_BROKER: Broker = {
     transacciones: 60,
     clientes: 45,
   },
+  filosofia:
+    "Te acompaño en cada paso del proceso inmobiliario con estrategia, transparencia y un trato personalizado.",
+  tipos_propiedad: ["Residencial", "Lujo", "Inversión"],
+  servicios: ["Compra", "Venta", "Renta", "Asesoría", "Valuación"],
+  idiomas: [
+    { idioma: "Español", nivel: "Nativo" },
+    { idioma: "Inglés", nivel: "Profesional" },
+  ],
+  educacion: [
+    {
+      institucion: "ITESM",
+      grado: "Licenciatura",
+      area: "Administración",
+      año_inicio: 2010,
+      año_fin: 2014,
+    },
+  ],
+  cursos: [
+    {
+      nombre: "Certificación en Bienes Raíces",
+      institucion: "AMPI",
+      año: 2021,
+    },
+  ],
+  trayectoria: [
+    {
+      brokerage: "Walls & People",
+      rol: "Asesor Inmobiliario",
+      desde: 2022,
+      hasta: null,
+      descripcion:
+        "Especialización en propiedades residenciales de lujo en San Pedro y Valle Oriente.",
+    },
+  ],
+  publicaciones: [],
+  awards: [],
+  asociaciones: [
+    {
+      nombre: "AMPI Nuevo León",
+      rol: "Miembro activo",
+      desde: 2021,
+      hasta: null,
+    },
+  ],
+  voluntariado: [],
+  featured: [],
 };
 
 export const DEFAULT_LISTINGS: Listing[] = [
@@ -332,6 +447,18 @@ type DbBrokerRow = {
   certificaciones: unknown;
   zonas_especializacion: string[] | null;
   stats: unknown;
+  filosofia: string | null;
+  tipos_propiedad: string[] | null;
+  servicios: string[] | null;
+  idiomas: unknown;
+  educacion: unknown;
+  cursos: unknown;
+  trayectoria: unknown;
+  publicaciones: unknown;
+  awards: unknown;
+  asociaciones: unknown;
+  voluntariado: unknown;
+  featured: unknown;
   created_at?: string;
   updated_at?: string;
 };
@@ -379,13 +506,164 @@ function parseCertifications(raw: unknown): BrokerCertification[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter((x): x is Record<string, unknown> => !!x && typeof x === "object")
-    .map((c) => ({
-      nombre: String(c.nombre ?? ""),
-      descripcion:
-        typeof c.descripcion === "string" ? c.descripcion : undefined,
-      anio: typeof c.anio === "number" ? c.anio : undefined,
-    }))
-    .filter((c) => c.nombre.length > 0);
+    .map((c) => {
+      const nombreCompleto =
+        typeof c.nombre_completo === "string" ? c.nombre_completo : undefined;
+      const nombre = typeof c.nombre === "string" ? c.nombre : undefined;
+      return {
+        nombre_completo: nombreCompleto,
+        siglas: typeof c.siglas === "string" ? c.siglas : undefined,
+        año:
+          typeof c["año"] === "number"
+            ? (c["año"] as number)
+            : typeof c.anio === "number"
+            ? (c.anio as number)
+            : undefined,
+        otorgante:
+          typeof c.otorgante === "string" ? c.otorgante : undefined,
+        nombre: nombre ?? nombreCompleto,
+        descripcion:
+          typeof c.descripcion === "string" ? c.descripcion : undefined,
+        anio: typeof c.anio === "number" ? c.anio : undefined,
+      };
+    })
+    .filter((c) => (c.nombre ?? c.nombre_completo ?? "").length > 0);
+}
+
+function parseArrayOf<T>(
+  raw: unknown,
+  map: (obj: Record<string, unknown>) => T | null
+): T[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((x): x is Record<string, unknown> => !!x && typeof x === "object")
+    .map(map)
+    .filter((x): x is T => x !== null);
+}
+
+function str(v: unknown): string | undefined {
+  return typeof v === "string" ? v : undefined;
+}
+function num(v: unknown): number | undefined {
+  return typeof v === "number" ? v : undefined;
+}
+function numOrNull(v: unknown): number | null {
+  if (v === null) return null;
+  return typeof v === "number" ? v : null;
+}
+
+function parseIdiomas(raw: unknown): BrokerIdioma[] {
+  return parseArrayOf(raw, (o) => {
+    const idioma = str(o.idioma);
+    if (!idioma) return null;
+    return { idioma, nivel: str(o.nivel) };
+  });
+}
+
+function parseEducacion(raw: unknown): BrokerEducacion[] {
+  return parseArrayOf(raw, (o) => {
+    const institucion = str(o.institucion);
+    if (!institucion) return null;
+    return {
+      institucion,
+      grado: str(o.grado),
+      area: str(o.area),
+      año_inicio: numOrNull(o["año_inicio"]),
+      año_fin: numOrNull(o["año_fin"]),
+    };
+  });
+}
+
+function parseCursos(raw: unknown): BrokerCurso[] {
+  return parseArrayOf(raw, (o) => {
+    const nombre = str(o.nombre);
+    if (!nombre) return null;
+    return {
+      nombre,
+      institucion: str(o.institucion),
+      año: num(o["año"]),
+    };
+  });
+}
+
+function parseTrayectoria(raw: unknown): BrokerTrayectoria[] {
+  return parseArrayOf(raw, (o) => {
+    const brokerage = str(o.brokerage);
+    if (!brokerage) return null;
+    return {
+      brokerage,
+      rol: str(o.rol),
+      desde: numOrNull(o.desde),
+      hasta: numOrNull(o.hasta),
+      descripcion: str(o.descripcion),
+    };
+  });
+}
+
+function parsePublicaciones(raw: unknown): BrokerPublicacion[] {
+  return parseArrayOf(raw, (o) => {
+    const titulo = str(o.titulo);
+    if (!titulo) return null;
+    return {
+      titulo,
+      medio: str(o.medio),
+      fecha: str(o.fecha),
+      url: str(o.url),
+    };
+  });
+}
+
+function parseAwards(raw: unknown): BrokerAward[] {
+  return parseArrayOf(raw, (o) => {
+    const titulo = str(o.titulo);
+    if (!titulo) return null;
+    return {
+      titulo,
+      otorgante: str(o.otorgante),
+      año: num(o["año"]),
+    };
+  });
+}
+
+function parseAsociaciones(raw: unknown): BrokerAsociacion[] {
+  return parseArrayOf(raw, (o) => {
+    const nombre = str(o.nombre);
+    if (!nombre) return null;
+    return {
+      nombre,
+      rol: str(o.rol),
+      desde: numOrNull(o.desde),
+      hasta: numOrNull(o.hasta),
+    };
+  });
+}
+
+function parseVoluntariado(raw: unknown): BrokerVoluntariado[] {
+  return parseArrayOf(raw, (o) => {
+    const organizacion = str(o.organizacion);
+    if (!organizacion) return null;
+    return {
+      organizacion,
+      rol: str(o.rol),
+      desde: numOrNull(o.desde),
+      hasta: numOrNull(o.hasta),
+      descripcion: str(o.descripcion),
+    };
+  });
+}
+
+function parseFeatured(raw: unknown): BrokerFeatured[] {
+  return parseArrayOf(raw, (o) => {
+    const titulo = str(o.titulo);
+    if (!titulo) return null;
+    return {
+      titulo,
+      tipo: str(o.tipo),
+      descripcion: str(o.descripcion),
+      url: str(o.url),
+      thumbnail_url: str(o.thumbnail_url),
+    };
+  });
 }
 
 function toNum(v: number | string | null | undefined): number | null {
@@ -415,6 +693,18 @@ function mapBrokerRow(row: DbBrokerRow): Broker {
     certificaciones: parseCertifications(row.certificaciones),
     zonas_especializacion: row.zonas_especializacion ?? [],
     stats: parseStats(row.stats),
+    filosofia: row.filosofia,
+    tipos_propiedad: row.tipos_propiedad ?? [],
+    servicios: row.servicios ?? [],
+    idiomas: parseIdiomas(row.idiomas),
+    educacion: parseEducacion(row.educacion),
+    cursos: parseCursos(row.cursos),
+    trayectoria: parseTrayectoria(row.trayectoria),
+    publicaciones: parsePublicaciones(row.publicaciones),
+    awards: parseAwards(row.awards),
+    asociaciones: parseAsociaciones(row.asociaciones),
+    voluntariado: parseVoluntariado(row.voluntariado),
+    featured: parseFeatured(row.featured),
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
