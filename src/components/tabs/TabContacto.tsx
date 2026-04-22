@@ -1,9 +1,9 @@
 "use client";
 
-import { Mail, MessageCircle, Phone, Send } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
+import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { useState, type CSSProperties, type FormEvent } from "react";
 import type { Broker } from "@/lib/brokers";
-import SocialIcons from "../SocialIcons";
 
 type Props = { broker: Broker };
 
@@ -46,10 +46,10 @@ export default function TabContacto({ broker }: Props) {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
+        const body = (await res.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(data?.error ?? "No se pudo enviar el mensaje");
+        throw new Error(body?.error ?? "No se pudo enviar el mensaje");
       }
       form.reset();
       setState("success");
@@ -59,223 +59,311 @@ export default function TabContacto({ broker }: Props) {
     }
   };
 
-  const socialLinks = {
-    instagram: broker.instagram,
-    facebook: broker.facebook,
-    linkedin: broker.linkedin,
+  const serif: CSSProperties = {
+    fontFamily: "var(--font-dm-serif), Georgia, serif",
   };
 
+  const labelStyle: CSSProperties = {
+    color: "#5C5C5C",
+    letterSpacing: "1.8px",
+    fontWeight: 600,
+  };
+
+  const inputBase =
+    "w-full bg-transparent px-0 py-3 text-[15px] text-[color:var(--text-primary)] focus:outline-none transition-colors";
+
+  const inputStyle: CSSProperties = {
+    borderTop: "none",
+    borderLeft: "none",
+    borderRight: "none",
+    borderBottom: "1px solid #D9D2C3",
+    borderRadius: 0,
+  };
+
+  const directAction = (
+    label: string,
+    icon: React.ReactNode,
+    href: string,
+    external?: boolean
+  ) => (
+    <a
+      href={href}
+      {...(external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {})}
+      className="inline-flex items-center justify-center gap-2 transition-colors"
+      style={{
+        border: "1px solid #1A1A1A",
+        borderRadius: 10,
+        padding: "12px 18px",
+        fontSize: 14,
+        fontWeight: 500,
+        color: "#1A1A1A",
+        backgroundColor: "transparent",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = "#1A1A1A";
+        e.currentTarget.style.color = "#F5F1EA";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = "transparent";
+        e.currentTarget.style.color = "#1A1A1A";
+      }}
+    >
+      {icon}
+      {label}
+    </a>
+  );
+
+  const socialIconClass =
+    "text-[#1A1A1A] hover:text-[color:var(--brand)] transition-colors";
+
   return (
-    <section id="contacto" className="bg-[color:var(--cream)] py-14 lg:py-20">
-      <div className="max-w-[1100px] mx-auto px-6 sm:px-10 lg:px-12">
+    <section
+      id="contacto"
+      className="bg-[color:var(--cream)] text-[color:var(--text-primary)]"
+    >
+      <div className="max-w-[720px] mx-auto px-5 sm:px-8 py-14 md:py-16">
+        {/* Editorial heading */}
         <p
-          className="text-[11px] uppercase text-[color:var(--accent)] mb-3"
-          style={{ letterSpacing: "3px" }}
+          className="text-[11px] uppercase mb-3"
+          style={{
+            color: "#5C5C5C",
+            letterSpacing: "2.5px",
+            fontWeight: 600,
+          }}
         >
           Contacto
         </p>
-        <h2
-          className="text-[color:var(--text-primary)] leading-[1.1] mb-10"
+        <h1
+          className="leading-[1.05] mb-4"
           style={{
-            fontFamily: "var(--font-dm-serif), Georgia, serif",
-            fontSize: "clamp(28px, 3vw, 42px)",
-            maxWidth: "720px",
+            ...serif,
+            fontSize: "clamp(32px, 5vw, 48px)",
+            color: "#1A1A1A",
           }}
         >
-          Platiquemos sobre tu próximo proyecto inmobiliario.
-        </h2>
+          Platiquemos sobre tu próximo proyecto.
+        </h1>
+        <p
+          className="text-[15px] md:text-base"
+          style={{
+            color: "#5C5C5C",
+            lineHeight: 1.6,
+            maxWidth: "58ch",
+          }}
+        >
+          Compra, venta, renta o inversión — escríbeme y te respondo lo antes
+          posible.
+        </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-14 items-start">
-          {/* Form */}
-          <form onSubmit={onSubmit} className="space-y-4" noValidate>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label className="block">
-                <span
-                  className="block text-[11px] uppercase text-[color:var(--text-secondary)] mb-1.5"
-                  style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-                >
-                  Nombre
-                </span>
-                <input
-                  required
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  className="w-full bg-white border border-black/[0.08] rounded-md px-4 py-3 text-[15px] text-[color:var(--text-primary)] focus:outline-none focus:border-[color:var(--accent)] transition-colors"
-                />
-              </label>
-              <label className="block">
-                <span
-                  className="block text-[11px] uppercase text-[color:var(--text-secondary)] mb-1.5"
-                  style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-                >
-                  Teléfono
-                </span>
-                <input
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  className="w-full bg-white border border-black/[0.08] rounded-md px-4 py-3 text-[15px] text-[color:var(--text-primary)] focus:outline-none focus:border-[color:var(--accent)] transition-colors"
-                />
-              </label>
-            </div>
+        <hr
+          className="my-10 border-0 h-px"
+          style={{ backgroundColor: "#D9D2C3" }}
+        />
+
+        {/* Form */}
+        <form onSubmit={onSubmit} className="space-y-7" noValidate>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-7">
             <label className="block">
               <span
-                className="block text-[11px] uppercase text-[color:var(--text-secondary)] mb-1.5"
-                style={{ letterSpacing: "1.5px", fontWeight: 600 }}
+                className="block text-[11px] uppercase mb-2"
+                style={labelStyle}
               >
-                Email
+                Nombre
               </span>
               <input
-                name="email"
-                type="email"
-                autoComplete="email"
-                className="w-full bg-white border border-black/[0.08] rounded-md px-4 py-3 text-[15px] text-[color:var(--text-primary)] focus:outline-none focus:border-[color:var(--accent)] transition-colors"
+                required
+                name="name"
+                type="text"
+                autoComplete="name"
+                className={inputBase}
+                style={inputStyle}
               />
             </label>
             <label className="block">
               <span
-                className="block text-[11px] uppercase text-[color:var(--text-secondary)] mb-1.5"
-                style={{ letterSpacing: "1.5px", fontWeight: 600 }}
+                className="block text-[11px] uppercase mb-2"
+                style={labelStyle}
               >
-                Mensaje
+                Teléfono
               </span>
-              <textarea
-                name="message"
-                rows={5}
-                className="w-full bg-white border border-black/[0.08] rounded-md px-4 py-3 text-[15px] text-[color:var(--text-primary)] focus:outline-none focus:border-[color:var(--accent)] transition-colors resize-y"
+              <input
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                className={inputBase}
+                style={inputStyle}
               />
             </label>
+          </div>
+          <label className="block">
+            <span
+              className="block text-[11px] uppercase mb-2"
+              style={labelStyle}
+            >
+              Email
+            </span>
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              className={inputBase}
+              style={inputStyle}
+            />
+          </label>
+          <label className="block">
+            <span
+              className="block text-[11px] uppercase mb-2"
+              style={labelStyle}
+            >
+              Mensaje
+            </span>
+            <textarea
+              name="message"
+              rows={5}
+              className="w-full bg-transparent px-0 py-3 text-[15px] text-[color:var(--text-primary)] focus:outline-none transition-colors resize-y"
+              style={inputStyle}
+            />
+          </label>
 
+          <div className="pt-2">
             <button
               type="submit"
               disabled={state === "submitting"}
-              className="inline-flex items-center justify-center gap-2 bg-[color:var(--accent)] text-white px-7 py-[14px] text-[12px] uppercase transition-transform duration-300 hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ letterSpacing: "2px", fontWeight: 600 }}
+              className="inline-flex items-center justify-center transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{
+                border: "1px solid #1A1A1A",
+                borderRadius: 10,
+                padding: "12px 24px",
+                fontSize: 15,
+                fontWeight: 500,
+                color: "#1A1A1A",
+                backgroundColor: "transparent",
+              }}
+              onMouseEnter={(e) => {
+                if (state === "submitting") return;
+                e.currentTarget.style.backgroundColor = "#1A1A1A";
+                e.currentTarget.style.color = "#F5F1EA";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "#1A1A1A";
+              }}
             >
               {state === "submitting" ? "Enviando..." : "Enviar mensaje"}
-              <Send size={15} />
             </button>
 
             {state === "success" && (
-              <p className="text-[14px] text-emerald-700">
-                ¡Mensaje enviado! Te contactaré pronto.
+              <p
+                className="mt-4 text-[14px]"
+                style={{ color: "#1A1A1A" }}
+              >
+                Mensaje enviado. Te contactaré pronto.
               </p>
             )}
             {state === "error" && (
-              <p className="text-[14px] text-rose-700">
+              <p
+                className="mt-4 text-[14px]"
+                style={{ color: "#8B2E2E" }}
+              >
                 {errorMsg ?? "No se pudo enviar el mensaje."}
               </p>
             )}
-          </form>
-
-          {/* Direct contact */}
-          <div className="space-y-3">
-            {broker.whatsapp && (
-              <a
-                href={whatsappHref(broker.whatsapp, broker.nombre)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-4 bg-white border border-black/[0.06] rounded-xl p-5 hover:border-[color:var(--accent)]/40 transition-colors"
-              >
-                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-[color:var(--accent)]/10 shrink-0">
-                  <MessageCircle
-                    size={19}
-                    className="text-[color:var(--accent)]"
-                    strokeWidth={2}
-                  />
-                </span>
-                <div className="min-w-0">
-                  <div
-                    className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-0.5"
-                    style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-                  >
-                    WhatsApp
-                  </div>
-                  <div
-                    className="text-[15px] text-[color:var(--text-primary)] truncate"
-                    style={{ fontWeight: 600 }}
-                  >
-                    {broker.whatsapp}
-                  </div>
-                </div>
-              </a>
-            )}
-            {broker.telefono && (
-              <a
-                href={`tel:${broker.telefono.replace(/[^\d+]/g, "")}`}
-                className="group flex items-center gap-4 bg-white border border-black/[0.06] rounded-xl p-5 hover:border-[color:var(--accent)]/40 transition-colors"
-              >
-                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-[color:var(--accent)]/10 shrink-0">
-                  <Phone
-                    size={19}
-                    className="text-[color:var(--accent)]"
-                    strokeWidth={2}
-                  />
-                </span>
-                <div className="min-w-0">
-                  <div
-                    className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-0.5"
-                    style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-                  >
-                    Teléfono
-                  </div>
-                  <div
-                    className="text-[15px] text-[color:var(--text-primary)] truncate"
-                    style={{ fontWeight: 600 }}
-                  >
-                    {broker.telefono}
-                  </div>
-                </div>
-              </a>
-            )}
-            {broker.email && (
-              <a
-                href={`mailto:${broker.email}`}
-                className="group flex items-center gap-4 bg-white border border-black/[0.06] rounded-xl p-5 hover:border-[color:var(--accent)]/40 transition-colors"
-              >
-                <span className="flex items-center justify-center w-11 h-11 rounded-full bg-[color:var(--accent)]/10 shrink-0">
-                  <Mail
-                    size={19}
-                    className="text-[color:var(--accent)]"
-                    strokeWidth={2}
-                  />
-                </span>
-                <div className="min-w-0">
-                  <div
-                    className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-0.5"
-                    style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-                  >
-                    Email
-                  </div>
-                  <div
-                    className="text-[15px] text-[color:var(--text-primary)] truncate"
-                    style={{ fontWeight: 600 }}
-                  >
-                    {broker.email}
-                  </div>
-                </div>
-              </a>
-            )}
-
-            {(broker.instagram || broker.facebook || broker.linkedin) && (
-              <div className="pt-3">
-                <p
-                  className="text-[11px] uppercase text-[color:var(--text-secondary)] mb-3"
-                  style={{ letterSpacing: "1.5px", fontWeight: 600 }}
-                >
-                  También me encuentras en
-                </p>
-                <SocialIcons
-                  size={22}
-                  gapClass="gap-5"
-                  links={socialLinks}
-                  linkClass="text-[color:var(--text-primary)] hover:text-[color:var(--accent)]"
-                />
-              </div>
-            )}
           </div>
+        </form>
+
+        <hr
+          className="my-10 border-0 h-px"
+          style={{ backgroundColor: "#D9D2C3" }}
+        />
+
+        {/* Direct action row */}
+        <p
+          className="text-[11px] uppercase mb-4"
+          style={{
+            color: "#5C5C5C",
+            letterSpacing: "2px",
+            fontWeight: 600,
+          }}
+        >
+          O contáctame directamente
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {broker.whatsapp &&
+            directAction(
+              "WhatsApp",
+              <MessageCircle size={16} strokeWidth={2} />,
+              whatsappHref(broker.whatsapp, broker.nombre),
+              true
+            )}
+          {broker.telefono &&
+            directAction(
+              "Llamada",
+              <Phone size={16} strokeWidth={2} />,
+              `tel:${broker.telefono.replace(/[^\d+]/g, "")}`
+            )}
+          {broker.email &&
+            directAction(
+              "Correo",
+              <Mail size={16} strokeWidth={2} />,
+              `mailto:${broker.email}`
+            )}
         </div>
+
+        {/* Social icons */}
+        {(broker.instagram || broker.facebook || broker.linkedin) && (
+          <div className="mt-10">
+            <p
+              className="text-[11px] uppercase mb-4"
+              style={{
+                color: "#5C5C5C",
+                letterSpacing: "2px",
+                fontWeight: 600,
+              }}
+            >
+              También me encuentras en
+            </p>
+            <div className="flex items-center gap-5">
+              {broker.instagram && (
+                <a
+                  href={broker.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className={socialIconClass}
+                  style={{ ["--brand" as string]: "#E4405F" }}
+                >
+                  <FaInstagram size={24} />
+                </a>
+              )}
+              {broker.facebook && (
+                <a
+                  href={broker.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className={socialIconClass}
+                  style={{ ["--brand" as string]: "#1877F2" }}
+                >
+                  <FaFacebook size={24} />
+                </a>
+              )}
+              {broker.linkedin && (
+                <a
+                  href={broker.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className={socialIconClass}
+                  style={{ ["--brand" as string]: "#0A66C2" }}
+                >
+                  <FaLinkedin size={24} />
+                </a>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
