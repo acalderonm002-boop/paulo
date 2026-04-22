@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Serif_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
-import LoadingScreen from "@/components/LoadingScreen";
 import { ToastProvider } from "@/context/ToastContext";
 import { fetchBrokerBundle } from "@/lib/brokers";
 
@@ -67,10 +66,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${dmSerif.variable} ${dmSans.variable} antialiased`}>
-        <ToastProvider>
-          <LoadingScreen />
-          {children}
-        </ToastProvider>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
